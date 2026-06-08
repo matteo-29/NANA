@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>External Website Notice</title>
+  <link rel="icon" href="./favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <meta name="theme-color" content="#123c96">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ana-blue:#123c96;
+      --ink:#1b2640;
+      --muted:#68738f;
+      --bg:#f4f6fa;
+      --card:#ffffff;
+      --line:#d7ddea;
+      --shadow:0 18px 40px rgba(17,39,92,.08);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Inter",system-ui,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      line-height:1.6;
+    }
+    .wrap{
+      width:min(920px, calc(100% - 32px));
+      margin:0 auto;
+      padding:48px 0 72px;
+    }
+    .card{
+      background:var(--card);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+      padding:34px 32px;
+      border:1px solid #e4e9f4;
+    }
+    .kicker{
+      color:var(--ana-blue);
+      font-size:13px;
+      font-weight:800;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
+    h1{
+      margin:0 0 18px;
+      font-size:clamp(32px, 4vw, 46px);
+      line-height:1.05;
+      color:var(--ink);
+    }
+    p{
+      margin:0 0 14px;
+      max-width:68ch;
+      color:#33415f;
+      font-size:16px;
+    }
+    .notice-list{
+      margin:24px 0 30px;
+      padding:0;
+      list-style:none;
+      display:grid;
+      gap:14px;
+    }
+    .notice-list li{
+      padding:16px 18px;
+      border:1px solid var(--line);
+      border-radius:16px;
+      background:#fafcff;
+      color:#33415f;
+    }
+    .actions{
+      display:flex;
+      gap:12px;
+      flex-wrap:wrap;
+      margin-top:28px;
+    }
+    .btn{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:46px;
+      padding:0 18px;
+      border-radius:999px;
+      font-weight:700;
+      text-decoration:none;
+      border:1px solid #c7d1e6;
+      color:#27417d;
+      background:#fff;
+    }
+    .btn.primary{
+      background:var(--ana-blue);
+      color:#fff;
+      border-color:var(--ana-blue);
+    }
+  </style>
+</head>
+<body>
+  <main class="wrap">
+    <section class="card">
+      <div class="kicker">External Website Notice</div>
+      <h1>You will now move to an external website.</h1>
+      <p>After you have been taken to the external website, the terms and conditions and the privacy policy of that website will apply.</p>
+      <ul class="notice-list">
+        <li>Any arrangement and usage contracts for the products shown on the external website will be concluded between the customer and Viator.</li>
+        <li>ANA is not liable for any trouble or injury, damage, or loss relating to the usage of these products.</li>
+        <li>Please confirm the details above before moving to the external website.</li>
+      </ul>
+      <div class="actions">
+        <a class="btn" href="./index.html">Back to top page</a>
+        <a class="btn primary" href="https://www.ana.co.jp/en/jp/plan-book/viator-relay/?url=https%3A%2F%2Fana.partner.viator.com%2FJapan%2Fd16" target="_blank" rel="noopener noreferrer">Open original ANA page</a>
+      </div>
+    </section>
+  </main>
+</body>
+</html>

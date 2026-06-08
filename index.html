@@ -1,0 +1,1182 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Aero Wedding — Check-in</title>
+  <link rel="icon" href="./favicon.ico" sizes="any">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
+  <meta name="theme-color" content="#123c96">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --ana-blue:#123c96;
+      --ana-blue-dark:#0d2f7d;
+      --ink:#1b2640;
+      --muted:#68738f;
+      --line:#d7ddea;
+      --bg:#f2f4f8;
+      --card:#ffffff;
+      --soft:#eef3fb;
+      --shadow:0 18px 40px rgba(17,39,92,.08);
+      --radius:18px;
+    }
+
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0}
+    body{
+      font-family:"Inter",system-ui,sans-serif;
+      background:var(--bg);
+      color:var(--ink);
+      line-height:1.45;
+    }
+
+    a{text-decoration:none;color:inherit}
+    button,input{font:inherit}
+    .container{
+      width:min(1180px, calc(100% - 32px));
+      margin:0 auto;
+    }
+
+    .top-alerts{
+      background:#d9dfec;
+      border-bottom:1px solid #c9d2e5;
+      font-size:13px;
+      color:#25304b;
+    }
+
+    .top-alerts .container{
+      display:flex;
+      gap:18px;
+      align-items:center;
+      justify-content:space-between;
+      padding:10px 0;
+      flex-wrap:wrap;
+    }
+
+    .ticker{display:grid;gap:4px}
+    .ticker-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+    .date{color:#8d2445;font-weight:600;min-width:42px}
+
+    .tag{
+      border:1px solid #7985a6;
+      padding:1px 7px;
+      border-radius:999px;
+      font-size:11px;
+      background:#f6f8fc;
+    }
+
+    .utility-pill{
+      border:1px solid #8390b0;
+      border-radius:999px;
+      padding:6px 12px;
+      font-size:12px;
+      background:#edf1f8;
+      white-space:nowrap;
+    }
+
+    header{
+      background:#fff;
+      border-bottom:1px solid #e5e9f3;
+      position:sticky;
+      top:0;
+      z-index:20;
+    }
+
+    .header-main{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+      padding:16px 0 12px;
+    }
+
+    .brand{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      min-width:0;
+    }
+
+    .brand-logo{
+      height:30px;
+      width:auto;
+      display:block;
+      object-fit:contain;
+      flex:0 0 auto;
+    }
+
+    .brand-text{
+      font-size:14px;
+      font-weight:700;
+      color:#20335f;
+      white-space:nowrap;
+    }
+
+    .header-actions{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      justify-content:flex-end;
+      color:#33415f;
+      font-size:13px;
+    }
+
+    .join-btn,.login-btn{
+      background:var(--ana-blue);
+      color:#fff;
+      border:none;
+      border-radius:999px;
+      padding:10px 16px;
+      font-weight:700;
+      cursor:pointer;
+    }
+
+    .login-btn{background:#0c2d82}
+    .icon-btn{
+      width:38px;height:38px;border-radius:50%;
+      border:1px solid #cfd7e8;background:#fff;cursor:pointer;
+      display:grid;place-items:center;
+    }
+
+    .nav-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:16px;
+      padding:0 0 12px;
+      overflow:auto;
+    }
+
+    .nav-left,.nav-right{
+      display:flex;
+      align-items:center;
+      gap:28px;
+      white-space:nowrap;
+    }
+
+    .nav-left a,.nav-right a{
+      font-size:14px;
+      font-weight:600;
+      color:#23355f;
+      padding-bottom:10px;
+      position:relative;
+    }
+
+    .nav-left a.active::after{
+      content:"";
+      position:absolute;
+      left:0; right:0; bottom:0;
+      height:3px;
+      border-radius:999px;
+      background:var(--ana-blue);
+    }
+
+    .hero{padding:0 0 56px}
+
+    .hero-frame{
+      position:relative;
+      min-height:620px;
+      overflow:hidden;
+    }
+
+    .hero-banner{
+      position:relative;
+      height:360px;
+      overflow:hidden;
+      background:
+        linear-gradient(90deg, rgba(175,206,235,.95) 0%, rgba(176,203,229,.84) 42%, rgba(248,198,105,.28) 72%, rgba(112,128,146,.2) 100%),
+        url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      border-bottom:1px solid #d8e0ef;
+    }
+
+    .hero-banner::before{
+      content:"";
+      position:absolute;
+      inset:auto auto 18% 6%;
+      width:40%;
+      height:34%;
+      background:
+        linear-gradient(180deg, rgba(20,60,150,.15), rgba(20,60,150,0)),
+        url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
+      border-radius:24px;
+      transform:skewX(-8deg);
+      opacity:.95;
+      box-shadow:0 10px 30px rgba(10,33,88,.12);
+    }
+
+    .hero-copy{
+      position:absolute;
+      top:26px;
+      left:50%;
+      transform:translateX(-12%);
+      z-index:2;
+      text-align:left;
+    }
+
+    .hero-copy h1{
+      margin:0;
+      font-size:clamp(38px,5vw,64px);
+      line-height:1.02;
+      color:#fff;
+      font-weight:800;
+      letter-spacing:-0.03em;
+      text-shadow:0 10px 28px rgba(11,37,89,.28);
+    }
+
+    .booking-shell{
+      position:absolute;
+      left:50%;
+      transform:translateX(-50%);
+      top:194px;
+      width:min(980px, calc(100% - 80px));
+      display:flex;
+      gap:0;
+      align-items:flex-start;
+      z-index:3;
+    }
+
+    .side-rail{
+      width:52px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-right:12px;
+      margin-top:24px;
+    }
+
+    .rail-item{
+      width:52px;
+      min-height:120px;
+      background:#fff;
+      border:1px solid #cfd7e8;
+      box-shadow:var(--shadow);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      font-size:11px;
+      font-weight:700;
+      color:#28427d;
+      writing-mode:vertical-rl;
+      transform:rotate(180deg);
+    }
+
+    .rail-item.active{
+      background:#7b7b7b;
+      color:#fff;
+      border-color:#7b7b7b;
+    }
+
+    .booking-card{
+      flex:1;
+      background:var(--card);
+      border-radius:12px;
+      box-shadow:var(--shadow);
+      padding:18px 26px 22px;
+    }
+
+    .big-tabs{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
+
+    .pill{
+      border:1px solid #c2cada;
+      background:#fff;
+      color:#4a5878;
+      border-radius:999px;
+      padding:11px 18px;
+      font-size:14px;
+      font-weight:600;
+    }
+
+    .pill.active{
+      color:var(--ana-blue);
+      border:2px solid rgba(18,60,150,.55);
+      padding:10px 17px;
+      background:#f8fbff;
+    }
+
+    .subtabs{
+      display:flex;
+      gap:26px;
+      border-bottom:1px solid #cfd7e8;
+      margin-bottom:22px;
+      padding:0 0 10px;
+      flex-wrap:wrap;
+    }
+
+    .subtabs a{
+      font-size:14px;
+      font-weight:700;
+      color:#5a6888;
+      position:relative;
+    }
+
+    .subtabs a.active{color:var(--ana-blue)}
+
+    .subtabs a.active::after{
+      content:"";
+      position:absolute;
+      left:0; right:0; bottom:-11px;
+      height:3px;
+      background:var(--ana-blue);
+      border-radius:999px;
+    }
+
+    .trip-switch{display:flex;justify-content:center;margin-bottom:18px}
+
+    .switch-track{
+      background:#eef1f7;
+      border-radius:999px;
+      padding:2px;
+      display:inline-flex;
+      gap:2px;
+    }
+
+    .switch-track button{
+      border:none;
+      background:transparent;
+      border-radius:999px;
+      padding:7px 18px;
+      min-width:104px;
+      font-weight:700;
+      color:#4d5874;
+      cursor:pointer;
+    }
+
+    .switch-track button.active{
+      background:#dfe7fb;
+      color:var(--ana-blue);
+      box-shadow:inset 0 0 0 1px rgba(18,60,150,.45);
+    }
+
+    .fields{
+      display:grid;
+      grid-template-columns:1fr 52px 1fr;
+      gap:18px;
+      align-items:end;
+    }
+
+    .field label{
+      display:block;
+      margin:0 0 8px;
+      font-size:14px;
+      font-weight:700;
+      color:#3a4664;
+    }
+
+    .input{
+      height:58px;
+      border-radius:999px;
+      border:2px solid #c8d0e0;
+      display:flex;
+      align-items:center;
+      gap:10px;
+      padding:0 18px;
+      color:#233760;
+      background:#fff;
+      font-size:14px;
+      font-weight:600;
+    }
+
+    .input.muted{
+      color:#7c88a3;
+      font-weight:500;
+    }
+
+    .swap{
+      width:44px;height:44px;border-radius:50%;
+      border:2px solid #c8d0e0;background:#fff;
+      display:grid;place-items:center;
+      color:var(--ana-blue);
+      margin-bottom:7px;
+      font-weight:800;
+    }
+
+    .open-more{
+      text-align:center;
+      margin-top:14px;
+      font-size:14px;
+      color:#596682;
+    }
+
+    .info{padding:20px 0 42px}
+
+    .section-title{
+      text-align:center;
+      font-size:20px;
+      font-weight:700;
+      margin:0 0 28px;
+      color:#2a3553;
+    }
+
+    .cards{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:18px;
+    }
+
+    .info-card{
+      background:#fff;
+      border-radius:16px;
+      overflow:hidden;
+      box-shadow:0 10px 24px rgba(23,36,77,.06);
+      min-height:180px;
+      display:flex;
+      flex-direction:column;
+    }
+
+    .info-media{
+      height:120px;
+      background-size:cover;
+      background-position:center;
+    }
+
+    .info-body{padding:16px}
+    .info-body h3{margin:0 0 8px;font-size:16px;line-height:1.2}
+    .info-body p{margin:0;color:var(--muted);font-size:14px}
+
+    .promo-section{
+      padding:10px 0 22px;
+    }
+
+    .promo-rail{
+      display:grid;
+      grid-template-columns:repeat(5, minmax(210px, 1fr));
+      gap:20px;
+      overflow:auto;
+      padding-bottom:6px;
+      scrollbar-width:none;
+    }
+
+    .promo-rail::-webkit-scrollbar{display:none}
+
+    .promo-card{
+      background:#fff;
+      border-radius:18px;
+      overflow:hidden;
+      min-height:158px;
+      box-shadow:0 10px 24px rgba(23,36,77,.06);
+      position:relative;
+    }
+
+    .promo-card img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+
+    .promo-card .promo-label{
+      position:absolute;
+      left:16px;
+      bottom:14px;
+      right:16px;
+      color:#fff;
+      font-size:14px;
+      font-weight:700;
+      line-height:1.25;
+      text-shadow:0 6px 18px rgba(0,0,0,.3);
+    }
+
+    .rail-dots{
+      display:flex;
+      justify-content:center;
+      align-items:center;
+      gap:10px;
+      padding:18px 0 8px;
+    }
+
+    .rail-dots span{
+      width:7px;
+      height:7px;
+      border-radius:50%;
+      background:#2f2f2f;
+      opacity:.28;
+    }
+
+    .rail-dots span.active{opacity:1}
+
+    .rail-dots .pause{
+      width:auto;
+      height:auto;
+      border-radius:0;
+      background:none;
+      font-size:12px;
+      font-weight:700;
+      opacity:.8;
+      color:#2b3554;
+    }
+
+    .discover{
+      padding:30px 0 18px;
+      text-align:center;
+    }
+
+    .discover h2{
+      font-size:20px;
+      line-height:1.35;
+      margin:0 0 18px;
+      color:#2a3553;
+    }
+
+    .discover-link{
+      display:block;
+      width:min(840px, 100%);
+      margin:0 auto;
+      border-radius:20px;
+      overflow:hidden;
+      position:relative;
+      box-shadow:0 14px 30px rgba(23,36,77,.08);
+    }
+
+    .discover-banner{
+      min-height:190px;
+      position:relative;
+      overflow:hidden;
+      background:#793126;
+    }
+
+    .discover-banner::before{
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        linear-gradient(90deg, rgba(110,26,6,.26), rgba(68,18,8,.12)),
+        url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
+      transform:scale(1);
+      transition:transform .55s cubic-bezier(.22,1,.36,1);
+      will-change:transform;
+    }
+
+    .discover-link:hover .discover-banner::before,
+    .discover-link:focus-visible .discover-banner::before{
+      transform:scale(1.08);
+    }
+
+    .discover-copy{
+      position:absolute;
+      inset:0;
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      justify-content:center;
+      color:#fff;
+      text-shadow:0 10px 28px rgba(0,0,0,.22);
+      padding:20px;
+      z-index:1;
+    }
+
+    .discover-copy .eyebrow{
+      font-size:15px;
+      font-weight:600;
+      margin-bottom:2px;
+    }
+
+    .discover-copy .headline{
+      font-size:clamp(44px, 6vw, 74px);
+      line-height:.98;
+      font-weight:800;
+      letter-spacing:-0.04em;
+    }
+
+    .lower-panel{
+      background:#f4f4f4;
+      margin-top:18px;
+      padding:24px 0 0;
+      border-top:1px solid #e7e7e7;
+    }
+
+    .info-accordion{
+      width:min(840px, 100%);
+      margin:0 auto;
+      background:transparent;
+    }
+
+    .accordion-item{
+      border-bottom:1px solid #dddddd;
+      background:transparent;
+    }
+
+    .accordion-toggle{
+      width:100%;
+      padding:24px 0;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+      text-align:left;
+      color:#1f3570;
+      font-weight:700;
+      font-size:15px;
+      background:none;
+      border:none;
+      cursor:pointer;
+    }
+
+    .accordion-toggle .plus{
+      font-size:34px;
+      line-height:1;
+      color:#383838;
+      font-weight:300;
+      transition:transform .2s ease;
+    }
+
+    .accordion-content{
+      display:none;
+      padding:0 0 22px;
+      color:#596682;
+      font-size:14px;
+    }
+
+    .accordion-item.open .accordion-content{display:block}
+    .accordion-item.open .plus{transform:rotate(45deg)}
+
+    .utility-links{
+      width:min(840px, 100%);
+      margin:12px auto 0;
+      padding-bottom:28px;
+    }
+
+    .utility-row{
+      min-height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:20px;
+      border-bottom:1px solid #dddddd;
+      color:#2d2d2d;
+      font-size:15px;
+    }
+
+    .utility-row .arrow,
+    .utility-row .copy{
+      color:#555;
+      font-size:20px;
+    }
+
+    .mega-footer{
+      background:#ececec;
+      padding:38px 0 26px;
+      border-top:1px solid #e0e0e0;
+    }
+
+    .mega-grid{
+      display:grid;
+      grid-template-columns:1.3fr .9fr;
+      gap:34px;
+      align-items:start;
+    }
+
+    .footer-title{
+      font-size:14px;
+      font-weight:700;
+      color:#3c3c3c;
+      margin:0 0 14px;
+    }
+
+    .footer-divider{
+      height:1px;
+      background:#4b4b4b;
+      opacity:.5;
+      margin-bottom:14px;
+    }
+
+    .footer-link-grid{
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0,1fr));
+      gap:10px 22px;
+    }
+
+    .footer-link-grid a,
+    .footer-badges a,
+    .legal-links a{
+      color:#505a73;
+      font-size:14px;
+    }
+
+    .socials{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      flex-wrap:wrap;
+      margin-bottom:22px;
+    }
+
+    .socials a{
+      width:36px;
+      height:36px;
+      border-radius:50%;
+      display:grid;
+      place-items:center;
+      font-weight:800;
+      color:#fff;
+      font-size:16px;
+    }
+
+    .socials .fb{background:#1877f2}
+    .socials .x{background:#111}
+    .socials .yt{background:#ff0000}
+    .socials .line{background:#06c755}
+    .socials .ig{background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af,#515bd4)}
+    .socials .tt{background:#000}
+
+    .footer-badges{
+      display:grid;
+      gap:16px;
+      margin-top:6px;
+    }
+
+    .badge-row{
+      display:flex;
+      align-items:center;
+      gap:14px;
+      color:#505a73;
+      font-size:14px;
+    }
+
+    .badge-mark{
+      width:54px;
+      height:54px;
+      border-radius:50%;
+      background:radial-gradient(circle at 30% 30%, #fff3b5, #d8b54a 60%, #9a7b1d);
+      box-shadow:inset 0 0 0 2px rgba(255,255,255,.45);
+      flex:0 0 auto;
+    }
+
+    .badge-mark.alt{
+      border-radius:12px;
+      background:linear-gradient(145deg,#fff9e1,#d3b06b);
+    }
+
+    .legal-footer{
+      background:#fff;
+      border-top:1px solid #e3e7ef;
+      padding:18px 0 28px;
+    }
+
+    .legal-wrap{
+      display:flex;
+      flex-direction:column;
+      gap:18px;
+    }
+
+    .legal-links{
+      display:flex;
+      flex-wrap:wrap;
+      gap:10px 16px;
+      color:#6b7488;
+      font-size:12px;
+      line-height:1.5;
+    }
+
+    .legal-bottom{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:16px;
+      color:#6b7488;
+      font-size:12px;
+      flex-wrap:wrap;
+    }
+
+    .back-top{
+      position:fixed;
+      right:24px;
+      bottom:22px;
+      width:48px;
+      height:48px;
+      border-radius:50%;
+      background:#173d9a;
+      color:#fff;
+      border:none;
+      box-shadow:0 14px 28px rgba(18,60,150,.26);
+      font-size:22px;
+      cursor:pointer;
+      z-index:25;
+    }
+
+    @media (max-width: 1024px){
+      .hero-frame{min-height:700px}
+      .hero-copy{left:32px;right:32px;transform:none}
+      .booking-shell{width:calc(100% - 32px);top:220px}
+      .cards{grid-template-columns:repeat(2,1fr)}
+      .promo-rail{grid-template-columns:repeat(5, 260px)}
+      .mega-grid{grid-template-columns:1fr}
+    }
+
+    @media (max-width: 760px){
+      .header-main,.nav-row,.top-alerts .container{
+        width:min(100%, calc(100% - 24px));
+      }
+
+      .brand-text{display:none}
+      .brand-logo{height:24px;max-width:120px}
+      .header-actions{gap:8px;font-size:12px}
+      .nav-left,.nav-right{gap:16px}
+      .hero{padding-bottom:32px}
+      .hero-frame{min-height:auto}
+      .hero-banner{height:280px}
+      .hero-banner::before{width:52%;height:30%;inset:auto auto 12% 4%}
+      .hero-copy{top:24px;left:20px;right:20px}
+      .hero-copy h1{font-size:40px}
+      .booking-shell{
+        position:relative;
+        top:auto;
+        left:auto;
+        transform:none;
+        width:100%;
+        margin-top:-28px;
+        padding:0 12px;
+      }
+      .side-rail{display:none}
+      .booking-card{padding:16px;border-radius:18px}
+      .fields{grid-template-columns:1fr}
+      .swap{margin:0 auto}
+      .cards{grid-template-columns:1fr}
+      .big-tabs,.subtabs{gap:10px 12px}
+      .promo-section{padding-top:18px}
+      .promo-rail{grid-template-columns:repeat(5, 82%);gap:14px}
+      .discover-banner{min-height:170px;border-radius:18px}
+      .footer-link-grid{grid-template-columns:1fr 1fr}
+      .accordion-toggle{padding:20px 0}
+      .utility-row{min-height:54px;font-size:14px}
+      .back-top{right:16px;bottom:16px;width:44px;height:44px}
+    }
+  </style>
+</head>
+<body>
+  <div class="top-alerts">
+    <div class="container">
+      <div class="ticker">
+        <div class="ticker-row">
+          <span class="date">6/8</span>
+          <span class="tag">Within Japan</span>
+          <span>Join our private trip to Okinawa</span>
+        </div>
+        <div class="ticker-row">
+          <span class="date">3/19</span>
+          <span class="tag">Notice</span>
+          <span>Online check-in for Nana &amp; Matteo guests will be available</span>
+        </div>
+        <div class="ticker-row">
+          <span class="date">3/29</span>
+          <span class="tag">Event</span>
+          <span>Wedding Day</span>
+        </div>
+      </div>
+      <div class="utility-pill">All 12 +</div>
+    </div>
+  </div>
+
+  <header>
+    <div class="container header-main">
+      <div class="brand">
+        <img class="brand-logo" src="./nana_logo.jpg" alt="Nana Logo">
+        <div class="brand-text">Inspiration of Celebration</div>
+      </div>
+
+      <div class="header-actions">
+        <a href="#">JAPAN · English</a>
+        <a href="#">Booking</a>
+        <a href="#">Help &amp; Contact</a>
+        <button class="join-btn">Join</button>
+        <button class="login-btn">Login</button>
+        <button class="icon-btn" aria-label="Suchen">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#233760" stroke-width="2">
+            <circle cx="11" cy="11" r="7"></circle>
+            <path d="M20 20l-3.5-3.5"></path>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="container nav-row">
+      <nav class="nav-left" aria-label="Hauptnavigation">
+        <a class="active" href="#">Top</a>
+        <a href="#">Domestic</a>
+        <a href="#">International</a>
+        <a href="#">Shopping&amp;Life</a>
+        <a href="#">Mileage Club</a>
+      </nav>
+      <nav class="nav-right" aria-label="Servicenavigation">
+        <a href="#">Special Assistance</a>
+        <a href="#">Corporate Customer</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="hero-frame">
+        <div class="hero-banner">
+          <div class="hero-copy">
+            <h1>Wedding<br>Check-in Fares</h1>
+          </div>
+        </div>
+
+        <div class="booking-shell container">
+          <div class="side-rail" aria-hidden="true">
+            <div class="rail-item active">Domestic</div>
+            <div class="rail-item">International</div>
+          </div>
+
+          <div class="booking-card">
+            <div class="big-tabs">
+              <button class="pill active">Reservations</button>
+              <button class="pill">Flight Status</button>
+              <button class="pill">Manage Reservation</button>
+              <button class="pill">Hotel &amp; Car</button>
+              <button class="pill">Check-in</button>
+            </div>
+
+            <div class="subtabs">
+              <a class="active" href="#">Tickets</a>
+              <a href="#">Flight Awards</a>
+              <a href="#">Hotel</a>
+              <a href="#">Car Rentals</a>
+            </div>
+
+            <div class="trip-switch">
+              <div class="switch-track">
+                <button class="active">Round Trip</button>
+                <button>One Way</button>
+              </div>
+            </div>
+
+            <div class="fields">
+              <div class="field">
+                <label>From</label>
+                <div class="input">✈ Tokyo (All) [TYO]</div>
+              </div>
+
+              <div class="swap">⇄</div>
+
+              <div class="field">
+                <label>To</label>
+                <div class="input muted">Select arrival location</div>
+              </div>
+            </div>
+
+            <div class="open-more">open ＋</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="info container">
+      <h2 class="section-title">Information from NANA</h2>
+
+      <div class="cards">
+        <article class="info-card">
+          <div class="info-media" style="background-image:url('https://images.unsplash.com/photo-1517479149777-5f3b1511d5ad?auto=format&fit=crop&w=900&q=80');"></div>
+          <div class="info-body">
+            <h3>Travel Experience</h3>
+            <p>Airport-inspired arrival flow for all wedding guests.</p>
+          </div>
+        </article>
+
+        <article class="info-card">
+          <div class="info-media" style="background-image:url('https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=900&q=80');"></div>
+          <div class="info-body">
+            <h3>From May 19 to June 9</h3>
+            <p>Online guest check-in and boarding pass generation available.</p>
+          </div>
+        </article>
+
+        <article class="info-card">
+          <div class="info-media" style="background-image:url('https://images.unsplash.com/photo-1529074963764-98f45c47344b?auto=format&fit=crop&w=900&q=80');"></div>
+          <div class="info-body">
+            <h3>ANA-style Boarding</h3>
+            <p>Gate signage, boarding groups and travel-themed celebration details.</p>
+          </div>
+        </article>
+
+        <article class="info-card">
+          <div class="info-media" style="background-image:url('https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=900&q=80');"></div>
+          <div class="info-body">
+            <h3>Venue Terminal</h3>
+            <p>A check-in counter inspired reception area for the event entrance.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+
+    <section class="promo-section container">
+      <h2 class="section-title">Information from NANA</h2>
+
+      <div class="promo-rail">
+        <article class="promo-card">
+          <img src="https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80" alt="Airplane wing in the sky" loading="lazy" width="1200" height="700">
+          <div class="promo-label">Service limitation during check-in migration period</div>
+        </article>
+
+        <article class="promo-card">
+          <img src="https://images.unsplash.com/photo-1519125323398-675f0ddb6308?auto=format&fit=crop&w=1200&q=80" alt="Couple in festive colors" loading="lazy" width="1200" height="700">
+          <div class="promo-label">New celebration boarding visuals for Nana &amp; Matteo</div>
+        </article>
+
+        <article class="promo-card">
+          <img src="https://images.unsplash.com/photo-1521295121783-8a321d551ad2?auto=format&fit=crop&w=1200&q=80" alt="Travel desk and tickets" loading="lazy" width="1200" height="700">
+          <div class="promo-label">Enjoy your trip to the wedding with digital boarding pass</div>
+        </article>
+
+        <article class="promo-card">
+          <img src="https://images.unsplash.com/photo-1521727857535-28d2047314ac?auto=format&fit=crop&w=1200&q=80" alt="Airport terminal interior" loading="lazy" width="1200" height="700">
+          <div class="promo-label">Please check the venue terminal and guest route before arrival</div>
+        </article>
+
+        <article class="promo-card">
+          <img src="https://images.unsplash.com/photo-1488646953014-85cb44e25828?auto=format&fit=crop&w=1200&q=80" alt="Blue travel themed design" loading="lazy" width="1200" height="700">
+          <div class="promo-label">New travel experience starts with your online check-in</div>
+        </article>
+      </div>
+
+      <div class="rail-dots" aria-hidden="true">
+        <span class="active"></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span></span>
+        <span class="pause">Ⅱ</span>
+      </div>
+    </section>
+
+    <section class="discover container">
+      <h2>Discover story-worthy experiences in Japan!</h2>
+      <a class="discover-link" href="./viator-relay.html">
+        <div class="discover-banner">
+          <div class="discover-copy">
+            <div class="eyebrow">Things to do in</div>
+            <div class="headline">Japan</div>
+          </div>
+        </div>
+      </a>
+    </section>
+
+    <section class="lower-panel">
+      <div class="info-accordion">
+        <div class="accordion-item">
+          <button class="accordion-toggle" type="button">
+            <span>Notices from NANA</span>
+            <span class="plus">+</span>
+          </button>
+          <div class="accordion-content">
+            Guest check-in opens 3 hours before the ceremony. Boarding pass QR check and seat-group guidance are available at arrival.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-toggle" type="button">
+            <span>Topics</span>
+            <span class="plus">+</span>
+          </button>
+          <div class="accordion-content">
+            Travel dress code, gate signage, ANA-style welcome counter and boarding music can be announced here.
+          </div>
+        </div>
+
+        <div class="accordion-item">
+          <button class="accordion-toggle" type="button">
+            <span>Information and Points to Note</span>
+            <span class="plus">+</span>
+          </button>
+          <div class="accordion-content">
+            Please prepare your boarding pass, arrive at your assigned time slot and follow the zone guidance for smooth boarding.
+          </div>
+        </div>
+      </div>
+
+      <div class="utility-links">
+        <div class="utility-row">
+          <span>System Maintenance Information</span>
+          <span class="copy">⧉</span>
+        </div>
+        <div class="utility-row">
+          <span>For Corporate Customer</span>
+          <span class="arrow">›</span>
+        </div>
+      </div>
+
+      <section class="mega-footer">
+        <div class="container mega-grid">
+          <div>
+            <h3 class="footer-title">NANA GROUP</h3>
+            <div class="footer-divider"></div>
+            <div class="footer-link-grid">
+              <a href="#">About Nana Group</a>
+              <a href="#">Group Companies</a>
+              <a href="#">Investor Relations</a>
+              <a href="#">Sustainability</a>
+              <a href="#">Safety Initiatives</a>
+              <a href="#">Carbon Offset Program</a>
+              <a href="#">Press Release</a>
+            </div>
+          </div>
+
+          <div>
+            <h3 class="footer-title">Official Social Media Accounts</h3>
+            <div class="socials">
+              <a class="fb" href="#" aria-label="Facebook">f</a>
+              <a class="x" href="#" aria-label="X">X</a>
+              <a class="yt" href="#" aria-label="YouTube">▶</a>
+              <a class="line" href="#" aria-label="Line">L</a>
+              <a class="ig" href="#" aria-label="Instagram">◎</a>
+              <a class="tt" href="#" aria-label="TikTok">♪</a>
+            </div>
+
+            <div class="footer-badges">
+              <div class="badge-row">
+                <div class="badge-mark"></div>
+                <a href="#">SKYTRAX 5 STAR AIRLINE</a>
+              </div>
+              <div class="badge-row">
+                <div class="badge-mark alt"></div>
+                <a href="#">APEX WORLD CLASS AIRLINE</a>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <footer class="legal-footer">
+    <div class="container legal-wrap">
+      <div class="legal-links">
+        <a href="#">Privacy Policy</a>
+        <a href="#">Cookie Policy</a>
+        <a href="#">External Transmission of User Information</a>
+        <a href="#">Terms of Use</a>
+        <a href="#">System Requirement</a>
+        <a href="#">Web Accessibility Policy</a>
+        <a href="#">Sitemap</a>
+        <a href="#">Conditions of Carriage</a>
+        <a href="#">JAPAN</a>
+      </div>
+
+      <div class="legal-bottom">
+        <div>A STAR ALLIANCE MEMBER</div>
+        <div>ANA inspired layout — this is a non-profit, non-commericial website just for entertainment.</div>
+      </div>
+    </div>
+  </footer>
+
+  <button class="back-top" type="button" aria-label="Nach oben">⌃</button>
+
+  <script>
+    document.querySelectorAll('.accordion-toggle').forEach((button) => {
+      button.addEventListener('click', () => {
+        button.parentElement.classList.toggle('open');
+      });
+    });
+
+    document.querySelector('.back-top')?.addEventListener('click', () => {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+  </script>
+</body>
+</html>
