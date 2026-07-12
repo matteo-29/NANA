@@ -1,1182 +1,960 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="de">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Aero Wedding — Check-in</title>
-  <link rel="icon" href="./favicon.ico" sizes="any">
-  <link rel="icon" type="image/png" sizes="32x32" href="./favicon.png">
-  <link rel="apple-touch-icon" sizes="180x180" href="./apple-touch-icon.png">
-  <meta name="theme-color" content="#123c96">
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <style>
-    :root{
-      --ana-blue:#123c96;
-      --ana-blue-dark:#0d2f7d;
-      --ink:#1b2640;
-      --muted:#68738f;
-      --line:#d7ddea;
-      --bg:#f2f4f8;
-      --card:#ffffff;
-      --soft:#eef3fb;
-      --shadow:0 18px 40px rgba(17,39,92,.08);
-      --radius:18px;
-    }
-
-    *{box-sizing:border-box}
-    html,body{margin:0;padding:0}
-    body{
-      font-family:"Inter",system-ui,sans-serif;
-      background:var(--bg);
-      color:var(--ink);
-      line-height:1.45;
-    }
-
-    a{text-decoration:none;color:inherit}
-    button,input{font:inherit}
-    .container{
-      width:min(1180px, calc(100% - 32px));
-      margin:0 auto;
-    }
-
-    .top-alerts{
-      background:#d9dfec;
-      border-bottom:1px solid #c9d2e5;
-      font-size:13px;
-      color:#25304b;
-    }
-
-    .top-alerts .container{
-      display:flex;
-      gap:18px;
-      align-items:center;
-      justify-content:space-between;
-      padding:10px 0;
-      flex-wrap:wrap;
-    }
-
-    .ticker{display:grid;gap:4px}
-    .ticker-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-    .date{color:#8d2445;font-weight:600;min-width:42px}
-
-    .tag{
-      border:1px solid #7985a6;
-      padding:1px 7px;
-      border-radius:999px;
-      font-size:11px;
-      background:#f6f8fc;
-    }
-
-    .utility-pill{
-      border:1px solid #8390b0;
-      border-radius:999px;
-      padding:6px 12px;
-      font-size:12px;
-      background:#edf1f8;
-      white-space:nowrap;
-    }
-
-    header{
-      background:#fff;
-      border-bottom:1px solid #e5e9f3;
-      position:sticky;
-      top:0;
-      z-index:20;
-    }
-
-    .header-main{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:24px;
-      padding:16px 0 12px;
-    }
-
-    .brand{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      min-width:0;
-    }
-
-    .brand-logo{
-      height:30px;
-      width:auto;
-      display:block;
-      object-fit:contain;
-      flex:0 0 auto;
-    }
-
-    .brand-text{
-      font-size:14px;
-      font-weight:700;
-      color:#20335f;
-      white-space:nowrap;
-    }
-
-    .header-actions{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      flex-wrap:wrap;
-      justify-content:flex-end;
-      color:#33415f;
-      font-size:13px;
-    }
-
-    .join-btn,.login-btn{
-      background:var(--ana-blue);
-      color:#fff;
-      border:none;
-      border-radius:999px;
-      padding:10px 16px;
-      font-weight:700;
-      cursor:pointer;
-    }
-
-    .login-btn{background:#0c2d82}
-    .icon-btn{
-      width:38px;height:38px;border-radius:50%;
-      border:1px solid #cfd7e8;background:#fff;cursor:pointer;
-      display:grid;place-items:center;
-    }
-
-    .nav-row{
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:16px;
-      padding:0 0 12px;
-      overflow:auto;
-    }
-
-    .nav-left,.nav-right{
-      display:flex;
-      align-items:center;
-      gap:28px;
-      white-space:nowrap;
-    }
-
-    .nav-left a,.nav-right a{
-      font-size:14px;
-      font-weight:600;
-      color:#23355f;
-      padding-bottom:10px;
-      position:relative;
-    }
-
-    .nav-left a.active::after{
-      content:"";
-      position:absolute;
-      left:0; right:0; bottom:0;
-      height:3px;
-      border-radius:999px;
-      background:var(--ana-blue);
-    }
-
-    .hero{padding:0 0 56px}
-
-    .hero-frame{
-      position:relative;
-      min-height:620px;
-      overflow:hidden;
-    }
-
-    .hero-banner{
-      position:relative;
-      height:360px;
-      overflow:hidden;
-      background:
-        linear-gradient(90deg, rgba(175,206,235,.95) 0%, rgba(176,203,229,.84) 42%, rgba(248,198,105,.28) 72%, rgba(112,128,146,.2) 100%),
-        url('https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
-      border-bottom:1px solid #d8e0ef;
-    }
-
-    .hero-banner::before{
-      content:"";
-      position:absolute;
-      inset:auto auto 18% 6%;
-      width:40%;
-      height:34%;
-      background:
-        linear-gradient(180deg, rgba(20,60,150,.15), rgba(20,60,150,0)),
-        url('https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=1200&q=80') center/cover no-repeat;
-      border-radius:24px;
-      transform:skewX(-8deg);
-      opacity:.95;
-      box-shadow:0 10px 30px rgba(10,33,88,.12);
-    }
-
-    .hero-copy{
-      position:absolute;
-      top:26px;
-      left:50%;
-      transform:translateX(-12%);
-      z-index:2;
-      text-align:left;
-    }
-
-    .hero-copy h1{
-      margin:0;
-      font-size:clamp(38px,5vw,64px);
-      line-height:1.02;
-      color:#fff;
-      font-weight:800;
-      letter-spacing:-0.03em;
-      text-shadow:0 10px 28px rgba(11,37,89,.28);
-    }
-
-    .booking-shell{
-      position:absolute;
-      left:50%;
-      transform:translateX(-50%);
-      top:194px;
-      width:min(980px, calc(100% - 80px));
-      display:flex;
-      gap:0;
-      align-items:flex-start;
-      z-index:3;
-    }
-
-    .side-rail{
-      width:52px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-      margin-right:12px;
-      margin-top:24px;
-    }
-
-    .rail-item{
-      width:52px;
-      min-height:120px;
-      background:#fff;
-      border:1px solid #cfd7e8;
-      box-shadow:var(--shadow);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      text-align:center;
-      font-size:11px;
-      font-weight:700;
-      color:#28427d;
-      writing-mode:vertical-rl;
-      transform:rotate(180deg);
-    }
-
-    .rail-item.active{
-      background:#7b7b7b;
-      color:#fff;
-      border-color:#7b7b7b;
-    }
-
-    .booking-card{
-      flex:1;
-      background:var(--card);
-      border-radius:12px;
-      box-shadow:var(--shadow);
-      padding:18px 26px 22px;
-    }
-
-    .big-tabs{display:flex;gap:12px;flex-wrap:wrap;margin-bottom:18px}
-
-    .pill{
-      border:1px solid #c2cada;
-      background:#fff;
-      color:#4a5878;
-      border-radius:999px;
-      padding:11px 18px;
-      font-size:14px;
-      font-weight:600;
-    }
-
-    .pill.active{
-      color:var(--ana-blue);
-      border:2px solid rgba(18,60,150,.55);
-      padding:10px 17px;
-      background:#f8fbff;
-    }
-
-    .subtabs{
-      display:flex;
-      gap:26px;
-      border-bottom:1px solid #cfd7e8;
-      margin-bottom:22px;
-      padding:0 0 10px;
-      flex-wrap:wrap;
-    }
-
-    .subtabs a{
-      font-size:14px;
-      font-weight:700;
-      color:#5a6888;
-      position:relative;
-    }
-
-    .subtabs a.active{color:var(--ana-blue)}
-
-    .subtabs a.active::after{
-      content:"";
-      position:absolute;
-      left:0; right:0; bottom:-11px;
-      height:3px;
-      background:var(--ana-blue);
-      border-radius:999px;
-    }
-
-    .trip-switch{display:flex;justify-content:center;margin-bottom:18px}
-
-    .switch-track{
-      background:#eef1f7;
-      border-radius:999px;
-      padding:2px;
-      display:inline-flex;
-      gap:2px;
-    }
-
-    .switch-track button{
-      border:none;
-      background:transparent;
-      border-radius:999px;
-      padding:7px 18px;
-      min-width:104px;
-      font-weight:700;
-      color:#4d5874;
-      cursor:pointer;
-    }
-
-    .switch-track button.active{
-      background:#dfe7fb;
-      color:var(--ana-blue);
-      box-shadow:inset 0 0 0 1px rgba(18,60,150,.45);
-    }
-
-    .fields{
-      display:grid;
-      grid-template-columns:1fr 52px 1fr;
-      gap:18px;
-      align-items:end;
-    }
-
-    .field label{
-      display:block;
-      margin:0 0 8px;
-      font-size:14px;
-      font-weight:700;
-      color:#3a4664;
-    }
-
-    .input{
-      height:58px;
-      border-radius:999px;
-      border:2px solid #c8d0e0;
-      display:flex;
-      align-items:center;
-      gap:10px;
-      padding:0 18px;
-      color:#233760;
-      background:#fff;
-      font-size:14px;
-      font-weight:600;
-    }
-
-    .input.muted{
-      color:#7c88a3;
-      font-weight:500;
-    }
-
-    .swap{
-      width:44px;height:44px;border-radius:50%;
-      border:2px solid #c8d0e0;background:#fff;
-      display:grid;place-items:center;
-      color:var(--ana-blue);
-      margin-bottom:7px;
-      font-weight:800;
-    }
-
-    .open-more{
-      text-align:center;
-      margin-top:14px;
-      font-size:14px;
-      color:#596682;
-    }
-
-    .info{padding:20px 0 42px}
-
-    .section-title{
-      text-align:center;
-      font-size:20px;
-      font-weight:700;
-      margin:0 0 28px;
-      color:#2a3553;
-    }
-
-    .cards{
-      display:grid;
-      grid-template-columns:repeat(4,1fr);
-      gap:18px;
-    }
-
-    .info-card{
-      background:#fff;
-      border-radius:16px;
-      overflow:hidden;
-      box-shadow:0 10px 24px rgba(23,36,77,.06);
-      min-height:180px;
-      display:flex;
-      flex-direction:column;
-    }
-
-    .info-media{
-      height:120px;
-      background-size:cover;
-      background-position:center;
-    }
-
-    .info-body{padding:16px}
-    .info-body h3{margin:0 0 8px;font-size:16px;line-height:1.2}
-    .info-body p{margin:0;color:var(--muted);font-size:14px}
-
-    .promo-section{
-      padding:10px 0 22px;
-    }
-
-    .promo-rail{
-      display:grid;
-      grid-template-columns:repeat(5, minmax(210px, 1fr));
-      gap:20px;
-      overflow:auto;
-      padding-bottom:6px;
-      scrollbar-width:none;
-    }
-
-    .promo-rail::-webkit-scrollbar{display:none}
-
-    .promo-card{
-      background:#fff;
-      border-radius:18px;
-      overflow:hidden;
-      min-height:158px;
-      box-shadow:0 10px 24px rgba(23,36,77,.06);
-      position:relative;
-    }
-
-    .promo-card img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
-    }
-
-    .promo-card .promo-label{
-      position:absolute;
-      left:16px;
-      bottom:14px;
-      right:16px;
-      color:#fff;
-      font-size:14px;
-      font-weight:700;
-      line-height:1.25;
-      text-shadow:0 6px 18px rgba(0,0,0,.3);
-    }
-
-    .rail-dots{
-      display:flex;
-      justify-content:center;
-      align-items:center;
-      gap:10px;
-      padding:18px 0 8px;
-    }
-
-    .rail-dots span{
-      width:7px;
-      height:7px;
-      border-radius:50%;
-      background:#2f2f2f;
-      opacity:.28;
-    }
-
-    .rail-dots span.active{opacity:1}
-
-    .rail-dots .pause{
-      width:auto;
-      height:auto;
-      border-radius:0;
-      background:none;
-      font-size:12px;
-      font-weight:700;
-      opacity:.8;
-      color:#2b3554;
-    }
-
-    .discover{
-      padding:30px 0 18px;
-      text-align:center;
-    }
-
-    .discover h2{
-      font-size:20px;
-      line-height:1.35;
-      margin:0 0 18px;
-      color:#2a3553;
-    }
-
-    .discover-link{
-      display:block;
-      width:min(840px, 100%);
-      margin:0 auto;
-      border-radius:20px;
-      overflow:hidden;
-      position:relative;
-      box-shadow:0 14px 30px rgba(23,36,77,.08);
-    }
-
-    .discover-banner{
-      min-height:190px;
-      position:relative;
-      overflow:hidden;
-      background:#793126;
-    }
-
-    .discover-banner::before{
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        linear-gradient(90deg, rgba(110,26,6,.26), rgba(68,18,8,.12)),
-        url('https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=1600&q=80') center/cover no-repeat;
-      transform:scale(1);
-      transition:transform .55s cubic-bezier(.22,1,.36,1);
-      will-change:transform;
-    }
-
-    .discover-link:hover .discover-banner::before,
-    .discover-link:focus-visible .discover-banner::before{
-      transform:scale(1.08);
-    }
-
-    .discover-copy{
-      position:absolute;
-      inset:0;
-      display:flex;
-      flex-direction:column;
-      align-items:center;
-      justify-content:center;
-      color:#fff;
-      text-shadow:0 10px 28px rgba(0,0,0,.22);
-      padding:20px;
-      z-index:1;
-    }
-
-    .discover-copy .eyebrow{
-      font-size:15px;
-      font-weight:600;
-      margin-bottom:2px;
-    }
-
-    .discover-copy .headline{
-      font-size:clamp(44px, 6vw, 74px);
-      line-height:.98;
-      font-weight:800;
-      letter-spacing:-0.04em;
-    }
-
-    .lower-panel{
-      background:#f4f4f4;
-      margin-top:18px;
-      padding:24px 0 0;
-      border-top:1px solid #e7e7e7;
-    }
-
-    .info-accordion{
-      width:min(840px, 100%);
-      margin:0 auto;
-      background:transparent;
-    }
-
-    .accordion-item{
-      border-bottom:1px solid #dddddd;
-      background:transparent;
-    }
-
-    .accordion-toggle{
-      width:100%;
-      padding:24px 0;
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:20px;
-      text-align:left;
-      color:#1f3570;
-      font-weight:700;
-      font-size:15px;
-      background:none;
-      border:none;
-      cursor:pointer;
-    }
-
-    .accordion-toggle .plus{
-      font-size:34px;
-      line-height:1;
-      color:#383838;
-      font-weight:300;
-      transition:transform .2s ease;
-    }
-
-    .accordion-content{
-      display:none;
-      padding:0 0 22px;
-      color:#596682;
-      font-size:14px;
-    }
-
-    .accordion-item.open .accordion-content{display:block}
-    .accordion-item.open .plus{transform:rotate(45deg)}
-
-    .utility-links{
-      width:min(840px, 100%);
-      margin:12px auto 0;
-      padding-bottom:28px;
-    }
-
-    .utility-row{
-      min-height:58px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:20px;
-      border-bottom:1px solid #dddddd;
-      color:#2d2d2d;
-      font-size:15px;
-    }
-
-    .utility-row .arrow,
-    .utility-row .copy{
-      color:#555;
-      font-size:20px;
-    }
-
-    .mega-footer{
-      background:#ececec;
-      padding:38px 0 26px;
-      border-top:1px solid #e0e0e0;
-    }
-
-    .mega-grid{
-      display:grid;
-      grid-template-columns:1.3fr .9fr;
-      gap:34px;
-      align-items:start;
-    }
-
-    .footer-title{
-      font-size:14px;
-      font-weight:700;
-      color:#3c3c3c;
-      margin:0 0 14px;
-    }
-
-    .footer-divider{
-      height:1px;
-      background:#4b4b4b;
-      opacity:.5;
-      margin-bottom:14px;
-    }
-
-    .footer-link-grid{
-      display:grid;
-      grid-template-columns:repeat(3, minmax(0,1fr));
-      gap:10px 22px;
-    }
-
-    .footer-link-grid a,
-    .footer-badges a,
-    .legal-links a{
-      color:#505a73;
-      font-size:14px;
-    }
-
-    .socials{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      flex-wrap:wrap;
-      margin-bottom:22px;
-    }
-
-    .socials a{
-      width:36px;
-      height:36px;
-      border-radius:50%;
-      display:grid;
-      place-items:center;
-      font-weight:800;
-      color:#fff;
-      font-size:16px;
-    }
-
-    .socials .fb{background:#1877f2}
-    .socials .x{background:#111}
-    .socials .yt{background:#ff0000}
-    .socials .line{background:#06c755}
-    .socials .ig{background:linear-gradient(135deg,#f58529,#dd2a7b,#8134af,#515bd4)}
-    .socials .tt{background:#000}
-
-    .footer-badges{
-      display:grid;
-      gap:16px;
-      margin-top:6px;
-    }
-
-    .badge-row{
-      display:flex;
-      align-items:center;
-      gap:14px;
-      color:#505a73;
-      font-size:14px;
-    }
-
-    .badge-mark{
-      width:54px;
-      height:54px;
-      border-radius:50%;
-      background:radial-gradient(circle at 30% 30%, #fff3b5, #d8b54a 60%, #9a7b1d);
-      box-shadow:inset 0 0 0 2px rgba(255,255,255,.45);
-      flex:0 0 auto;
-    }
-
-    .badge-mark.alt{
-      border-radius:12px;
-      background:linear-gradient(145deg,#fff9e1,#d3b06b);
-    }
-
-    .legal-footer{
-      background:#fff;
-      border-top:1px solid #e3e7ef;
-      padding:18px 0 28px;
-    }
-
-    .legal-wrap{
-      display:flex;
-      flex-direction:column;
-      gap:18px;
-    }
-
-    .legal-links{
-      display:flex;
-      flex-wrap:wrap;
-      gap:10px 16px;
-      color:#6b7488;
-      font-size:12px;
-      line-height:1.5;
-    }
-
-    .legal-bottom{
-      display:flex;
-      justify-content:space-between;
-      align-items:center;
-      gap:16px;
-      color:#6b7488;
-      font-size:12px;
-      flex-wrap:wrap;
-    }
-
-    .back-top{
-      position:fixed;
-      right:24px;
-      bottom:22px;
-      width:48px;
-      height:48px;
-      border-radius:50%;
-      background:#173d9a;
-      color:#fff;
-      border:none;
-      box-shadow:0 14px 28px rgba(18,60,150,.26);
-      font-size:22px;
-      cursor:pointer;
-      z-index:25;
-    }
-
-    @media (max-width: 1024px){
-      .hero-frame{min-height:700px}
-      .hero-copy{left:32px;right:32px;transform:none}
-      .booking-shell{width:calc(100% - 32px);top:220px}
-      .cards{grid-template-columns:repeat(2,1fr)}
-      .promo-rail{grid-template-columns:repeat(5, 260px)}
-      .mega-grid{grid-template-columns:1fr}
-    }
-
-    @media (max-width: 760px){
-      .header-main,.nav-row,.top-alerts .container{
-        width:min(100%, calc(100% - 24px));
-      }
-
-      .brand-text{display:none}
-      .brand-logo{height:24px;max-width:120px}
-      .header-actions{gap:8px;font-size:12px}
-      .nav-left,.nav-right{gap:16px}
-      .hero{padding-bottom:32px}
-      .hero-frame{min-height:auto}
-      .hero-banner{height:280px}
-      .hero-banner::before{width:52%;height:30%;inset:auto auto 12% 4%}
-      .hero-copy{top:24px;left:20px;right:20px}
-      .hero-copy h1{font-size:40px}
-      .booking-shell{
-        position:relative;
-        top:auto;
-        left:auto;
-        transform:none;
-        width:100%;
-        margin-top:-28px;
-        padding:0 12px;
-      }
-      .side-rail{display:none}
-      .booking-card{padding:16px;border-radius:18px}
-      .fields{grid-template-columns:1fr}
-      .swap{margin:0 auto}
-      .cards{grid-template-columns:1fr}
-      .big-tabs,.subtabs{gap:10px 12px}
-      .promo-section{padding-top:18px}
-      .promo-rail{grid-template-columns:repeat(5, 82%);gap:14px}
-      .discover-banner{min-height:170px;border-radius:18px}
-      .footer-link-grid{grid-template-columns:1fr 1fr}
-      .accordion-toggle{padding:20px 0}
-      .utility-row{min-height:54px;font-size:14px}
-      .back-top{right:16px;bottom:16px;width:44px;height:44px}
-    }
-  </style>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Nana & Matteo — Wedding Flight NM0329</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Noto+Sans+JP:wght@400;500;700&display=swap" rel="stylesheet">
+
+<style>
+:root{
+  --blue:#123c96;
+  --navy:#09296d;
+  --ink:#172746;
+  --muted:#697590;
+  --line:#d7ddea;
+  --bg:#f3f5f9;
+  --red:#a6264c;
+  --shadow:0 16px 38px rgba(14,42,102,.1);
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--ink);
+  font:15px Inter,"Noto Sans JP",sans-serif;
+  line-height:1.55;
+}
+
+.container{
+  width:min(1120px,calc(100% - 32px));
+  margin:auto;
+}
+
+.notice{
+  background:#e1e6f1;
+  color:#263553;
+  font-size:12px;
+}
+
+.notice .container{
+  display:flex;
+  gap:12px;
+  justify-content:space-between;
+  padding:8px 0;
+  flex-wrap:wrap;
+}
+
+.notice b{color:var(--red)}
+
+header{
+  background:#fff;
+  position:sticky;
+  top:0;
+  z-index:10;
+  border-bottom:1px solid #e5e9f1;
+}
+
+.head{
+  min-height:74px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:25px;
+}
+
+.brand{
+  display:flex;
+  flex-direction:row;
+  align-items:center;
+  gap:18px;
+  min-width:0;
+  flex-wrap:nowrap;
+}
+
+.brand-logo{
+  height:34px;
+  max-width:130px;
+  width:auto;
+  object-fit:contain;
+  display:block;
+  flex:0 0 auto;
+}
+
+.kratz-alliance{
+  display:inline-flex;
+  flex-direction:row;
+  align-items:center;
+  justify-content:flex-start;
+  gap:8px;
+  padding-left:16px;
+  border-left:1px solid #d7ddea;
+  color:#68738f;
+  white-space:nowrap;
+  line-height:1;
+  flex:0 0 auto;
+}
+
+.kratz-alliance span{
+  display:block;
+  font-size:13px;
+  font-weight:500;
+  letter-spacing:.04em;
+  line-height:1;
+}
+
+.kratz-alliance .kratz-logo{
+  display:block;
+  width:auto;
+  height:13px;
+  max-width:22px;
+  object-fit:contain;
+  flex:0 0 auto;
+  margin:0;
+}
+
+nav{
+  display:flex;
+  gap:18px;
+  align-items:center;
+}
+
+nav a{
+  font-size:13px;
+  font-weight:700;
+  color:#263960;
+  text-decoration:none;
+}
+
+nav a:hover{color:var(--blue)}
+
+.lang{
+  border:1px solid #cbd4e4;
+  background:#fff;
+  color:var(--blue);
+  border-radius:18px;
+  padding:7px 10px;
+  font-weight:700;
+}
+
+.hero{
+  position:relative;
+  overflow:hidden;
+  background:
+    linear-gradient(105deg,rgba(18,60,150,.90),rgba(87,144,207,.35)),
+    url("https://images.unsplash.com/photo-1436491865332-7a61a109cc05?auto=format&fit=crop&w=2000&q=85")
+    center/cover;
+  min-height:510px;
+}
+
+.hero:after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:linear-gradient(0deg,rgba(8,30,83,.4),transparent 60%);
+}
+
+.hero-inner{
+  position:relative;
+  z-index:1;
+  padding:70px 0 185px;
+  color:#fff;
+}
+
+.flight-tag{
+  font-size:12px;
+  letter-spacing:.15em;
+  font-weight:800;
+}
+
+.hero h1{
+  font-size:clamp(43px,7vw,76px);
+  line-height:1;
+  margin:10px 0;
+  letter-spacing:-.05em;
+}
+
+.hero p{
+  max-width:520px;
+  font-size:17px;
+}
+
+.route{
+  display:flex;
+  align-items:center;
+  gap:15px;
+  margin-top:28px;
+  font-weight:800;
+}
+
+.route i{
+  height:1px;
+  width:100px;
+  background:#fff;
+  position:relative;
+}
+
+.route i:after{
+  content:"✈";
+  position:absolute;
+  right:-3px;
+  top:-13px;
+  font-style:normal;
+  animation:fly 4s ease-in-out infinite;
+}
+
+@keyframes fly{
+  50%{transform:translateX(-78px) translateY(-6px)}
+}
+
+.booking{
+  margin:-112px auto 0;
+  position:relative;
+  z-index:3;
+  background:#fff;
+  box-shadow:var(--shadow);
+  border-radius:15px;
+  padding:20px 25px;
+}
+
+.tabs{
+  display:flex;
+  gap:12px;
+  border-bottom:1px solid var(--line);
+  padding-bottom:15px;
+  margin-bottom:19px;
+  flex-wrap:wrap;
+}
+
+.tab{
+  border:1px solid #c8d2e3;
+  background:#fff;
+  border-radius:22px;
+  padding:8px 16px;
+  font-weight:700;
+  color:#52607a;
+  font-size:13px;
+}
+
+.tab.active{
+  border:2px solid var(--blue);
+  padding:7px 15px;
+  color:var(--blue);
+}
+
+.search-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr 1fr auto;
+  gap:14px;
+  align-items:end;
+}
+
+.field label{
+  font-size:12px;
+  font-weight:800;
+  display:block;
+  margin:0 0 6px;
+}
+
+.field div{
+  border:1px solid #bdc9dd;
+  border-radius:6px;
+  padding:14px;
+  color:#354466;
+  font-weight:600;
+  min-height:50px;
+}
+
+.button{
+  background:var(--blue);
+  border:0;
+  color:#fff;
+  padding:14px 22px;
+  border-radius:5px;
+  font-weight:800;
+  cursor:pointer;
+  white-space:nowrap;
+  text-decoration:none;
+  display:inline-block;
+}
+
+.button:hover{background:#0a2c77}
+
+.section{padding:74px 0}
+
+.eyebrow{
+  color:var(--red);
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.13em;
+  text-align:center;
+}
+
+.title{
+  text-align:center;
+  font-size:29px;
+  letter-spacing:-.03em;
+  margin:7px 0 30px;
+}
+
+.announcement{
+  background:#fff;
+  border-radius:14px;
+  padding:32px;
+  box-shadow:var(--shadow);
+  display:grid;
+  grid-template-columns:70px 1fr;
+  gap:20px;
+}
+
+.speaker{
+  width:55px;
+  height:55px;
+  border-radius:50%;
+  background:#eaf0fc;
+  color:var(--blue);
+  font-size:25px;
+  display:grid;
+  place-items:center;
+}
+
+.announcement p{
+  margin:7px 0;
+  color:#42516c;
+}
+
+.welcome-photo{
+  margin-top:28px;
+  height:clamp(230px,40vw,480px);
+  border-radius:14px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+.welcome-photo img{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+}
+
+.cards{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:22px;
+}
+
+.passenger{
+  background:#fff;
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  border-radius:12px;
+}
+
+.passenger-top{
+  background:var(--blue);
+  color:#fff;
+  padding:18px 22px;
+  display:flex;
+  justify-content:space-between;
+}
+
+.passenger-top small{
+  display:block;
+  opacity:.75;
+  font-size:10px;
+  letter-spacing:.1em;
+}
+
+.passenger-top b{font-size:21px}
+
+.passenger-body{
+  padding:24px;
+  display:grid;
+  grid-template-columns:90px 1fr;
+  gap:20px;
+}
+
+.portrait{
+  width:90px;
+  height:90px;
+  border-radius:50%;
+  background:#dce5f5 center/cover;
+}
+
+.m{background-image:url("./Matteo.jpg")}
+.n{background-image:url("./Nana.jpg")}
+
+.passenger dl{
+  margin:0;
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:12px;
+}
+
+.passenger dt{
+  font-size:10px;
+  letter-spacing:.08em;
+  color:#75819a;
+  font-weight:800;
+}
+
+.passenger dd{
+  margin:2px 0;
+  font-weight:700;
+  font-size:13px;
+}
+
+.schedule{
+  background:#0a2053;
+  color:#fff;
+  padding:60px 0;
+}
+
+.schedule .title{color:#fff}
+
+.board{
+  background:#102d70;
+  border-radius:8px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+}
+
+.row{
+  display:grid;
+  grid-template-columns:95px 120px 1fr 130px;
+  gap:12px;
+  padding:15px 20px;
+  border-bottom:1px solid rgba(255,255,255,.14);
+  align-items:center;
+}
+
+.row:first-child{
+  background:#071836;
+  color:#b7ccff;
+  font-size:11px;
+  font-weight:800;
+  letter-spacing:.08em;
+}
+
+.status{
+  color:#f5cf63;
+  font-weight:800;
+  font-size:12px;
+}
+
+.location{
+  display:grid;
+  grid-template-columns:1fr 1.1fr;
+  background:#fff;
+  box-shadow:var(--shadow);
+  border-radius:14px;
+  overflow:hidden;
+}
+
+.location-copy{padding:34px}
+
+.location-copy h3{
+  font-size:24px;
+  margin:0 0 10px;
+}
+
+.location-copy p{color:#52607a}
+
+.map{
+  min-height:330px;
+  width:100%;
+  border:0;
+}
+
+.checkin-cta{
+  display:flex;
+  justify-content:center;
+  padding:30px 0 8px;
+}
+
+.checkin-link{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  background:var(--blue);
+  color:#fff;
+  text-decoration:none;
+  border-radius:5px;
+  padding:14px 30px;
+  font-weight:800;
+  box-shadow:0 10px 22px rgba(18,60,150,.2);
+  transition:background .2s ease,transform .2s ease;
+}
+
+.checkin-link:hover{
+  background:var(--navy);
+  transform:translateY(-2px);
+}
+
+.nav-checkin{
+  padding:8px 14px;
+  border-radius:18px;
+  font-size:13px;
+  color:#fff;
+}
+
+footer{
+  background:#fff;
+  border-top:1px solid #e5e9f1;
+  padding:35px 0;
+  color:#53617a;
+  font-size:12px;
+}
+
+footer b{color:#263860}
+.private{margin-top:12px;font-size:11px}
+
+@media(max-width:760px){
+  nav a:not(.nav-checkin){display:none}
+
+  .head{
+    min-height:64px;
+    gap:10px;
+  }
+
+  .brand{gap:9px}
+
+  .brand-logo{
+    height:27px;
+    max-width:95px;
+  }
+
+  .kratz-alliance{
+    gap:6px;
+    padding-left:8px;
+  }
+
+  .kratz-alliance span{
+    font-size:9px;
+  }
+
+  .kratz-alliance .kratz-logo{
+    height:9px;
+    max-width:16px;
+  }
+
+  .nav-checkin{
+    padding:7px 11px;
+    font-size:12px;
+  }
+
+  .hero-inner{padding:55px 0 150px}
+  .booking{margin-top:-90px;padding:17px}
+
+  .search-grid,
+  .location{grid-template-columns:1fr}
+
+  .cards{grid-template-columns:1fr}
+
+  .passenger-body{
+    grid-template-columns:70px 1fr;
+  }
+
+  .portrait{
+    width:70px;
+    height:70px;
+  }
+
+  .row{
+    grid-template-columns:65px 85px 1fr;
+  }
+
+  .row span:last-child{display:none}
+
+  .section{padding:55px 0}
+
+  .announcement{
+    padding:24px;
+    grid-template-columns:50px 1fr;
+  }
+
+  .speaker{
+    width:45px;
+    height:45px;
+  }
+
+  .welcome-photo{height:260px}
+  .map{min-height:270px}
+}
+</style>
 </head>
+
 <body>
-  <div class="top-alerts">
-    <div class="container">
-      <div class="ticker">
-        <div class="ticker-row">
-          <span class="date">6/8</span>
-          <span class="tag">Within Japan</span>
-          <span>Join our private trip to Okinawa</span>
-        </div>
-        <div class="ticker-row">
-          <span class="date">3/19</span>
-          <span class="tag">Notice</span>
-          <span>Online check-in for Nana &amp; Matteo guests will be available</span>
-        </div>
-        <div class="ticker-row">
-          <span class="date">3/29</span>
-          <span class="tag">Event</span>
-          <span>Wedding Day</span>
-        </div>
-      </div>
-      <div class="utility-pill">All 12 +</div>
-    </div>
+
+<div class="notice">
+  <div class="container">
+    <span><b>NM 0329</b> · Private Wedding Flight</span>
+    <span>Online Check-in opens before departure</span>
   </div>
-
-  <header>
-    <div class="container header-main">
-      <div class="brand">
-        <img class="brand-logo" src="./nana_logo.jpg" alt="Nana Logo">
-        <div class="brand-text">Inspiration of Celebration</div>
-      </div>
-
-      <div class="header-actions">
-        <a href="#">JAPAN · English</a>
-        <a href="#">Booking</a>
-        <a href="#">Help &amp; Contact</a>
-        <button class="join-btn">Join</button>
-        <button class="login-btn">Login</button>
-        <button class="icon-btn" aria-label="Suchen">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#233760" stroke-width="2">
-            <circle cx="11" cy="11" r="7"></circle>
-            <path d="M20 20l-3.5-3.5"></path>
-          </svg>
-        </button>
-      </div>
-    </div>
-
-    <div class="container nav-row">
-      <nav class="nav-left" aria-label="Hauptnavigation">
-        <a class="active" href="#">Top</a>
-        <a href="#">Domestic</a>
-        <a href="#">International</a>
-        <a href="#">Shopping&amp;Life</a>
-        <a href="#">Mileage Club</a>
-      </nav>
-      <nav class="nav-right" aria-label="Servicenavigation">
-        <a href="#">Special Assistance</a>
-        <a href="#">Corporate Customer</a>
-      </nav>
-    </div>
-  </header>
-
-  <main>
-    <section class="hero">
-      <div class="hero-frame">
-        <div class="hero-banner">
-          <div class="hero-copy">
-            <h1>Wedding<br>Check-in Fares</h1>
-          </div>
-        </div>
-
-        <div class="booking-shell container">
-          <div class="side-rail" aria-hidden="true">
-            <div class="rail-item active">Domestic</div>
-            <div class="rail-item">International</div>
-          </div>
-
-          <div class="booking-card">
-            <div class="big-tabs">
-              <button class="pill active">Reservations</button>
-              <button class="pill">Flight Status</button>
-              <button class="pill">Manage Reservation</button>
-              <button class="pill">Hotel &amp; Car</button>
-              <button class="pill">Check-in</button>
-            </div>
-
-            <div class="subtabs">
-              <a class="active" href="#">Tickets</a>
-              <a href="#">Flight Awards</a>
-              <a href="#">Hotel</a>
-              <a href="#">Car Rentals</a>
-            </div>
-
-            <div class="trip-switch">
-              <div class="switch-track">
-                <button class="active">Round Trip</button>
-                <button>One Way</button>
-              </div>
-            </div>
-
-            <div class="fields">
-              <div class="field">
-                <label>From</label>
-                <div class="input">✈ Tokyo (All) [TYO]</div>
-              </div>
-
-              <div class="swap">⇄</div>
-
-              <div class="field">
-                <label>To</label>
-                <div class="input muted">Select arrival location</div>
-              </div>
-            </div>
-
-            <div class="open-more">open ＋</div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="info container">
-      <h2 class="section-title">Information from NANA</h2>
-
-      <div class="cards">
-        <article class="info-card">
-          <div class="info-media" style="background-image:url('https://images.unsplash.com/photo-1517479149777-5f3b1511d5ad?auto=format&fit=crop&w=900&q=80');"></div>
-          <div class="info-body">
-            <h3>Travel Experience</h3>
-            <p>Airport-inspired arrival flow for all wedding guests.</p>
-          </div>
-        </article>
-
-        <article class="info-card">
-          <div class="info-media" style="background-image:url('https://images.unsplash.com/photo-1527631746610-bca00a040d60?auto=format&fit=crop&w=900&q=80');"></div>
-          <div class="info-body">
-            <h3>From May 19 to June 9</h3>
-            <p>Online guest check-in and boarding pass generation available.</p>
-          </div>
-        </article>
-
-        <article class="info-card">
-          <div class="info-media" style="background-image:url('https://images.unsplash.com/photo-1529074963764-98f45c47344b?auto=format&fit=crop&w=900&q=80');"></div>
-          <div class="info-body">
-            <h3>ANA-style Boarding</h3>
-            <p>Gate signage, boarding groups and travel-themed celebration details.</p>
-          </div>
-        </article>
-
-        <article class="info-card">
-          <div class="info-media" style="background-image:url('https://images.unsplash.com/photo-1502920917128-1aa500764cbd?auto=format&fit=crop&w=900&q=80');"></div>
-          <div class="info-body">
-            <h3>Venue Terminal</h3>
-            <p>A check-in counter inspired reception area for the event entrance.</p>
-          </div>
-        </article>
-      </div>
-    </section>
-
-    <section class="promo-section container">
-      <h2 class="section-title">Information from NANA</h2>
-
-      <div class="promo-rail">
-  <article class="promo-card">
-    <img src="./ZM305687.jpg" alt="Pilot portrait" loading="lazy" width="1200" height="700">
-    <div class="promo-label">Service limitation during check-in migration period</div>
-  </article>
-
-  <article class="promo-card">
-    <img src="./ZM305811.jpg" alt="Couple at the airport" loading="lazy" width="1200" height="700">
-    <div class="promo-label">New celebration boarding visuals for Nana &amp; Matteo</div>
-  </article>
-
-  <article class="promo-card">
-    <img src="./ZM305836.jpg" alt="Couple seen from behind with luggage" loading="lazy" width="1200" height="700">
-    <div class="promo-label">Enjoy your trip to the wedding with digital boarding pass</div>
-  </article>
-
-  <article class="promo-card">
-    <img src="./ZM306563.jpg" alt="Couple overlooking the airport" loading="lazy" width="1200" height="700">
-    <div class="promo-label">Please check the venue terminal and guest route before arrival</div>
-  </article>
-
-  <article class="promo-card">
-    <img src="./ZM305619.jpg" alt="Pilot and crew style walk" loading="lazy" width="1200" height="700">
-    <div class="promo-label">New travel experience starts with your online check-in</div>
-  </article>
 </div>
 
-      <div class="rail-dots" aria-hidden="true">
-        <span class="active"></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span></span>
-        <span class="pause">Ⅱ</span>
-      </div>
-    </section>
+<header>
+  <div class="container head">
 
-    <section class="discover container">
-      <h2>Discover story-worthy experiences in Japan!</h2>
-      <a class="discover-link" href="./viator-relay.html">
-        <div class="discover-banner">
-          <div class="discover-copy">
-            <div class="eyebrow">Things to do in</div>
-            <div class="headline">Japan</div>
-          </div>
-        </div>
-      </a>
-    </section>
+    <div class="brand">
+      <img class="brand-logo" src="./nana_logo.jpg" alt="Nana & Matteo">
 
-    <section class="lower-panel">
-      <div class="info-accordion">
-        <div class="accordion-item">
-          <button class="accordion-toggle" type="button">
-            <span>Notices from NANA</span>
-            <span class="plus">+</span>
-          </button>
-          <div class="accordion-content">
-            Guest check-in opens 3 hours before the ceremony. Boarding pass QR check and seat-group guidance are available at arrival.
-          </div>
-        </div>
-
-        <div class="accordion-item">
-          <button class="accordion-toggle" type="button">
-            <span>Topics</span>
-            <span class="plus">+</span>
-          </button>
-          <div class="accordion-content">
-            Travel dress code, gate signage, ANA-style welcome counter and boarding music can be announced here.
-          </div>
-        </div>
-
-        <div class="accordion-item">
-          <button class="accordion-toggle" type="button">
-            <span>Information and Points to Note</span>
-            <span class="plus">+</span>
-          </button>
-          <div class="accordion-content">
-            Please prepare your boarding pass, arrive at your assigned time slot and follow the zone guidance for smooth boarding.
-          </div>
-        </div>
-      </div>
-
-      <div class="utility-links">
-        <div class="utility-row">
-          <span>System Maintenance Information</span>
-          <span class="copy">⧉</span>
-        </div>
-        <div class="utility-row">
-          <span>For Corporate Customer</span>
-          <span class="arrow">›</span>
-        </div>
-      </div>
-
-      <section class="mega-footer">
-        <div class="container mega-grid">
-          <div>
-            <h3 class="footer-title">NANA GROUP</h3>
-            <div class="footer-divider"></div>
-            <div class="footer-link-grid">
-              <a href="#">About Nana Group</a>
-              <a href="#">Group Companies</a>
-              <a href="#">Investor Relations</a>
-              <a href="#">Sustainability</a>
-              <a href="#">Safety Initiatives</a>
-              <a href="#">Carbon Offset Program</a>
-              <a href="#">Press Release</a>
-            </div>
-          </div>
-
-          <div>
-            <h3 class="footer-title">Official Social Media Accounts</h3>
-            <div class="socials">
-              <a class="fb" href="#" aria-label="Facebook">f</a>
-              <a class="x" href="#" aria-label="X">X</a>
-              <a class="yt" href="#" aria-label="YouTube">▶</a>
-              <a class="line" href="#" aria-label="Line">L</a>
-              <a class="ig" href="#" aria-label="Instagram">◎</a>
-              <a class="tt" href="#" aria-label="TikTok">♪</a>
-            </div>
-
-            <div class="footer-badges">
-              <div class="badge-row">
-                <div class="badge-mark"></div>
-                <a href="#">SKYTRAX 5 STAR AIRLINE</a>
-              </div>
-              <div class="badge-row">
-                <div class="badge-mark alt"></div>
-                <a href="#">APEX WORLD CLASS AIRLINE</a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-    </section>
-  </main>
-
-  <footer class="legal-footer">
-    <div class="container legal-wrap">
-      <div class="legal-links">
-        <a href="#">Privacy Policy</a>
-        <a href="#">Cookie Policy</a>
-        <a href="#">External Transmission of User Information</a>
-        <a href="#">Terms of Use</a>
-        <a href="#">System Requirement</a>
-        <a href="#">Web Accessibility Policy</a>
-        <a href="#">Sitemap</a>
-        <a href="#">Conditions of Carriage</a>
-        <a href="#">JAPAN</a>
-      </div>
-
-      <div class="legal-bottom">
-        <div>A STAR ALLIANCE MEMBER</div>
-        <div>ANA inspired layout — this is a non-profit, non-commericial website just for entertainment.</div>
+      <div class="kratz-alliance">
+        <span>A K_ATZ ALLIANCE MEMBER</span>
+        <img class="kratz-logo" src="./Kratz_Logo_klein.png" alt="Kratz Alliance">
       </div>
     </div>
-  </footer>
 
-  <button class="back-top" type="button" aria-label="Nach oben">⌃</button>
+    <nav>
+      <a href="#welcome" data-t="navWelcome">Willkommen</a>
+      <a href="#schedule" data-t="navSchedule">Flugplan</a>
+      <a href="#location" data-t="navLocation">Anreise</a>
+      <a class="checkin-link nav-checkin" href="entry.html" data-t="navCheckin">Check-in</a>
 
-  <script>
-    document.querySelectorAll('.accordion-toggle').forEach((button) => {
-      button.addEventListener('click', () => {
-        button.parentElement.classList.toggle('open');
-      });
-    });
+      <select class="lang" onchange="setLang(this.value)" aria-label="Sprache">
+        <option value="de">DE</option>
+        <option value="en">EN</option>
+        <option value="ja">日本語</option>
+      </select>
+    </nav>
 
-    document.querySelector('.back-top')?.addEventListener('click', () => {
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    });
-  </script>
+  </div>
+</header>
+
+<main>
+
+<section class="hero">
+  <div class="container hero-inner">
+    <div class="flight-tag">FLIGHT NM 0329 · HND → HIJ · 29 MAR 2027</div>
+    <h1>Nana &<br>Matteo</h1>
+    <p id="heroText">Willkommen an Bord unseres schönsten gemeinsamen Fluges.</p>
+
+    <div class="route">
+      <span>HND</span>
+      <i></i>
+      <span>HIJ</span>
+    </div>
+  </div>
+</section>
+
+<section class="container booking">
+  <div class="tabs">
+    <button class="tab active" data-t="book1">Wedding Reservation</button>
+    <button class="tab" data-t="book2">Flight Status</button>
+    <button class="tab" data-t="book3">Check-in verwalten</button>
+  </div>
+
+  <div class="search-grid">
+    <div class="field">
+      <label data-t="from">ABFLUG</label>
+      <div>HND · Love Terminal</div>
+    </div>
+
+    <div class="field">
+      <label data-t="to">ANKUNFT</label>
+      <div>HIJ · Grand Prince Hotel</div>
+    </div>
+
+    <div class="field">
+      <label data-t="date">DATUM</label>
+      <div>29 MAR 2027 · 13:00</div>
+    </div>
+
+    <a class="button" href="#schedule" data-t="start">CHECK-IN</a>
+  </div>
+</section>
+
+<section id="welcome" class="section container">
+  <div class="eyebrow" data-t="announce">BORDDURCHSAGE</div>
+  <h2 class="title" data-t="welcomeTitle">Willkommen an Bord</h2>
+
+  <article class="announcement">
+    <div class="speaker">⌁</div>
+
+    <div>
+      <strong data-t="announceLead">Liebe Passagiere,</strong>
+
+      <p data-t="announceBody">
+        willkommen an Bord von Flight NM 0329 – dem schönsten Flug unseres Lebens.
+        Bitte haltet eure Boarding Card bereit, nehmt eure Plätze ein und begleitet
+        uns auf unserer Reise in ein neues Kapitel voller Liebe, Lachen und
+        unvergesslicher Erinnerungen.
+      </p>
+
+      <p><b>Nana & Matteo K_atz</b></p>
+    </div>
+  </article>
+
+  <div class="welcome-photo">
+    <img src="./ZM300813.jpg" alt="Nana und Matteo">
+  </div>
+</section>
+
+<section class="section container">
+  <div class="eyebrow">CREW INFORMATION</div>
+  <h2 class="title" data-t="passengers">Ihre Gastgeber</h2>
+
+  <div class="cards">
+
+    <article class="passenger">
+      <div class="passenger-top">
+        <div>
+          <small>PILOT IN COMMAND</small>
+          <b>MATTEO K_ATZ</b>
+        </div>
+        <div>NM0329</div>
+      </div>
+
+      <div class="passenger-body">
+        <div class="portrait m"></div>
+
+        <dl>
+          <div><dt>ROLE</dt><dd>Pilot of Adventure</dd></div>
+          <div><dt>HOME BASE</dt><dd>Weiden i.d.OPf.</dd></div>
+          <div><dt>INTERESTS</dt><dd>Cars · Aviation · Travel</dd></div>
+          <div><dt>FAVOURITE MEAL</dt><dd>Yakiniku</dd></div>
+        </dl>
+      </div>
+    </article>
+
+    <article class="passenger">
+      <div class="passenger-top">
+        <div>
+          <small>CHIEF PURSER</small>
+          <b>NANA KOGA K_ATZ</b>
+        </div>
+        <div>NM0329</div>
+      </div>
+
+      <div class="passenger-body">
+        <div class="portrait n"></div>
+
+        <dl>
+          <div><dt>ROLE</dt><dd>Co-Pilot of Joy</dd></div>
+          <div><dt>HOME BASE</dt><dd>Fukuoka</dd></div>
+          <div><dt>NEW SURNAME</dt><dd>K_atz</dd></div>
+          <div><dt>INTERESTS</dt><dd>Travel · Food · Massage</dd></div>
+        </dl>
+      </div>
+    </article>
+
+  </div>
+</section>
+
+<section id="schedule" class="schedule">
+  <div class="container">
+
+    <div class="eyebrow" style="color:#f5cf63">DEPARTURE BOARD</div>
+    <h2 class="title" data-t="schedule">Flugplan des Tages</h2>
+
+    <div class="board">
+      <div class="row">
+        <span>TIME</span>
+        <span>FLIGHT</span>
+        <span>EVENT</span>
+        <span>STATUS</span>
+      </div>
+
+      <div class="row">
+        <b>12:00</b>
+        <span>NM 0329</span>
+        <span data-t="s1">Gäste-Check-in & Welcome Drink</span>
+        <span class="status">CHECK-IN OPEN</span>
+      </div>
+
+      <div class="row">
+        <b>12:30</b>
+        <span>NM 0329</span>
+        <span data-t="s2">Boarding zu den Destination Tables</span>
+        <span class="status">NOW BOARDING</span>
+      </div>
+
+      <div class="row">
+        <b>13:00</b>
+        <span>NM 0329</span>
+        <span data-t="s3">Trauung — Departure</span>
+        <span class="status">DEPARTED</span>
+      </div>
+
+      <div class="row">
+        <b>14:30</b>
+        <span>NM 0329</span>
+        <span data-t="s4">In-flight Service — Dinner & Reden</span>
+        <span class="status">CRUISING</span>
+      </div>
+
+      <div class="row">
+        <b>18:30</b>
+        <span>NM 0329</span>
+        <span data-t="s5">Night Flight — Party & Tanz</span>
+        <span class="status">ON TIME</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section id="location" class="section container">
+  <div class="eyebrow">ARRIVAL TERMINAL</div>
+  <h2 class="title">Wo wir landen</h2>
+
+  <div class="location">
+    <div class="location-copy">
+      <h3>Grand Prince Hotel Hiroshima</h3>
+
+      <p>
+        <b>
+          23-1 Motoujinamachi, Minami Ward,<br>
+          Hiroshima 734-8543, Japan
+        </b>
+      </p>
+
+      <p>
+        Unser Arrival Terminal liegt direkt an der Hiroshima-Bucht.
+        Der Check-in Counter öffnet um 12:00 Uhr.
+      </p>
+
+      <p>Tel. +81 82-256-1111</p>
+
+      <a class="button" target="_blank"
+         href="https://www.google.com/maps/search/?api=1&query=Grand+Prince+Hotel+Hiroshima">
+        GOOGLE MAPS
+      </a>
+    </div>
+
+    <iframe class="map"
+      title="Grand Prince Hotel Hiroshima map"
+      loading="lazy"
+      src="https://www.google.com/maps?q=Grand+Prince+Hotel+Hiroshima&output=embed">
+    </iframe>
+  </div>
+
+  <div class="checkin-cta">
+    <a class="checkin-link" href="entry.html" data-t="navCheckin">
+      Check-in
+    </a>
+  </div>
+</section>
+
+</main>
+
+<footer>
+  <div class="container">
+    <div style="display:flex;align-items:center;gap:14px">
+      <img src="./nana_logo.jpg" alt="Nana & Matteo" style="height:25px;width:auto">
+
+      <div class="kratz-alliance">
+        <span>A K_ATZ ALLIANCE MEMBER</span>
+        <img class="kratz-logo" src="./Kratz_Logo_klein.png" alt="Kratz Alliance">
+      </div>
+    </div>
+
+    <div class="private">
+      Private wedding celebration. ANA-inspired visual language only; not affiliated with,
+      sponsored by, or operated by All Nippon Airways.
+    </div>
+  </div>
+</footer>
+
+<script>
+const copy={
+  de:{
+    heroText:"Willkommen an Bord unseres schönsten gemeinsamen Fluges.",
+    navWelcome:"Willkommen",
+    navSchedule:"Flugplan",
+    navLocation:"Anreise",
+    navCheckin:"Check-in",
+    book1:"Wedding Reservation",
+    book2:"Flugstatus",
+    book3:"Check-in verwalten",
+    from:"ABFLUG",
+    to:"ANKUNFT",
+    date:"DATUM",
+    start:"CHECK-IN",
+    announce:"BORDDURCHSAGE",
+    welcomeTitle:"Willkommen an Bord",
+    announceLead:"Liebe Passagiere,",
+    announceBody:"willkommen an Bord von Flight NM 0329 – dem schönsten Flug unseres Lebens. Bitte haltet eure Boarding Card bereit, nehmt eure Plätze ein und begleitet uns auf unserer Reise in ein neues Kapitel voller Liebe, Lachen und unvergesslicher Erinnerungen.",
+    passengers:"Ihre Gastgeber",
+    schedule:"Flugplan des Tages",
+    s1:"Gäste-Check-in & Welcome Drink",
+    s2:"Boarding zu den Destination Tables",
+    s3:"Trauung — Departure",
+    s4:"In-flight Service — Dinner & Reden",
+    s5:"Night Flight — Party & Tanz"
+  },
+
+  en:{
+    heroText:"Welcome aboard the most meaningful flight of our lives.",
+    navWelcome:"Welcome",
+    navSchedule:"Flight schedule",
+    navLocation:"Arrival",
+    navCheckin:"Check-in",
+    book1:"Wedding reservation",
+    book2:"Flight status",
+    book3:"Manage reservation",
+    from:"DEPARTURE",
+    to:"ARRIVAL",
+    date:"DATE",
+    start:"CHECK-IN",
+    announce:"ON-BOARD ANNOUNCEMENT",
+    welcomeTitle:"Welcome aboard",
+    announceLead:"Dear passengers,",
+    announceBody:"welcome aboard Flight NM 0329 — the most beautiful flight of our lives. Please have your boarding card ready, take your seats and join us as we travel into a new chapter full of love, laughter and unforgettable memories.",
+    passengers:"Your hosts",
+    schedule:"Flight schedule",
+    s1:"Guest check-in & welcome drink",
+    s2:"Boarding to the destination tables",
+    s3:"Wedding ceremony — departure",
+    s4:"In-flight service — dinner & speeches",
+    s5:"Night flight — party & dancing"
+  },
+
+  ja:{
+    heroText:"人生で最も大切な旅へ、ようこそ。",
+    navWelcome:"ご挨拶",
+    navSchedule:"フライトスケジュール",
+    navLocation:"アクセス",
+    navCheckin:"チェックイン",
+    book1:"ウェディング予約",
+    book2:"フライト状況",
+    book3:"予約を管理",
+    from:"出発",
+    to:"到着",
+    date:"日付",
+    start:"チェックイン",
+    announce:"機内アナウンス",
+    welcomeTitle:"ご搭乗ありがとうございます",
+    announceLead:"ご搭乗のお客様へ",
+    announceBody:"フライト NM 0329 へようこそ。私たちの人生で最も美しい旅にご参加ください。搭乗券をご用意のうえ、お席にお座りいただき、愛と笑顔、そして忘れられない思い出に満ちた新しい章へご一緒に出発しましょう。",
+    passengers:"ホスト紹介",
+    schedule:"当日のフライトスケジュール",
+    s1:"ゲストチェックイン＆ウェルカムドリンク",
+    s2:"デスティネーションテーブルへご案内",
+    s3:"挙式 — 出発",
+    s4:"機内サービス — お食事＆スピーチ",
+    s5:"ナイトフライト — パーティー＆ダンス"
+  }
+};
+
+function setLang(lang){
+  document.documentElement.lang=lang;
+
+  document.querySelectorAll("[data-t]").forEach(el=>{
+    const key=el.dataset.t;
+    if(copy[lang][key]) el.textContent=copy[lang][key];
+  });
+
+  document.querySelector("#heroText").textContent=copy[lang].heroText;
+}
+</script>
+
 </body>
 </html>
