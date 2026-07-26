@@ -37,6 +37,8 @@
   --accent-foreground: 222 41% 18%;
   --gold: 48 100% 48%;
   --gold-foreground: 222 41% 15%;
+  --flight-red: 355 78% 42%;
+  --flight-red-foreground: 0 0% 100%;
   --destructive: 341 59% 35%;
   --destructive-foreground: 0 0% 98%;
   --input: 219 31% 80%;
@@ -144,6 +146,8 @@
   --accent-foreground: 210 30% 95%;
   --gold: 48 90% 55%;
   --gold-foreground: 222 41% 10%;
+  --flight-red: 355 70% 48%;
+  --flight-red-foreground: 0 0% 100%;
   --destructive: 341 55% 55%;
   --destructive-foreground: 0 0% 98%;
   --input: 222 20% 26%;

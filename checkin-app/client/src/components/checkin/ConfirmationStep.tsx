@@ -8,6 +8,7 @@ import {
   TooltipContent,
 } from "@/components/ui/tooltip";
 import { Link } from "wouter";
+import type { Guest } from "@shared/schema";
 import {
   CheckCircle2,
   XCircle,
@@ -22,21 +23,7 @@ import {
   PhoneOff,
   type LucideIcon,
 } from "lucide-react";
-import type { Guest } from "@shared/schema";
-import { getCountryName } from "@shared/countries";
 import princeHotelImg from "@/assets/nana/prince_hotel.jpg";
-
-function departureCity(g: Guest, lang: string): string {
-  if (g.address) {
-    const parts = g.address
-      .split(",")
-      .map((p) => p.trim())
-      .filter(Boolean);
-    if (parts.length > 0) return parts[parts.length - 1];
-  }
-  if (g.country) return getCountryName(g.country, lang);
-  return "—";
-}
 
 function ServiceIcon({
   icon: Icon,
@@ -79,7 +66,7 @@ export function ConfirmationStep({
   onEditAfterparty: () => void;
   onEditGuest: (guestIndex: number) => void;
 }) {
-  const { t, lang } = useI18n();
+  const { t } = useI18n();
   const selected = guests.filter((g) => g.selected);
   const notAttending = guests.filter((g) => !g.selected);
 
@@ -147,7 +134,6 @@ export function ConfirmationStep({
         )}
 
         {selected.map((g, idx) => {
-          const from = departureCity(g, lang);
           return (
             <Card key={g.id} className="border-card-border overflow-hidden">
               <div className="bg-primary text-primary-foreground px-5 py-3 flex items-center justify-between">
@@ -156,7 +142,7 @@ export function ConfirmationStep({
                     {t("confirm.ticketed")}
                   </span>
                 </div>
-                <Badge className="bg-gold text-gold-foreground border-none">
+                <Badge className="bg-flight-red text-flight-red-foreground border-none">
                   {t("confirm.class")}
                 </Badge>
               </div>
@@ -181,21 +167,28 @@ export function ConfirmationStep({
                       {t("confirm.departure")}
                     </div>
                     <div className="text-sm font-semibold text-foreground truncate" data-testid={`text-departure-${g.id}`}>
-                      {from}
+                      {t("confirm.departureCity")}
+                    </div>
+                    <div className="text-xs text-muted-foreground truncate">
+                      {t("confirm.departureVenue")}
                     </div>
                   </div>
-                  <Plane className="h-4 w-4 text-primary shrink-0 rotate-90" />
+                  <Plane className="h-4 w-4 text-primary shrink-0" />
                   <div className="flex-1 min-w-0 text-right">
                     <div className="text-[10px] uppercase tracking-wide text-muted-foreground mb-0.5">
                       {t("confirm.arrival")}
                     </div>
-                    <div className="text-sm font-semibold text-foreground truncate">
+                    <div className="text-sm font-semibold text-foreground truncate" data-testid={`text-arrival-${g.id}`}>
                       {t("confirm.arrivalCity")}
                     </div>
-                    <div className="text-xs text-muted-foreground truncate">
-                      {t("confirm.arrivalVenue")}
-                    </div>
                   </div>
+                </div>
+
+                <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground border-t border-border pt-2" data-testid={`text-flight-schedule-${g.id}`}>
+                  <span className="font-medium text-foreground">{t("confirm.flightDate")}</span>
+                  <span>{t("confirm.gateOpensLabel")} 12:00</span>
+                  <span>{t("confirm.departureTimeLabel")} 13:00</span>
+                  <span>{t("confirm.arrivalTimeLabel")} 16:30</span>
                 </div>
 
                 <div className="flex items-center gap-2 pt-1 border-t border-border">
@@ -217,8 +210,9 @@ export function ConfirmationStep({
                 </div>
 
                 {g.meal_choice && (
-                  <div>
+                  <div className="flex items-center gap-2 flex-wrap">
                     <Badge variant="outline">{t(`meal.option.${g.meal_choice}`)}</Badge>
+                    <span className="text-[11px] text-muted-foreground">{t("confirm.mealLabel")}</span>
                   </div>
                 )}
                 <div className="text-xs text-muted-foreground">{g.email}</div>
