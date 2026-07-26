@@ -61,7 +61,8 @@ export default function CheckinPage() {
     onSuccess: async (_data, ids) => {
       setSelectedIds(ids);
       await refetchBooking();
-      setStep("afterparty");
+      setGuestIndex(0);
+      setStep("guest-details");
     },
   });
 
@@ -75,8 +76,7 @@ export default function CheckinPage() {
     },
     onSuccess: async () => {
       await refetchBooking();
-      setGuestIndex(0);
-      setStep("guest-details");
+      setStep("confirmation");
     },
   });
 
@@ -108,6 +108,7 @@ export default function CheckinPage() {
       mealChoice?: string;
       allergies?: string;
       specialAssistance?: string[];
+      specialAssistanceOther?: string;
     }) => {
       await apiRequest("POST", "/api/meal-details", values);
     },
@@ -117,7 +118,7 @@ export default function CheckinPage() {
         setGuestIndex(guestIndex + 1);
         setStep("guest-details");
       } else {
-        setStep("confirmation");
+        setStep("afterparty");
       }
     },
   });
@@ -154,9 +155,12 @@ export default function CheckinPage() {
 
       {step === "afterparty" && (
         <AfterpartyStep
-          guests={selectedGuests}
+          guests={data.guests}
           onSubmit={(optins) => afterpartyMutation.mutate(optins)}
-          onBack={() => setStep("selection")}
+          onBack={() => {
+            setGuestIndex(selectedGuests.length - 1);
+            setStep("guest-meal");
+          }}
           isSubmitting={afterpartyMutation.isPending}
         />
       )}
@@ -171,7 +175,7 @@ export default function CheckinPage() {
           }
           onBack={() => {
             if (guestIndex === 0) {
-              setStep("afterparty");
+              setStep("selection");
             } else {
               setGuestIndex(guestIndex - 1);
               setStep("guest-meal");

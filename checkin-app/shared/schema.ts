@@ -30,6 +30,7 @@ export interface Guest {
   meal_choice: string | null;
   allergies: string | null;
   special_assistance: string[];
+  special_assistance_other: string | null;
   checkin_completed: boolean;
   created_at: string;
   updated_at: string;
@@ -98,6 +99,7 @@ export const mealDetailsSchema = z.object({
   mealChoice: z.string().optional(),
   allergies: z.string().optional(),
   specialAssistance: z.array(z.string()).optional(),
+  specialAssistanceOther: z.string().optional(),
 });
 
 export const adminLoginSchema = z.object({

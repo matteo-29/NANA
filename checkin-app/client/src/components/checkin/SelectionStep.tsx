@@ -1,9 +1,7 @@
 import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
-import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import type { Guest } from "@shared/schema";
 import { StepBar } from "@/components/layout";
 import { Loader2, Users } from "lucide-react";
@@ -23,11 +21,11 @@ export function SelectionStep({
   const [selected, setSelected] = useState<Set<string>>(new Set(initialSelected));
   const [error, setError] = useState<string | null>(null);
 
-  function toggle(id: string) {
+  function setAttending(id: string, attending: boolean) {
     setSelected((prev) => {
       const next = new Set(prev);
-      if (next.has(id)) next.delete(id);
-      else next.add(id);
+      if (attending) next.add(id);
+      else next.delete(id);
       return next;
     });
   }
@@ -50,7 +48,7 @@ export function SelectionStep({
       <StepBar
         step={0}
         total={4}
-        labels={[t("step.selection"), t("step.afterparty"), t("step.details"), t("step.meal")]}
+        labels={[t("step.selection"), t("step.details"), t("step.meal"), t("step.afterparty")]}
       />
       <div className="mb-6">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-2">
@@ -78,24 +76,46 @@ export function SelectionStep({
               {t("selection.selectAll")}
             </button>
           </div>
-          {guests.map((g) => (
-            <Label
-              key={g.id}
-              htmlFor={`guest-${g.id}`}
-              className="flex items-center gap-3 py-3 px-2 rounded-md hover-elevate cursor-pointer border-b border-border last:border-b-0"
-              data-testid={`row-guest-${g.id}`}
-            >
-              <Checkbox
-                id={`guest-${g.id}`}
-                checked={selected.has(g.id)}
-                onCheckedChange={() => toggle(g.id)}
-                data-testid={`checkbox-guest-${g.id}`}
-              />
-              <span className="text-sm font-medium">
-                {g.first_name} {g.last_name}
-              </span>
-            </Label>
-          ))}
+          {guests.map((g) => {
+            const attending = selected.has(g.id);
+            return (
+              <div
+                key={g.id}
+                className="flex items-center justify-between gap-3 py-3 px-2 border-b border-border last:border-b-0"
+                data-testid={`row-guest-${g.id}`}
+              >
+                <span className="text-sm font-medium">
+                  {g.first_name} {g.last_name}
+                </span>
+                <div className="flex items-center gap-2 shrink-0">
+                  <button
+                    type="button"
+                    onClick={() => setAttending(g.id, true)}
+                    className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                      attending
+                        ? "bg-primary text-primary-foreground border-primary"
+                        : "bg-transparent text-muted-foreground border-border hover-elevate"
+                    }`}
+                    data-testid={`button-attending-${g.id}`}
+                  >
+                    {t("selection.attending")}
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setAttending(g.id, false)}
+                    className={`text-xs font-semibold px-3 py-1.5 rounded-full border transition-colors ${
+                      !attending
+                        ? "bg-foreground text-background border-foreground"
+                        : "bg-transparent text-muted-foreground border-border hover-elevate"
+                    }`}
+                    data-testid={`button-not-attending-${g.id}`}
+                  >
+                    {t("selection.notAttending")}
+                  </button>
+                </div>
+              </div>
+            );
+          })}
         </CardContent>
       </Card>
 

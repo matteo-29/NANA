@@ -162,6 +162,9 @@ export async function registerRoutes(
         meal_choice: d.mealChoice || null,
         allergies: d.allergies || null,
         special_assistance: d.specialAssistance || [],
+        special_assistance_other: d.specialAssistance?.includes("other")
+          ? d.specialAssistanceOther || null
+          : null,
         checkin_completed: true,
       });
       res.json({ guest });
@@ -263,10 +266,15 @@ export async function registerRoutes(
           "Buchungscode",
           "Vorname",
           "Nachname",
+          "Furigana",
+          "Geschlecht",
           "Ausgewählt",
           "Check-in abgeschlossen",
           "Afterparty",
           "Nationalität",
+          "Land",
+          "PLZ",
+          "Adresse",
           "Reisepassnummer",
           "Geburtsdatum",
           "E-Mail",
@@ -274,6 +282,7 @@ export async function registerRoutes(
           "Mahlzeit",
           "Allergien",
           "Assistenz",
+          "Assistenz (Sonstiges)",
         ],
       ];
       for (const b of bookings) {
@@ -282,10 +291,15 @@ export async function registerRoutes(
             b.booking_code,
             g.first_name,
             g.last_name,
+            g.furigana ?? "",
+            g.gender ?? "",
             g.selected ? "ja" : "nein",
             g.checkin_completed ? "ja" : "nein",
             g.afterparty_optin === true ? "ja" : g.afterparty_optin === false ? "nein" : "",
             g.nationality ?? "",
+            g.country ?? "",
+            g.postal_code ?? "",
+            (g.address ?? "").replace(/\n/g, " "),
             g.passport_number ?? "",
             g.birth_date ?? "",
             g.email ?? "",
@@ -293,6 +307,7 @@ export async function registerRoutes(
             g.meal_choice ?? "",
             (g.allergies ?? "").replace(/\n/g, " "),
             (g.special_assistance ?? []).join("; "),
+            g.special_assistance_other ?? "",
           ]);
         }
       }

@@ -29,7 +29,12 @@ export function GuestMealStep({
   guestIndex: number;
   guestTotal: number;
   isLast: boolean;
-  onSubmit: (values: { mealChoice: string; allergies: string; specialAssistance: string[] }) => void;
+  onSubmit: (values: {
+    mealChoice: string;
+    allergies: string;
+    specialAssistance: string[];
+    specialAssistanceOther: string;
+  }) => void;
   onBack: () => void;
   isSubmitting: boolean;
 }) {
@@ -39,6 +44,7 @@ export function GuestMealStep({
   const [assistance, setAssistance] = useState<Set<string>>(
     new Set(guest.special_assistance ?? [])
   );
+  const [assistanceOther, setAssistanceOther] = useState(guest.special_assistance_other ?? "");
 
   function toggleAssist(id: string) {
     setAssistance((prev) => {
@@ -52,9 +58,9 @@ export function GuestMealStep({
   return (
     <div>
       <StepBar
-        step={3}
+        step={2}
         total={4}
-        labels={[t("step.selection"), t("step.afterparty"), t("step.details"), t("step.meal")]}
+        labels={[t("step.selection"), t("step.details"), t("step.meal"), t("step.afterparty")]}
       />
       <div className="mb-6">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-2">
@@ -116,6 +122,17 @@ export function GuestMealStep({
                 <span className="text-sm">{t(`assist.${opt}`)}</span>
               </Label>
             ))}
+            {assistance.has("other") && (
+              <div className="pl-2 pt-1">
+                <Textarea
+                  value={assistanceOther}
+                  onChange={(e) => setAssistanceOther(e.target.value)}
+                  placeholder={t("assist.otherPlaceholder")}
+                  rows={2}
+                  data-testid="input-assist-other"
+                />
+              </div>
+            )}
           </div>
 
           <div className="flex gap-3 mt-2">
@@ -134,7 +151,12 @@ export function GuestMealStep({
               className="rounded-full flex-1 sm:flex-none"
               disabled={isSubmitting}
               onClick={() =>
-                onSubmit({ mealChoice, allergies, specialAssistance: Array.from(assistance) })
+                onSubmit({
+                  mealChoice,
+                  allergies,
+                  specialAssistance: Array.from(assistance),
+                  specialAssistanceOther: assistanceOther,
+                })
               }
               data-testid="button-next"
             >

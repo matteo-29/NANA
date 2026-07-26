@@ -17,3 +17,14 @@ export type CountryCode = (typeof COUNTRY_CODES)[number];
 
 // De-duplicate while preserving order (in case of accidental repeats above).
 export const COUNTRIES = Array.from(new Set(COUNTRY_CODES));
+
+// Resolve a country code to its localized display name. Falls back to the
+// raw code if Intl.DisplayNames is unavailable or the code is unrecognized.
+export function getCountryName(code: string, lang: string): string {
+  try {
+    const dn = new Intl.DisplayNames([lang], { type: "region" });
+    return dn.of(code) ?? code;
+  } catch {
+    return code;
+  }
+}

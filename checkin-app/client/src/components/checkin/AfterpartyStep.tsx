@@ -21,16 +21,21 @@ export function AfterpartyStep({
   isSubmitting: boolean;
 }) {
   const { t } = useI18n();
+  const attendingGuests = guests.filter((g) => g.selected);
   const [optins, setOptins] = useState<Record<string, boolean>>(() =>
-    Object.fromEntries(guests.map((g) => [g.id, g.afterparty_optin ?? true]))
+    Object.fromEntries(attendingGuests.map((g) => [g.id, g.afterparty_optin ?? true]))
   );
+
+  function handleSubmit() {
+    onSubmit(optins);
+  }
 
   return (
     <div>
       <StepBar
-        step={1}
+        step={3}
         total={4}
-        labels={[t("step.selection"), t("step.afterparty"), t("step.details"), t("step.meal")]}
+        labels={[t("step.selection"), t("step.details"), t("step.meal"), t("step.afterparty")]}
       />
       <div className="mb-6">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-2">
@@ -70,24 +75,37 @@ export function AfterpartyStep({
             <div className="text-xs font-medium text-muted-foreground uppercase tracking-wide mb-1">
               {t("afterparty.optinFor")}
             </div>
-            {guests.map((g) => (
-              <Label
-                key={g.id}
-                htmlFor={`optin-${g.id}`}
-                className="flex items-center gap-3 py-2.5 px-2 rounded-md hover-elevate cursor-pointer"
-                data-testid={`row-optin-${g.id}`}
-              >
-                <Checkbox
-                  id={`optin-${g.id}`}
-                  checked={optins[g.id]}
-                  onCheckedChange={(v) => setOptins((prev) => ({ ...prev, [g.id]: !!v }))}
-                  data-testid={`checkbox-optin-${g.id}`}
-                />
-                <span className="text-sm font-medium">
-                  {g.first_name} {g.last_name}
-                </span>
-              </Label>
-            ))}
+            {guests.map((g) => {
+              const attending = g.selected;
+              return (
+                <Label
+                  key={g.id}
+                  htmlFor={attending ? `optin-${g.id}` : undefined}
+                  className={`flex items-center gap-3 py-2.5 px-2 rounded-md ${
+                    attending ? "hover-elevate cursor-pointer" : "opacity-40 cursor-not-allowed"
+                  }`}
+                  data-testid={`row-optin-${g.id}`}
+                >
+                  <Checkbox
+                    id={`optin-${g.id}`}
+                    checked={attending ? !!optins[g.id] : false}
+                    disabled={!attending}
+                    onCheckedChange={(v) =>
+                      setOptins((prev) => ({ ...prev, [g.id]: !!v }))
+                    }
+                    data-testid={`checkbox-optin-${g.id}`}
+                  />
+                  <span className="text-sm font-medium">
+                    {g.first_name} {g.last_name}
+                  </span>
+                  {!attending && (
+                    <span className="text-xs text-muted-foreground ml-auto">
+                      {t("afterparty.notAttendingWedding")}
+                    </span>
+                  )}
+                </Label>
+              );
+            })}
           </div>
         </CardContent>
       </Card>
@@ -105,11 +123,11 @@ export function AfterpartyStep({
         <Button
           size="lg"
           className="rounded-full flex-1 sm:flex-none"
-          onClick={() => onSubmit(optins)}
+          onClick={handleSubmit}
           disabled={isSubmitting}
           data-testid="button-next"
         >
-          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("common.next")}
+          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("common.finish")}
         </Button>
       </div>
     </div>
