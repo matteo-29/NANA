@@ -127,7 +127,14 @@ export function AfterpartyStep({
           disabled={isSubmitting}
           data-testid="button-next"
         >
-          {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("common.finish")}
+          {isSubmitting ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="h-4 w-4 animate-spin" />
+              {t("common.saving")}
+            </span>
+          ) : (
+            t("common.finish")
+          )}
         </Button>
       </div>
     </div>

@@ -1,5 +1,5 @@
 import { useMemo, useRef, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, useFormState } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { useI18n } from "@/lib/i18n";
@@ -63,6 +63,7 @@ export function GuestDetailsStep({
   guestIndex,
   guestTotal,
   onSubmit,
+  onSkip,
   onBack,
   isSubmitting,
 }: {
@@ -70,6 +71,7 @@ export function GuestDetailsStep({
   guestIndex: number;
   guestTotal: number;
   onSubmit: (values: DetailsFormValues) => void;
+  onSkip: () => void;
   onBack: () => void;
   isSubmitting: boolean;
 }) {
@@ -96,6 +98,24 @@ export function GuestDetailsStep({
   });
 
   const country = form.watch("country");
+  // react-hook-form only computes/tracks `isDirty` for fields that are read
+  // during render (its formState is a lazily-subscribed proxy) — reading
+  // `form.formState.isDirty` only inside the submit callback silently always
+  // returns false. `useFormState` here subscribes properly so the value
+  // below reflects real edits.
+  const { isDirty } = useFormState({ control: form.control });
+
+  // If the guest didn't change any field, there is nothing new to persist —
+  // skip the network round-trip entirely and move straight to the next
+  // step. This is what makes "Weiter" feel instant when nothing changed,
+  // per the request to not wait on unmodified steps.
+  function handleSubmit(values: DetailsFormValues) {
+    if (!isDirty) {
+      onSkip();
+      return;
+    }
+    onSubmit(values);
+  }
 
   function handlePostalCodeChange(value: string) {
     form.setValue("postalCode", value);
@@ -136,21 +156,23 @@ export function GuestDetailsStep({
         <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-2">
           {t("details.eyebrow")}
         </p>
-        <h1 className="text-xl font-bold text-foreground mb-1">{t("details.title")}</h1>
-        <p className="text-sm text-muted-foreground mb-1">{t("details.subtitle")}</p>
-        <p
-          className="text-sm font-medium text-primary"
+        <h1
+          className="text-xl font-bold text-foreground mb-1"
           data-testid="text-current-guest"
         >
-          {guest.first_name} {guest.last_name} · {t("common.guestOf", { current: guestIndex + 1, total: guestTotal })}
+          {t("details.title")} — {guest.first_name} {guest.last_name}
+        </h1>
+        <p className="text-sm text-muted-foreground mb-1">
+          {t("common.guestOf", { current: guestIndex + 1, total: guestTotal })}
         </p>
+        <p className="text-sm text-muted-foreground">{t("details.subtitle")}</p>
       </div>
 
       <Card className="border-card-border">
         <CardContent className="pt-6">
           <Form {...form}>
             <form
-              onSubmit={form.handleSubmit(onSubmit)}
+              onSubmit={form.handleSubmit(handleSubmit)}
               className="flex flex-col gap-5"
               data-testid="form-guest-details"
             >
@@ -387,7 +409,14 @@ export function GuestDetailsStep({
                   disabled={isSubmitting}
                   data-testid="button-next"
                 >
-                  {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("common.next")}
+                  {isSubmitting ? (
+                    <span className="flex items-center gap-2">
+                      <Loader2 className="h-4 w-4 animate-spin" />
+                      {t("common.saving")}
+                    </span>
+                  ) : (
+                    t("common.next")
+                  )}
                 </Button>
               </div>
             </form>

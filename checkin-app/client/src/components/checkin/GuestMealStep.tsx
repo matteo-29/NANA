@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -22,6 +22,7 @@ export function GuestMealStep({
   guestTotal,
   isLast,
   onSubmit,
+  onSkip,
   onBack,
   isSubmitting,
 }: {
@@ -35,6 +36,7 @@ export function GuestMealStep({
     specialAssistance: string[];
     specialAssistanceOther: string;
   }) => void;
+  onSkip: () => void;
   onBack: () => void;
   isSubmitting: boolean;
 }) {
@@ -45,6 +47,41 @@ export function GuestMealStep({
     new Set(guest.special_assistance ?? [])
   );
   const [assistanceOther, setAssistanceOther] = useState(guest.special_assistance_other ?? "");
+  const initial = useRef({
+    mealChoice: guest.meal_choice ?? "standard",
+    allergies: guest.allergies ?? "",
+    assistance: new Set(guest.special_assistance ?? []),
+    assistanceOther: guest.special_assistance_other ?? "",
+  });
+
+  // Mirrors the isDirty check in GuestDetailsStep: no react-hook-form here,
+  // so the "did anything change" comparison is done by hand against the
+  // values this step started with.
+  function isDirty() {
+    if (mealChoice !== initial.current.mealChoice) return true;
+    if (allergies !== initial.current.allergies) return true;
+    if (assistanceOther !== initial.current.assistanceOther) return true;
+    if (assistance.size !== initial.current.assistance.size) return true;
+    for (const a of assistance) if (!initial.current.assistance.has(a)) return true;
+    return false;
+  }
+
+  function handleNext() {
+    // This step also flips `checkin_completed` to true server-side, so we
+    // can only skip the network call when the guest is already checked in
+    // AND nothing changed — otherwise the completion flag would never get
+    // persisted.
+    if (!isDirty() && guest.checkin_completed) {
+      onSkip();
+      return;
+    }
+    onSubmit({
+      mealChoice,
+      allergies,
+      specialAssistance: Array.from(assistance),
+      specialAssistanceOther: assistanceOther,
+    });
+  }
 
   function toggleAssist(id: string) {
     setAssistance((prev) => {
@@ -66,12 +103,13 @@ export function GuestMealStep({
         <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-2">
           {t("meal.eyebrow")}
         </p>
-        <h1 className="text-xl font-bold text-foreground mb-1">{t("meal.title")}</h1>
-        <p className="text-sm text-muted-foreground mb-1">{t("meal.subtitle")}</p>
-        <p className="text-sm font-medium text-primary" data-testid="text-current-guest">
-          {guest.first_name} {guest.last_name} ·{" "}
+        <h1 className="text-xl font-bold text-foreground mb-1" data-testid="text-current-guest">
+          {t("meal.title")} — {guest.first_name} {guest.last_name}
+        </h1>
+        <p className="text-sm text-muted-foreground mb-1">
           {t("common.guestOf", { current: guestIndex + 1, total: guestTotal })}
         </p>
+        <p className="text-sm text-muted-foreground">{t("meal.subtitle")}</p>
       </div>
 
       <Card className="border-card-border">
@@ -150,18 +188,14 @@ export function GuestMealStep({
               size="lg"
               className="rounded-full flex-1 sm:flex-none"
               disabled={isSubmitting}
-              onClick={() =>
-                onSubmit({
-                  mealChoice,
-                  allergies,
-                  specialAssistance: Array.from(assistance),
-                  specialAssistanceOther: assistanceOther,
-                })
-              }
+              onClick={handleNext}
               data-testid="button-next"
             >
               {isSubmitting ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
+                <span className="flex items-center gap-2">
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                  {t("common.saving")}
+                </span>
               ) : isLast ? (
                 t("meal.finish")
               ) : (

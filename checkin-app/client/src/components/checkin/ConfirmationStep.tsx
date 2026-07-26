@@ -3,10 +3,10 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import {
-  Tooltip,
-  TooltipTrigger,
-  TooltipContent,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
+} from "@/components/ui/popover";
 import { Link } from "wouter";
 import type { Guest } from "@shared/schema";
 import {
@@ -37,9 +37,10 @@ function ServiceIcon({
   testId: string;
 }) {
   return (
-    <Tooltip>
-      <TooltipTrigger asChild>
-        <div
+    <Popover>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
           className={`h-9 w-9 rounded-full flex items-center justify-center border ${
             disabled
               ? "border-border text-muted-foreground/40 opacity-40"
@@ -48,10 +49,16 @@ function ServiceIcon({
           data-testid={testId}
         >
           <Icon className="h-4 w-4" />
-        </div>
-      </TooltipTrigger>
-      <TooltipContent>{label}</TooltipContent>
-    </Tooltip>
+        </button>
+      </PopoverTrigger>
+      <PopoverContent
+        side="top"
+        className="w-auto px-3 py-1.5 text-sm"
+        data-testid={`${testId}-popover`}
+      >
+        {label}
+      </PopoverContent>
+    </Popover>
   );
 }
 

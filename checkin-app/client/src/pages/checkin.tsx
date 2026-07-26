@@ -50,17 +50,37 @@ export default function CheckinPage() {
     [data, selectedIds]
   );
 
-  async function refetchBooking() {
-    await queryClient.invalidateQueries({ queryKey: ["/api/booking", bookingId] });
+  // Patches specific guests directly in the cached booking data instead of
+  // re-fetching the whole booking from the server after every step. This
+  // removes an entire network round-trip (POST + GET) per "Weiter" click,
+  // which was the main cause of the slow/unclear loading behavior — and, as
+  // a side effect, it also avoids re-deriving guest order from a fresh
+  // server response on every step (the array position of unrelated guests
+  // never changes mid-flow).
+  function patchGuests(updater: (guests: Guest[]) => Guest[]) {
+    queryClient.setQueryData<{ booking: Booking; guests: Guest[] } | undefined>(
+      ["/api/booking", bookingId],
+      (old) => (old ? { ...old, guests: updater(old.guests) } : old)
+    );
+  }
+
+  function advanceAfterMeal() {
+    if (guestIndex + 1 < selectedGuests.length) {
+      setGuestIndex(guestIndex + 1);
+      setStep("guest-details");
+    } else {
+      setStep("afterparty");
+    }
   }
 
   const selectionMutation = useMutation({
     mutationFn: async (ids: string[]) => {
-      await apiRequest("POST", "/api/selection", { bookingId, selectedGuestIds: ids });
+      const res = await apiRequest("POST", "/api/selection", { bookingId, selectedGuestIds: ids });
+      return (await res.json()) as { guests: Guest[] };
     },
-    onSuccess: async (_data, ids) => {
+    onSuccess: (result, ids) => {
       setSelectedIds(ids);
-      await refetchBooking();
+      patchGuests(() => result.guests);
       setGuestIndex(0);
       setStep("guest-details");
     },
@@ -68,14 +88,16 @@ export default function CheckinPage() {
 
   const afterpartyMutation = useMutation({
     mutationFn: async (optins: Record<string, boolean>) => {
-      await Promise.all(
-        Object.entries(optins).map(([guestId, afterpartyOptin]) =>
-          apiRequest("POST", "/api/afterparty", { guestId, afterpartyOptin })
-        )
+      const results = await Promise.all(
+        Object.entries(optins).map(async ([guestId, afterpartyOptin]) => {
+          const res = await apiRequest("POST", "/api/afterparty", { guestId, afterpartyOptin });
+          return (await res.json()) as { guest: Guest };
+        })
       );
+      return results.map((r) => r.guest);
     },
-    onSuccess: async () => {
-      await refetchBooking();
+    onSuccess: (updatedGuests) => {
+      patchGuests((guests) => guests.map((g) => updatedGuests.find((u) => u.id === g.id) ?? g));
       setStep("confirmation");
     },
   });
@@ -94,10 +116,11 @@ export default function CheckinPage() {
       postalCode?: string;
       address?: string;
     }) => {
-      await apiRequest("POST", "/api/personal-details", values);
+      const res = await apiRequest("POST", "/api/personal-details", values);
+      return (await res.json()) as { guest: Guest };
     },
-    onSuccess: async () => {
-      await refetchBooking();
+    onSuccess: ({ guest }) => {
+      patchGuests((guests) => guests.map((g) => (g.id === guest.id ? guest : g)));
       setStep("guest-meal");
     },
   });
@@ -110,16 +133,12 @@ export default function CheckinPage() {
       specialAssistance?: string[];
       specialAssistanceOther?: string;
     }) => {
-      await apiRequest("POST", "/api/meal-details", values);
+      const res = await apiRequest("POST", "/api/meal-details", values);
+      return (await res.json()) as { guest: Guest };
     },
-    onSuccess: async () => {
-      await refetchBooking();
-      if (guestIndex + 1 < selectedGuests.length) {
-        setGuestIndex(guestIndex + 1);
-        setStep("guest-details");
-      } else {
-        setStep("afterparty");
-      }
+    onSuccess: ({ guest }) => {
+      patchGuests((guests) => guests.map((g) => (g.id === guest.id ? guest : g)));
+      advanceAfterMeal();
     },
   });
 
@@ -173,6 +192,7 @@ export default function CheckinPage() {
           onSubmit={(values) =>
             detailsMutation.mutate({ guestId: selectedGuests[guestIndex].id, ...values })
           }
+          onSkip={() => setStep("guest-meal")}
           onBack={() => {
             if (guestIndex === 0) {
               setStep("selection");
@@ -194,6 +214,7 @@ export default function CheckinPage() {
           onSubmit={(values) =>
             mealMutation.mutate({ guestId: selectedGuests[guestIndex].id, ...values })
           }
+          onSkip={advanceAfterMeal}
           onBack={() => setStep("guest-details")}
           isSubmitting={mealMutation.isPending}
         />

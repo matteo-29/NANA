@@ -49,11 +49,18 @@ class SupabaseStorage implements IStorage {
   }
 
   async getGuestsByBooking(bookingId: string): Promise<Guest[]> {
+    // Guests for a booking are bulk-inserted in a single statement, so
+    // `created_at` is often identical across rows (Postgres `now()` is
+    // stable within one transaction). Without a tiebreaker, ties have no
+    // guaranteed order and can flip between queries — which guest ends up
+    // at index 0 could change after any refetch. `id` is a stable,
+    // per-row tiebreaker that guarantees a deterministic, repeatable order.
     const { data, error } = await supabase
       .from("guests")
       .select("*")
       .eq("booking_id", bookingId)
-      .order("created_at", { ascending: true });
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true });
     if (error) throw error;
     return data ?? [];
   }
@@ -101,7 +108,11 @@ class SupabaseStorage implements IStorage {
       .select("*")
       .order("created_at", { ascending: false });
     if (error) throw error;
-    const { data: guests, error: gErr } = await supabase.from("guests").select("*");
+    const { data: guests, error: gErr } = await supabase
+      .from("guests")
+      .select("*")
+      .order("created_at", { ascending: true })
+      .order("id", { ascending: true });
     if (gErr) throw gErr;
     return (bookings ?? []).map((b) => ({
       ...b,

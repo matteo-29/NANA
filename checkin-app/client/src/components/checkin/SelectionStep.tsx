@@ -132,7 +132,14 @@ export function SelectionStep({
         disabled={isSubmitting}
         data-testid="button-next"
       >
-        {isSubmitting ? <Loader2 className="h-4 w-4 animate-spin" /> : t("common.next")}
+        {isSubmitting ? (
+          <span className="flex items-center gap-2">
+            <Loader2 className="h-4 w-4 animate-spin" />
+            {t("common.saving")}
+          </span>
+        ) : (
+          t("common.next")
+        )}
       </Button>
     </div>
   );
