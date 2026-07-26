@@ -1,0 +1,503 @@
+import { createContext, useContext, useMemo, useState, type ReactNode } from "react";
+
+export type Lang = "de" | "en" | "ja";
+
+export const LANGS: { code: Lang; label: string }[] = [
+  { code: "de", label: "Deutsch" },
+  { code: "en", label: "English" },
+  { code: "ja", label: "日本語" },
+];
+
+type Dict = Record<string, string>;
+
+const de: Dict = {
+  "app.title": "Nana & Matteo",
+  "app.flight": "Flight NM 0329",
+  "app.tagline": "Inspiration of Celebration",
+  "app.langLabel": "Sprache",
+  "nav.admin": "Admin",
+  "nav.home": "Start",
+
+  "notice.tag": "HINWEIS",
+  "notice.text": "Online Check-in für die Hochzeit von Nana & Matteo",
+  "notice.date": "29. MÄRZ 2027",
+
+  "step.selection": "Auswahl",
+  "step.afterparty": "Afterparty",
+  "step.details": "Angaben",
+  "step.meal": "Mahlzeit",
+
+  "common.next": "Weiter",
+  "common.back": "Zurück",
+  "common.save": "Speichern",
+  "common.saving": "Wird gespeichert…",
+  "common.cancel": "Abbrechen",
+  "common.delete": "Löschen",
+  "common.required": "Pflichtfeld",
+  "common.optional": "optional",
+  "common.loading": "Wird geladen…",
+  "common.genericError": "Etwas ist schiefgelaufen. Bitte versuche es erneut.",
+  "common.guestOf": "Gast {current} von {total}",
+  "common.edit": "Bearbeiten",
+
+  "entry.eyebrow": "Online Check-in",
+  "entry.title": "Willkommen an Bord",
+  "entry.subtitle":
+    "Bitte gib deinen Buchungscode und Nachnamen ein, um mit dem Check-in für die Hochzeit von Nana & Matteo zu beginnen.",
+  "entry.bookingCode": "Buchungscode",
+  "entry.bookingCodePlaceholder": "z.B. NM0329",
+  "entry.lastName": "Nachname",
+  "entry.lastNamePlaceholder": "Nachname",
+  "entry.firstName": "Vorname",
+  "entry.firstNamePlaceholder": "Vorname",
+  "entry.submit": "Suchen",
+  "entry.notFound": "Wir konnten keine Buchung mit diesen Angaben finden. Bitte überprüfe deine Eingaben.",
+  "entry.adminLink": "Admin-Zugang",
+  "entry.footerNote": "Bei Fragen wende dich bitte direkt an Nana oder Matteo.",
+
+  "selection.eyebrow": "Schritt 1 von 4",
+  "selection.title": "Wer reist mit?",
+  "selection.subtitle": "Wähle alle Personen aus dieser Buchung aus, die sich jetzt einchecken.",
+  "selection.selectAll": "Alle auswählen",
+  "selection.error": "Bitte wähle mindestens eine Person aus.",
+
+  "afterparty.eyebrow": "Schritt 2 von 4",
+  "afterparty.title": "Afterparty",
+  "afterparty.subtitle": "Feiere mit uns weiter — kostenlos, für alle angemeldeten Gäste.",
+  "afterparty.venueName": "Top of Hiroshima Lounge",
+  "afterparty.venueSub": "Grand Prince Hotel Hiroshima",
+  "afterparty.venueTime": "18:00 – 20:00 Uhr",
+  "afterparty.venueFree": "Kostenlos",
+  "afterparty.mapLink": "Auf der Karte ansehen",
+  "afterparty.optinFor": "Nimmt teil:",
+
+  "details.eyebrow": "Schritt 3 von 4",
+  "details.title": "Persönliche Angaben",
+  "details.subtitle": "Diese Angaben benötigen wir für die Gästeliste und im Notfall.",
+  "details.nationality": "Nationalität",
+  "details.nationalityPlaceholder": "z.B. Deutsch",
+  "details.passport": "Reisepassnummer",
+  "details.passportPlaceholder": "Reisepassnummer",
+  "details.birthDate": "Geburtsdatum",
+  "details.email": "E-Mail-Adresse",
+  "details.emailPlaceholder": "name@beispiel.de",
+  "details.phone": "Telefonnummer",
+  "details.phonePlaceholder": "+49 …",
+  "details.emailInvalid": "Bitte gib eine gültige E-Mail-Adresse ein.",
+  "details.furigana": "Name in Furigana",
+  "details.furiganaPlaceholder": "例：クラッツ マッテオ",
+  "details.gender": "Geschlecht",
+  "details.genderPlaceholder": "Bitte auswählen",
+  "details.gender.female": "Weiblich",
+  "details.gender.male": "Männlich",
+  "details.gender.non_binary": "Nicht-binär",
+  "details.gender.prefer_not_to_say": "Möchte ich nicht angeben",
+  "details.country": "Land",
+  "details.countryPlaceholder": "Bitte auswählen",
+  "details.postalCode": "Postleitzahl",
+  "details.postalCodePlaceholder": "z. B. 100-0001",
+  "details.postalLooking": "Adresse wird gesucht…",
+  "details.postalNotFound": "Keine Adresse zu dieser Postleitzahl gefunden.",
+  "details.address": "Adresse",
+  "details.addressPlaceholder": "Straße, Hausnummer, Ort, Land",
+
+  "meal.eyebrow": "Schritt 4 von 4",
+  "meal.title": "Mahlzeit & besondere Anliegen",
+  "meal.subtitle": "Damit wir uns bestmöglich um dich kümmern können.",
+  "meal.mealChoice": "Menüwunsch",
+  "meal.mealPlaceholder": "Bitte wählen",
+  "meal.allergies": "Allergien / Unverträglichkeiten",
+  "meal.allergiesPlaceholder": "z.B. Nussallergie, laktosefrei …",
+  "meal.assistance": "Besondere Unterstützung",
+  "meal.finish": "Check-in abschließen",
+
+  "meal.option.standard": "Standard",
+  "meal.option.vegetarian": "Vegetarisch",
+  "meal.option.vegan": "Vegan",
+  "meal.option.halal": "Halal",
+  "meal.option.kosher": "Koscher",
+  "meal.option.gluten_free": "Glutenfrei",
+  "meal.option.child": "Kindermenü",
+  "meal.option.none": "Keine Angabe",
+
+  "assist.wheelchair": "Rollstuhlzugang",
+  "assist.visual": "Sehbehinderung",
+  "assist.hearing": "Hörbehinderung",
+  "assist.walking": "Gehhilfe",
+  "assist.other": "Sonstiges",
+
+  "confirm.eyebrow": "Bestätigt",
+  "confirm.title": "Check-in abgeschlossen",
+  "confirm.subtitle":
+    "Vielen Dank! Wir freuen uns, mit euch zu feiern. Du kannst dich jederzeit mit deinem Buchungscode erneut anmelden, um deine Angaben anzusehen oder zu ändern.",
+  "confirm.afterpartyYes": "Nimmt an der Afterparty teil",
+  "confirm.afterpartyNo": "Nimmt nicht an der Afterparty teil",
+  "confirm.backHome": "Zur Startseite",
+  "confirm.editHint": "Um Angaben zu ändern, logge dich einfach erneut mit deinem Buchungscode ein.",
+
+  "admin.title": "Admin-Bereich",
+  "admin.passwordLabel": "Passwort",
+  "admin.login": "Anmelden",
+  "admin.wrongPassword": "Falsches Passwort.",
+  "admin.dashboardTitle": "Buchungen verwalten",
+  "admin.newBooking": "Neue Buchung",
+  "admin.bookingCode": "Buchungscode",
+  "admin.primaryLastName": "Nachname (Hauptbucher)",
+  "admin.primaryFirstName": "Vorname (Hauptbucher)",
+  "admin.guestsHeading": "Gäste",
+  "admin.addGuest": "Gast hinzufügen",
+  "admin.removeGuest": "Entfernen",
+  "admin.saveBooking": "Buchung speichern",
+  "admin.deleteBooking": "Buchung löschen",
+  "admin.confirmDelete": "Diese Buchung wirklich löschen?",
+  "admin.exportCsv": "Als CSV exportieren",
+  "admin.logout": "Abmelden",
+  "admin.status": "Status",
+  "admin.statusDone": "abgeschlossen",
+  "admin.statusOpen": "offen",
+  "admin.noBookings": "Noch keine Buchungen angelegt.",
+  "admin.afterparty": "Afterparty",
+  "admin.selected": "eingecheckt",
+};
+
+const en: Dict = {
+  "app.title": "Nana & Matteo",
+  "app.flight": "Flight NM 0329",
+  "app.tagline": "Inspiration of Celebration",
+  "app.langLabel": "Language",
+  "nav.admin": "Admin",
+  "nav.home": "Home",
+
+  "notice.tag": "NOTICE",
+  "notice.text": "Online Check-in for Nana & Matteo's Wedding",
+  "notice.date": "29 MAR 2027",
+
+  "step.selection": "Selection",
+  "step.afterparty": "Afterparty",
+  "step.details": "Details",
+  "step.meal": "Meal",
+
+  "common.next": "Next",
+  "common.back": "Back",
+  "common.save": "Save",
+  "common.saving": "Saving…",
+  "common.cancel": "Cancel",
+  "common.delete": "Delete",
+  "common.required": "required",
+  "common.optional": "optional",
+  "common.loading": "Loading…",
+  "common.genericError": "Something went wrong. Please try again.",
+  "common.guestOf": "Guest {current} of {total}",
+  "common.edit": "Edit",
+
+  "entry.eyebrow": "Online Check-in",
+  "entry.title": "Welcome Aboard",
+  "entry.subtitle":
+    "Please enter your booking code and last name to begin check-in for Nana & Matteo's wedding.",
+  "entry.bookingCode": "Booking Code",
+  "entry.bookingCodePlaceholder": "e.g. NM0329",
+  "entry.lastName": "Last Name",
+  "entry.lastNamePlaceholder": "Last name",
+  "entry.firstName": "First Name",
+  "entry.firstNamePlaceholder": "First name",
+  "entry.submit": "Search",
+  "entry.notFound": "We couldn't find a booking with these details. Please check your entries.",
+  "entry.adminLink": "Admin access",
+  "entry.footerNote": "For questions, please contact Nana or Matteo directly.",
+
+  "selection.eyebrow": "Step 1 of 4",
+  "selection.title": "Who's checking in?",
+  "selection.subtitle": "Select everyone from this booking who is checking in now.",
+  "selection.selectAll": "Select all",
+  "selection.error": "Please select at least one person.",
+
+  "afterparty.eyebrow": "Step 2 of 4",
+  "afterparty.title": "Afterparty",
+  "afterparty.subtitle": "Keep celebrating with us — free of charge for all registered guests.",
+  "afterparty.venueName": "Top of Hiroshima Lounge",
+  "afterparty.venueSub": "Grand Prince Hotel Hiroshima",
+  "afterparty.venueTime": "6:00 PM – 8:00 PM",
+  "afterparty.venueFree": "Free of charge",
+  "afterparty.mapLink": "View on map",
+  "afterparty.optinFor": "Attending:",
+
+  "details.eyebrow": "Step 3 of 4",
+  "details.title": "Personal Details",
+  "details.subtitle": "We need this information for the guest list and in case of emergency.",
+  "details.nationality": "Nationality",
+  "details.nationalityPlaceholder": "e.g. German",
+  "details.passport": "Passport Number",
+  "details.passportPlaceholder": "Passport number",
+  "details.birthDate": "Date of Birth",
+  "details.email": "Email Address",
+  "details.emailPlaceholder": "name@example.com",
+  "details.phone": "Phone Number",
+  "details.phonePlaceholder": "+1 …",
+  "details.emailInvalid": "Please enter a valid email address.",
+  "details.furigana": "Name in Furigana",
+  "details.furiganaPlaceholder": "e.g. クラッツ マッテオ",
+  "details.gender": "Gender",
+  "details.genderPlaceholder": "Please select",
+  "details.gender.female": "Female",
+  "details.gender.male": "Male",
+  "details.gender.non_binary": "Non-binary",
+  "details.gender.prefer_not_to_say": "Prefer not to say",
+  "details.country": "Country",
+  "details.countryPlaceholder": "Please select",
+  "details.postalCode": "Postal Code",
+  "details.postalCodePlaceholder": "e.g. 100-0001",
+  "details.postalLooking": "Looking up address…",
+  "details.postalNotFound": "No address found for this postal code.",
+  "details.address": "Address",
+  "details.addressPlaceholder": "Street, house number, city, country",
+
+  "meal.eyebrow": "Step 4 of 4",
+  "meal.title": "Meal & Special Requests",
+  "meal.subtitle": "So we can take the best possible care of you.",
+  "meal.mealChoice": "Meal Preference",
+  "meal.mealPlaceholder": "Please select",
+  "meal.allergies": "Allergies / Intolerances",
+  "meal.allergiesPlaceholder": "e.g. nut allergy, lactose-free …",
+  "meal.assistance": "Special Assistance",
+  "meal.finish": "Complete Check-in",
+
+  "meal.option.standard": "Standard",
+  "meal.option.vegetarian": "Vegetarian",
+  "meal.option.vegan": "Vegan",
+  "meal.option.halal": "Halal",
+  "meal.option.kosher": "Kosher",
+  "meal.option.gluten_free": "Gluten-free",
+  "meal.option.child": "Children's meal",
+  "meal.option.none": "No preference",
+
+  "assist.wheelchair": "Wheelchair access",
+  "assist.visual": "Visual impairment",
+  "assist.hearing": "Hearing impairment",
+  "assist.walking": "Walking aid",
+  "assist.other": "Other",
+
+  "confirm.eyebrow": "Confirmed",
+  "confirm.title": "Check-in Complete",
+  "confirm.subtitle":
+    "Thank you! We can't wait to celebrate with you. You can log back in anytime with your booking code to view or change your details.",
+  "confirm.afterpartyYes": "Attending the afterparty",
+  "confirm.afterpartyNo": "Not attending the afterparty",
+  "confirm.backHome": "Back to start",
+  "confirm.editHint": "To change your details, simply log in again with your booking code.",
+
+  "admin.title": "Admin Area",
+  "admin.passwordLabel": "Password",
+  "admin.login": "Log in",
+  "admin.wrongPassword": "Incorrect password.",
+  "admin.dashboardTitle": "Manage Bookings",
+  "admin.newBooking": "New Booking",
+  "admin.bookingCode": "Booking Code",
+  "admin.primaryLastName": "Last Name (Primary)",
+  "admin.primaryFirstName": "First Name (Primary)",
+  "admin.guestsHeading": "Guests",
+  "admin.addGuest": "Add Guest",
+  "admin.removeGuest": "Remove",
+  "admin.saveBooking": "Save Booking",
+  "admin.deleteBooking": "Delete Booking",
+  "admin.confirmDelete": "Really delete this booking?",
+  "admin.exportCsv": "Export as CSV",
+  "admin.logout": "Log out",
+  "admin.status": "Status",
+  "admin.statusDone": "completed",
+  "admin.statusOpen": "open",
+  "admin.noBookings": "No bookings yet.",
+  "admin.afterparty": "Afterparty",
+  "admin.selected": "checked in",
+};
+
+const ja: Dict = {
+  "app.title": "ナナ & マテオ",
+  "app.flight": "Flight NM 0329",
+  "app.tagline": "Inspiration of Celebration",
+  "app.langLabel": "言語",
+  "nav.admin": "管理者",
+  "nav.home": "トップ",
+
+  "notice.tag": "お知らせ",
+  "notice.text": "ナナ&マテオの結婚式 オンラインチェックイン",
+  "notice.date": "2027年3月29日",
+
+  "step.selection": "選択",
+  "step.afterparty": "アフターパーティー",
+  "step.details": "個人情報",
+  "step.meal": "食事",
+
+  "common.next": "次へ",
+  "common.back": "戻る",
+  "common.save": "保存",
+  "common.saving": "保存中…",
+  "common.cancel": "キャンセル",
+  "common.delete": "削除",
+  "common.required": "必須",
+  "common.optional": "任意",
+  "common.loading": "読み込み中…",
+  "common.genericError": "エラーが発生しました。もう一度お試しください。",
+  "common.guestOf": "ゲスト {current} / {total}",
+  "common.edit": "編集",
+
+  "entry.eyebrow": "オンラインチェックイン",
+  "entry.title": "ご搭乗ありがとうございます",
+  "entry.subtitle": "ナナ&マテオの結婚式チェックインのため、予約コードと姓を入力してください。",
+  "entry.bookingCode": "予約コード",
+  "entry.bookingCodePlaceholder": "例: NM0329",
+  "entry.lastName": "姓",
+  "entry.lastNamePlaceholder": "姓",
+  "entry.firstName": "名",
+  "entry.firstNamePlaceholder": "名",
+  "entry.submit": "検索",
+  "entry.notFound": "入力された情報での予約が見つかりませんでした。もう一度ご確認ください。",
+  "entry.adminLink": "管理者ログイン",
+  "entry.footerNote": "ご質問はナナまたはマテオまで直接ご連絡ください。",
+
+  "selection.eyebrow": "ステップ 1/4",
+  "selection.title": "チェックインする方を選択",
+  "selection.subtitle": "この予約の中で、今チェックインする方全員を選択してください。",
+  "selection.selectAll": "すべて選択",
+  "selection.error": "少なくとも1名選択してください。",
+
+  "afterparty.eyebrow": "ステップ 2/4",
+  "afterparty.title": "アフターパーティー",
+  "afterparty.subtitle": "登録ゲスト全員無料でご参加いただけます。",
+  "afterparty.venueName": "Top of Hiroshima Lounge",
+  "afterparty.venueSub": "グランドプリンスホテル広島",
+  "afterparty.venueTime": "18:00 – 20:00",
+  "afterparty.venueFree": "無料",
+  "afterparty.mapLink": "地図で見る",
+  "afterparty.optinFor": "参加者:",
+
+  "details.eyebrow": "ステップ 3/4",
+  "details.title": "個人情報",
+  "details.subtitle": "ゲストリストおよび緊急時のために必要な情報です。",
+  "details.nationality": "国籍",
+  "details.nationalityPlaceholder": "例: ドイツ",
+  "details.passport": "パスポート番号",
+  "details.passportPlaceholder": "パスポート番号",
+  "details.birthDate": "生年月日",
+  "details.email": "メールアドレス",
+  "details.emailPlaceholder": "name@example.com",
+  "details.phone": "電話番号",
+  "details.phonePlaceholder": "+81 …",
+  "details.emailInvalid": "有効なメールアドレスを入力してください。",
+  "details.furigana": "フリガナ",
+  "details.furiganaPlaceholder": "例：クラッツ マッテオ",
+  "details.gender": "性別",
+  "details.genderPlaceholder": "選択してください",
+  "details.gender.female": "女性",
+  "details.gender.male": "男性",
+  "details.gender.non_binary": "ノンバイナリー",
+  "details.gender.prefer_not_to_say": "回答しない",
+  "details.country": "国",
+  "details.countryPlaceholder": "選択してください",
+  "details.postalCode": "郵便番号",
+  "details.postalCodePlaceholder": "例：100-0001",
+  "details.postalLooking": "住所を検索中…",
+  "details.postalNotFound": "この郵便番号の住所は見つかりませんでした。",
+  "details.address": "住所",
+  "details.addressPlaceholder": "番地、建物名、市区町村、国",
+
+  "meal.eyebrow": "ステップ 4/4",
+  "meal.title": "食事と特別なご要望",
+  "meal.subtitle": "皆様に最適な対応をするための情報です。",
+  "meal.mealChoice": "食事のご希望",
+  "meal.mealPlaceholder": "選択してください",
+  "meal.allergies": "アレルギー・食事制限",
+  "meal.allergiesPlaceholder": "例: ナッツアレルギー、乳製品不可 など",
+  "meal.assistance": "特別なサポート",
+  "meal.finish": "チェックインを完了する",
+
+  "meal.option.standard": "スタンダード",
+  "meal.option.vegetarian": "ベジタリアン",
+  "meal.option.vegan": "ヴィーガン",
+  "meal.option.halal": "ハラール",
+  "meal.option.kosher": "コーシャ",
+  "meal.option.gluten_free": "グルテンフリー",
+  "meal.option.child": "キッズメニュー",
+  "meal.option.none": "指定なし",
+
+  "assist.wheelchair": "車椅子での移動",
+  "assist.visual": "視覚障がい",
+  "assist.hearing": "聴覚障がい",
+  "assist.walking": "歩行補助",
+  "assist.other": "その他",
+
+  "confirm.eyebrow": "確認済み",
+  "confirm.title": "チェインイン完了",
+  "confirm.subtitle":
+    "ありがとうございます！ 皆様と一緒にお祝いできることを楽しみにしています。予約コードでいつでも再ログインし、内容の確認・変更が可能です。",
+  "confirm.afterpartyYes": "アフターパーティーに参加します",
+  "confirm.afterpartyNo": "アフターパーティーには参加しません",
+  "confirm.backHome": "トップページへ",
+  "confirm.editHint": "内容を変更するには、予約コードで再度ログインしてください。",
+
+  "admin.title": "管理者ページ",
+  "admin.passwordLabel": "パスワード",
+  "admin.login": "ログイン",
+  "admin.wrongPassword": "パスワードが正しくありません。",
+  "admin.dashboardTitle": "予約管理",
+  "admin.newBooking": "新規予約",
+  "admin.bookingCode": "予約コード",
+  "admin.primaryLastName": "姓（代表者）",
+  "admin.primaryFirstName": "名（代表者）",
+  "admin.guestsHeading": "ゲスト",
+  "admin.addGuest": "ゲストを追加",
+  "admin.removeGuest": "削除",
+  "admin.saveBooking": "予約を保存",
+  "admin.deleteBooking": "予約を削除",
+  "admin.confirmDelete": "この予約を本当に削除しますか？",
+  "admin.exportCsv": "CSVエクスポート",
+  "admin.logout": "ログアウト",
+  "admin.status": "ステータス",
+  "admin.statusDone": "完了",
+  "admin.statusOpen": "未完了",
+  "admin.noBookings": "予約がまだありません。",
+  "admin.afterparty": "アフターパーティー",
+  "admin.selected": "チェックイン済み",
+};
+
+const dictionaries: Record<Lang, Dict> = { de, en, ja };
+
+function detectLang(): Lang {
+  const nav = typeof navigator !== "undefined" ? navigator.language.toLowerCase() : "en";
+  if (nav.startsWith("de")) return "de";
+  if (nav.startsWith("ja")) return "ja";
+  return "en";
+}
+
+interface I18nContextValue {
+  lang: Lang;
+  setLang: (lang: Lang) => void;
+  t: (key: string, vars?: Record<string, string | number>) => string;
+}
+
+const I18nContext = createContext<I18nContextValue | null>(null);
+
+export function I18nProvider({ children }: { children: ReactNode }) {
+  const [lang, setLang] = useState<Lang>(() => detectLang());
+
+  const t = useMemo(() => {
+    return (key: string, vars?: Record<string, string | number>) => {
+      let str = dictionaries[lang][key] ?? dictionaries.en[key] ?? key;
+      if (vars) {
+        for (const [k, v] of Object.entries(vars)) {
+          str = str.replace(`{${k}}`, String(v));
+        }
+      }
+      return str;
+    };
+  }, [lang]);
+
+  const value = useMemo(() => ({ lang, setLang, t }), [lang, t]);
+
+  return <I18nContext.Provider value={value}>{children}</I18nContext.Provider>;
+}
+
+export function useI18n() {
+  const ctx = useContext(I18nContext);
+  if (!ctx) throw new Error("useI18n must be used within I18nProvider");
+  return ctx;
+}
