@@ -109,7 +109,10 @@ export async function registerRoutes(
         birth_date: d.birthDate || null,
         email: d.email,
         phone: d.phone || null,
-        furigana: d.furigana || null,
+        furigana_last_name: d.furiganaLastName || null,
+        furigana_first_name: d.furiganaFirstName || null,
+        kanji_last_name: d.kanjiLastName || null,
+        kanji_first_name: d.kanjiFirstName || null,
         gender: d.gender || null,
         country: d.country || null,
         postal_code: d.postalCode || null,
@@ -264,13 +267,16 @@ export async function registerRoutes(
       const rows = [
         [
           "Buchungscode",
-          "Vorname",
-          "Nachname",
-          "Furigana",
+          "Nachname (Romaji)",
+          "Vorname (Romaji)",
+          "Nachname (Kanji)",
+          "Vorname (Kanji)",
+          "Furigana Nachname",
+          "Furigana Vorname",
           "Geschlecht",
-          "Ausgewählt",
+          "Teilnahme Zeremonie",
           "Check-in abgeschlossen",
-          "Afterparty",
+          "Teilnahme Afterparty",
           "Nationalität",
           "Land",
           "PLZ",
@@ -289,13 +295,20 @@ export async function registerRoutes(
         for (const g of b.guests) {
           rows.push([
             b.booking_code,
-            g.first_name,
             g.last_name,
-            g.furigana ?? "",
+            g.first_name,
+            g.kanji_last_name ?? "",
+            g.kanji_first_name ?? "",
+            g.furigana_last_name ?? "",
+            g.furigana_first_name ?? "",
             g.gender ?? "",
-            g.selected ? "ja" : "nein",
+            g.selected ? "nimmt teil" : "nimmt nicht teil",
             g.checkin_completed ? "ja" : "nein",
-            g.afterparty_optin === true ? "ja" : g.afterparty_optin === false ? "nein" : "",
+            g.afterparty_optin === true
+              ? "nimmt teil"
+              : g.afterparty_optin === false
+                ? "nimmt nicht teil"
+                : "noch offen",
             g.nationality ?? "",
             g.country ?? "",
             g.postal_code ?? "",

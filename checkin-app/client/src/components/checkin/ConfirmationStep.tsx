@@ -103,7 +103,7 @@ export function ConfirmationStep({
             <CardContent className="py-4 flex items-center justify-between">
               <div>
                 <div className="text-sm font-semibold text-foreground">
-                  {guests.map((g) => `${g.first_name} ${g.last_name}`).join(", ")}
+                  {guests.map((g) => `${g.last_name} ${g.first_name}`).join(", ")}
                 </div>
                 <div className="text-xs text-muted-foreground">{t("selection.title")}</div>
               </div>
@@ -156,7 +156,7 @@ export function ConfirmationStep({
               <CardContent className="pt-5 flex flex-col gap-4">
                 <div className="flex items-center justify-between">
                   <div className="text-sm font-semibold text-foreground" data-testid={`text-guest-name-${g.id}`}>
-                    {g.first_name} {g.last_name}
+                    {g.last_name} {g.first_name}
                   </div>
                   <button
                     type="button"
@@ -232,7 +232,7 @@ export function ConfirmationStep({
           <Card key={g.id} className="border-card-border opacity-60">
             <CardContent className="py-4 flex items-center justify-between">
               <div className="text-sm font-semibold text-foreground">
-                {g.first_name} {g.last_name}
+                {g.last_name} {g.first_name}
               </div>
               <Badge variant="outline" className="text-muted-foreground gap-1">
                 <XCircle className="h-3 w-3" />

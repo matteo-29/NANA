@@ -19,7 +19,6 @@ export function SelectionStep({
 }) {
   const { t } = useI18n();
   const [selected, setSelected] = useState<Set<string>>(new Set(initialSelected));
-  const [error, setError] = useState<string | null>(null);
 
   function setAttending(id: string, attending: boolean) {
     setSelected((prev) => {
@@ -35,11 +34,6 @@ export function SelectionStep({
   }
 
   function handleSubmit() {
-    if (selected.size === 0) {
-      setError(t("selection.error"));
-      return;
-    }
-    setError(null);
     onSubmit(Array.from(selected));
   }
 
@@ -85,7 +79,7 @@ export function SelectionStep({
                 data-testid={`row-guest-${g.id}`}
               >
                 <span className="text-sm font-medium">
-                  {g.first_name} {g.last_name}
+                  {g.last_name} {g.first_name}
                 </span>
                 <div className="flex items-center gap-2 shrink-0">
                   <button
@@ -119,9 +113,9 @@ export function SelectionStep({
         </CardContent>
       </Card>
 
-      {error && (
-        <p className="text-sm text-destructive mt-3" data-testid="text-selection-error">
-          {error}
+      {selected.size === 0 && (
+        <p className="text-sm text-muted-foreground mt-3" data-testid="text-selection-hint">
+          {t("selection.noneSelectedHint")}
         </p>
       )}
 

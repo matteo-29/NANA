@@ -14,7 +14,10 @@ function mapAdminGuestFields(g: AdminGuestInput): Record<string, unknown> {
   if (g.birthDate !== undefined) row.birth_date = g.birthDate || null;
   if (g.email !== undefined) row.email = g.email;
   if (g.phone !== undefined) row.phone = g.phone;
-  if (g.furigana !== undefined) row.furigana = g.furigana;
+  if (g.furiganaLastName !== undefined) row.furigana_last_name = g.furiganaLastName;
+  if (g.furiganaFirstName !== undefined) row.furigana_first_name = g.furiganaFirstName;
+  if (g.kanjiLastName !== undefined) row.kanji_last_name = g.kanjiLastName;
+  if (g.kanjiFirstName !== undefined) row.kanji_first_name = g.kanjiFirstName;
   if (g.gender !== undefined) row.gender = g.gender;
   if (g.country !== undefined) row.country = g.country;
   if (g.postalCode !== undefined) row.postal_code = g.postalCode;

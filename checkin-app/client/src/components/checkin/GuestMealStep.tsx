@@ -104,7 +104,7 @@ export function GuestMealStep({
           {t("meal.eyebrow")}
         </p>
         <h1 className="text-xl font-bold text-foreground mb-1" data-testid="text-current-guest">
-          {t("meal.title")} — {guest.first_name} {guest.last_name}
+          {t("meal.title")} — {guest.last_name} {guest.first_name}
         </h1>
         <p className="text-sm text-muted-foreground mb-1">
           {t("common.guestOf", { current: guestIndex + 1, total: guestTotal })}

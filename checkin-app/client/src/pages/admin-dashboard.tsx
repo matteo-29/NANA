@@ -1,7 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
-import { apiRequest, queryClient } from "@/lib/queryClient";
+import { apiRequest, queryClient, API_BASE } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import { useI18n } from "@/lib/i18n";
 import { useAdminAuth } from "@/lib/admin-auth";
 import { PageShell } from "@/components/layout";
@@ -58,7 +59,10 @@ type EditableGuest = {
   birthDate: string;
   email: string;
   phone: string;
-  furigana: string;
+  furiganaLastName: string;
+  furiganaFirstName: string;
+  kanjiLastName: string;
+  kanjiFirstName: string;
   gender: string;
   country: string;
   postalCode: string;
@@ -79,7 +83,10 @@ function emptyGuest(): EditableGuest {
     birthDate: "",
     email: "",
     phone: "",
-    furigana: "",
+    furiganaLastName: "",
+    furiganaFirstName: "",
+    kanjiLastName: "",
+    kanjiFirstName: "",
     gender: "",
     country: "",
     postalCode: "",
@@ -102,7 +109,10 @@ function guestFromRecord(g: Guest): EditableGuest {
     birthDate: g.birth_date ?? "",
     email: g.email ?? "",
     phone: g.phone ?? "",
-    furigana: g.furigana ?? "",
+    furiganaLastName: g.furigana_last_name ?? "",
+    furiganaFirstName: g.furigana_first_name ?? "",
+    kanjiLastName: g.kanji_last_name ?? "",
+    kanjiFirstName: g.kanji_first_name ?? "",
     gender: g.gender ?? "",
     country: g.country ?? "",
     postalCode: g.postal_code ?? "",
@@ -131,6 +141,7 @@ export default function AdminDashboardPage() {
   const { t } = useI18n();
   const { password, setPassword } = useAdminAuth();
   const [, navigate] = useLocation();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (!password) navigate("/admin");
@@ -162,17 +173,36 @@ export default function AdminDashboardPage() {
     },
   });
 
-  function exportCsv() {
-    fetch(`/api/admin/export.csv`, { headers: { "x-admin-password": password ?? "" } })
-      .then((res) => res.blob())
-      .then((blob) => {
-        const url = URL.createObjectURL(blob);
-        const a = document.createElement("a");
-        a.href = url;
-        a.download = "gaeste.csv";
-        a.click();
-        URL.revokeObjectURL(url);
+  async function exportCsv() {
+    try {
+      const res = await fetch(`${API_BASE}/api/admin/export.csv`, {
+        headers: { "x-admin-password": password ?? "" },
       });
+      if (!res.ok) {
+        let message = `Fehler ${res.status}`;
+        try {
+          const body = await res.json();
+          message = body?.message || body?.detail || message;
+        } catch {
+          // response wasn't JSON, keep the generic status message
+        }
+        toast({ title: "CSV-Export fehlgeschlagen", description: message, variant: "destructive" });
+        return;
+      }
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = "gaeste.csv";
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      toast({
+        title: "CSV-Export fehlgeschlagen",
+        description: err instanceof Error ? err.message : "Unbekannter Fehler",
+        variant: "destructive",
+      });
+    }
   }
 
   const bookings = data?.bookings ?? [];
@@ -248,7 +278,7 @@ export default function AdminDashboardPage() {
                       </Badge>
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">
-                      {b.first_name} {b.last_name}
+                      {b.last_name} {b.first_name}
                     </div>
                   </div>
                   <div className="flex items-center gap-1.5">
@@ -277,7 +307,7 @@ export default function AdminDashboardPage() {
                       variant={g.checkin_completed ? "default" : "outline"}
                       data-testid={`badge-guest-${g.id}`}
                     >
-                      {g.first_name} {g.last_name}
+                      {g.last_name} {g.first_name}
                     </Badge>
                   ))}
                 </div>
@@ -411,19 +441,19 @@ function BookingEditDialog({
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="flex flex-col gap-1.5">
-              <Label>{t("admin.primaryFirstName")}</Label>
-              <Input
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                data-testid="input-edit-primary-first-name"
-              />
-            </div>
-            <div className="flex flex-col gap-1.5">
               <Label>{t("admin.primaryLastName")}</Label>
               <Input
                 value={lastName}
                 onChange={(e) => setLastName(e.target.value)}
                 data-testid="input-edit-primary-last-name"
+              />
+            </div>
+            <div className="flex flex-col gap-1.5">
+              <Label>{t("admin.primaryFirstName")}</Label>
+              <Input
+                value={firstName}
+                onChange={(e) => setFirstName(e.target.value)}
+                data-testid="input-edit-primary-first-name"
               />
             </div>
           </div>
@@ -440,16 +470,16 @@ function BookingEditDialog({
                 >
                   <div className="flex items-center gap-2 py-2">
                     <Input
-                      value={g.firstName}
-                      onChange={(e) => updateGuest(idx, { firstName: e.target.value })}
-                      placeholder={t("entry.firstName")}
-                      data-testid={`input-guest-first-${idx}`}
-                    />
-                    <Input
                       value={g.lastName}
                       onChange={(e) => updateGuest(idx, { lastName: e.target.value })}
                       placeholder={t("entry.lastName")}
                       data-testid={`input-guest-last-${idx}`}
+                    />
+                    <Input
+                      value={g.firstName}
+                      onChange={(e) => updateGuest(idx, { firstName: e.target.value })}
+                      placeholder={t("entry.firstName")}
+                      data-testid={`input-guest-first-${idx}`}
                     />
                     <Button
                       variant="ghost"
@@ -471,11 +501,37 @@ function BookingEditDialog({
                   <AccordionContent className="flex flex-col gap-4 pt-1 pb-3">
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                       <div className="flex flex-col gap-1.5">
-                        <Label>{t("details.furigana")}</Label>
+                        <Label>{t("details.furiganaLastName")}</Label>
                         <Input
-                          value={g.furigana}
-                          onChange={(e) => updateGuest(idx, { furigana: e.target.value })}
-                          data-testid={`input-guest-furigana-${idx}`}
+                          value={g.furiganaLastName}
+                          onChange={(e) => updateGuest(idx, { furiganaLastName: e.target.value })}
+                          placeholder={t("details.furiganaLastNamePlaceholder")}
+                          data-testid={`input-guest-furigana-last-${idx}`}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.furiganaFirstName")}</Label>
+                        <Input
+                          value={g.furiganaFirstName}
+                          onChange={(e) => updateGuest(idx, { furiganaFirstName: e.target.value })}
+                          placeholder={t("details.furiganaFirstNamePlaceholder")}
+                          data-testid={`input-guest-furigana-first-${idx}`}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.kanjiLastName")}</Label>
+                        <Input
+                          value={g.kanjiLastName}
+                          onChange={(e) => updateGuest(idx, { kanjiLastName: e.target.value })}
+                          data-testid={`input-guest-kanji-last-${idx}`}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.kanjiFirstName")}</Label>
+                        <Input
+                          value={g.kanjiFirstName}
+                          onChange={(e) => updateGuest(idx, { kanjiFirstName: e.target.value })}
+                          data-testid={`input-guest-kanji-first-${idx}`}
                         />
                       </div>
                       <div className="flex flex-col gap-1.5">

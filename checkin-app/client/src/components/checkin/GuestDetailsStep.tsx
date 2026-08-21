@@ -35,7 +35,10 @@ function buildDetailsFormSchema(emailInvalidMessage: string) {
     birthDate: z.string().optional(),
     email: z.string().email({ message: emailInvalidMessage }),
     phone: z.string().optional(),
-    furigana: z.string().optional(),
+    furiganaLastName: z.string().optional(),
+    furiganaFirstName: z.string().optional(),
+    kanjiLastName: z.string().optional(),
+    kanjiFirstName: z.string().optional(),
     gender: z.string().optional(),
     country: z.string().optional(),
     postalCode: z.string().optional(),
@@ -89,7 +92,10 @@ export function GuestDetailsStep({
       birthDate: guest.birth_date ?? "",
       email: guest.email ?? "",
       phone: guest.phone ?? "",
-      furigana: guest.furigana ?? "",
+      furiganaLastName: guest.furigana_last_name ?? "",
+      furiganaFirstName: guest.furigana_first_name ?? "",
+      kanjiLastName: guest.kanji_last_name ?? "",
+      kanjiFirstName: guest.kanji_first_name ?? "",
       gender: guest.gender ?? "",
       country: guest.country ?? "",
       postalCode: guest.postal_code ?? "",
@@ -160,7 +166,7 @@ export function GuestDetailsStep({
           className="text-xl font-bold text-foreground mb-1"
           data-testid="text-current-guest"
         >
-          {t("details.title")} — {guest.first_name} {guest.last_name}
+          {t("details.title")} — {guest.last_name} {guest.first_name}
         </h1>
         <p className="text-sm text-muted-foreground mb-1">
           {t("common.guestOf", { current: guestIndex + 1, total: guestTotal })}
@@ -179,15 +185,15 @@ export function GuestDetailsStep({
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <FormField
                   control={form.control}
-                  name="furigana"
+                  name="furiganaLastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("details.furigana")}</FormLabel>
+                      <FormLabel>{t("details.furiganaLastName")}</FormLabel>
                       <FormControl>
                         <Input
                           {...field}
-                          placeholder={t("details.furiganaPlaceholder")}
-                          data-testid="input-furigana"
+                          placeholder={t("details.furiganaLastNamePlaceholder")}
+                          data-testid="input-furigana-last"
                         />
                       </FormControl>
                       <FormMessage />
@@ -196,29 +202,94 @@ export function GuestDetailsStep({
                 />
                 <FormField
                   control={form.control}
-                  name="gender"
+                  name="furiganaFirstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("details.gender")}</FormLabel>
-                      <Select value={field.value} onValueChange={field.onChange}>
-                        <FormControl>
-                          <SelectTrigger data-testid="select-gender">
-                            <SelectValue placeholder={t("details.genderPlaceholder")} />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          {GENDER_OPTIONS.map((opt) => (
-                            <SelectItem key={opt} value={opt} data-testid={`option-gender-${opt}`}>
-                              {t(`details.gender.${opt}`)}
-                            </SelectItem>
-                          ))}
-                        </SelectContent>
-                      </Select>
+                      <FormLabel>{t("details.furiganaFirstName")}</FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t("details.furiganaFirstNamePlaceholder")}
+                          data-testid="input-furigana-first"
+                        />
+                      </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <FormField
+                  control={form.control}
+                  name="kanjiLastName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t("details.kanjiLastName")}{" "}
+                        <span className="text-muted-foreground font-normal">
+                          ({t("common.optional")})
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t("details.kanjiLastNamePlaceholder")}
+                          data-testid="input-kanji-last"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={form.control}
+                  name="kanjiFirstName"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>
+                        {t("details.kanjiFirstName")}{" "}
+                        <span className="text-muted-foreground font-normal">
+                          ({t("common.optional")})
+                        </span>
+                      </FormLabel>
+                      <FormControl>
+                        <Input
+                          {...field}
+                          placeholder={t("details.kanjiFirstNamePlaceholder")}
+                          data-testid="input-kanji-first"
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+              </div>
+
+              <FormField
+                control={form.control}
+                name="gender"
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>{t("details.gender")}</FormLabel>
+                    <Select value={field.value} onValueChange={field.onChange}>
+                      <FormControl>
+                        <SelectTrigger data-testid="select-gender">
+                          <SelectValue placeholder={t("details.genderPlaceholder")} />
+                        </SelectTrigger>
+                      </FormControl>
+                      <SelectContent>
+                        {GENDER_OPTIONS.map((opt) => (
+                          <SelectItem key={opt} value={opt} data-testid={`option-gender-${opt}`}>
+                            {t(`details.gender.${opt}`)}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}

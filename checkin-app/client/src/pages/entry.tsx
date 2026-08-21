@@ -67,18 +67,6 @@ export default function EntryPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="firstName">{t("entry.firstName")}</Label>
-                <Input
-                  id="firstName"
-                  data-testid="input-first-name"
-                  value={firstName}
-                  onChange={(e) => setFirstName(e.target.value)}
-                  placeholder={t("entry.firstNamePlaceholder")}
-                  required
-                  className="rounded-lg"
-                />
-              </div>
-              <div className="flex flex-col gap-1.5">
                 <Label htmlFor="lastName">{t("entry.lastName")}</Label>
                 <Input
                   id="lastName"
@@ -86,6 +74,18 @@ export default function EntryPage() {
                   value={lastName}
                   onChange={(e) => setLastName(e.target.value)}
                   placeholder={t("entry.lastNamePlaceholder")}
+                  required
+                  className="rounded-lg"
+                />
+              </div>
+              <div className="flex flex-col gap-1.5">
+                <Label htmlFor="firstName">{t("entry.firstName")}</Label>
+                <Input
+                  id="firstName"
+                  data-testid="input-first-name"
+                  value={firstName}
+                  onChange={(e) => setFirstName(e.target.value)}
+                  placeholder={t("entry.firstNamePlaceholder")}
                   required
                   className="rounded-lg"
                 />

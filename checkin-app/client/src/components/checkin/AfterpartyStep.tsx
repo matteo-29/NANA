@@ -96,7 +96,7 @@ export function AfterpartyStep({
                     data-testid={`checkbox-optin-${g.id}`}
                   />
                   <span className="text-sm font-medium">
-                    {g.first_name} {g.last_name}
+                    {g.last_name} {g.first_name}
                   </span>
                   {!attending && (
                     <span className="text-xs text-muted-foreground ml-auto">

@@ -23,6 +23,10 @@ export interface Guest {
   email: string | null;
   phone: string | null;
   furigana: string | null;
+  furigana_last_name: string | null;
+  furigana_first_name: string | null;
+  kanji_last_name: string | null;
+  kanji_first_name: string | null;
   gender: string | null;
   country: string | null;
   postal_code: string | null;
@@ -65,7 +69,7 @@ export const lookupSchema = z.object({
 
 export const selectionSchema = z.object({
   bookingId: z.string().uuid(),
-  selectedGuestIds: z.array(z.string().uuid()).min(1),
+  selectedGuestIds: z.array(z.string().uuid()),
 });
 
 export const afterpartySchema = z.object({
@@ -87,7 +91,10 @@ export const personalDetailsSchema = z.object({
   birthDate: z.string().optional(),
   email: z.string().email(),
   phone: z.string().optional(),
-  furigana: z.string().optional(),
+  furiganaLastName: z.string().optional(),
+  furiganaFirstName: z.string().optional(),
+  kanjiLastName: z.string().optional(),
+  kanjiFirstName: z.string().optional(),
   gender: z.string().optional(),
   country: z.string().optional(),
   postalCode: z.string().optional(),
@@ -116,7 +123,10 @@ export const adminGuestSchema = z.object({
   birthDate: z.string().nullable().optional(),
   email: z.string().nullable().optional(),
   phone: z.string().nullable().optional(),
-  furigana: z.string().nullable().optional(),
+  furiganaLastName: z.string().nullable().optional(),
+  furiganaFirstName: z.string().nullable().optional(),
+  kanjiLastName: z.string().nullable().optional(),
+  kanjiFirstName: z.string().nullable().optional(),
   gender: z.string().nullable().optional(),
   country: z.string().nullable().optional(),
   postalCode: z.string().nullable().optional(),

@@ -8,11 +8,18 @@ import { AfterpartyStep } from "@/components/checkin/AfterpartyStep";
 import { GuestDetailsStep } from "@/components/checkin/GuestDetailsStep";
 import { GuestMealStep } from "@/components/checkin/GuestMealStep";
 import { ConfirmationStep } from "@/components/checkin/ConfirmationStep";
+import { DeclinedStep } from "@/components/checkin/DeclinedStep";
 import type { Booking, Guest } from "@shared/schema";
 import { useI18n } from "@/lib/i18n";
 import { Loader2 } from "lucide-react";
 
-type WizardStep = "selection" | "afterparty" | "guest-details" | "guest-meal" | "confirmation";
+type WizardStep =
+  | "selection"
+  | "afterparty"
+  | "guest-details"
+  | "guest-meal"
+  | "confirmation"
+  | "declined";
 
 export default function CheckinPage() {
   const { bookingId } = useParams<{ bookingId: string }>();
@@ -81,8 +88,12 @@ export default function CheckinPage() {
     onSuccess: (result, ids) => {
       setSelectedIds(ids);
       patchGuests(() => result.guests);
-      setGuestIndex(0);
-      setStep("guest-details");
+      if (ids.length === 0) {
+        setStep("declined");
+      } else {
+        setGuestIndex(0);
+        setStep("guest-details");
+      }
     },
   });
 
@@ -110,7 +121,10 @@ export default function CheckinPage() {
       birthDate?: string;
       email: string;
       phone?: string;
-      furigana?: string;
+      furiganaLastName?: string;
+      furiganaFirstName?: string;
+      kanjiLastName?: string;
+      kanjiFirstName?: string;
       gender?: string;
       country?: string;
       postalCode?: string;
@@ -230,6 +244,10 @@ export default function CheckinPage() {
             setStep("guest-details");
           }}
         />
+      )}
+
+      {step === "declined" && (
+        <DeclinedStep onEditSelection={() => setStep("selection")} />
       )}
     </PageShell>
   );
