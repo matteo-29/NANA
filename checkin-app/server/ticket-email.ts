@@ -3,12 +3,19 @@ import type { Booking, Guest } from "@shared/schema";
 import { getTicketDict, type TicketLang } from "@shared/ticket-i18n";
 import { renderTicketPdf } from "./ticket-pdf";
 
-const NAVY = "#1E3A78";
+const NAVY = "#0B318F";
 const CRIMSON = "#B5182A";
 const CREAM = "#F7F4EC";
 const HAIRLINE = "#E3DECE";
 const MUTED = "#6B6558";
 const INK = "#221F1A";
+
+// Base URL used to build absolute image links in the e-mail (images must be
+// fetched by the recipient's mail client via HTTP, not embedded as MIME
+// attachments, so the e-mail loads fast). Defaults to the live production
+// site; override with PUBLIC_BASE_URL if the app is hosted elsewhere.
+const PUBLIC_BASE_URL =
+  process.env.PUBLIC_BASE_URL || "https://nana-matteo-checkin.pplx.app";
 
 function escapeHtml(s: string): string {
   return s
@@ -75,6 +82,9 @@ function buildEmailHtml(booking: Booking, guests: Guest[], lang: TicketLang): st
                   <span style="color:#fff;font-size:20px;font-weight:700;letter-spacing:2px;">${escapeHtml(d.brand)}</span><br/>
                   <span style="color:#C9D3EA;font-size:10px;letter-spacing:0.6px;">${escapeHtml(d.allianceTag)}</span>
                 </td>
+                <td align="right">
+                  <img src="${PUBLIC_BASE_URL}/branding/kratz-alliance.jpg" width="120" alt="Kratz Alliance" style="display:block;border-radius:3px;" />
+                </td>
               </tr></table>
             </td>
           </tr>
@@ -89,6 +99,14 @@ function buildEmailHtml(booking: Booking, guests: Guest[], lang: TicketLang): st
                   <td style="padding:14px 16px;">
                     <span style="font-size:10px;color:${MUTED};letter-spacing:0.6px;">${escapeHtml(d.emailBookingLabel).toUpperCase()}</span><br/>
                     <span style="font-size:16px;font-weight:700;color:${INK};letter-spacing:1px;">${escapeHtml(booking.booking_code)}</span>
+                  </td>
+                </tr>
+              </table>
+
+              <table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin-bottom:20px;">
+                <tr>
+                  <td style="border-radius:6px;overflow:hidden;">
+                    <img src="${PUBLIC_BASE_URL}/branding/hero-photo.jpg" width="544" alt="" style="display:block;width:100%;max-width:544px;border-radius:6px;" />
                   </td>
                 </tr>
               </table>

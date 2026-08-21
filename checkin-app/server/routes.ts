@@ -226,7 +226,11 @@ export async function registerRoutes(
       res.json({ ok: true });
     } catch (err) {
       console.error(err);
-      res.status(502).json({ message: "E-Mail konnte nicht gesendet werden." });
+      // Use a 4xx (not 5xx) status here: some proxy layers treat 5xx as an
+      // upstream health signal and retry/replace the response, which can turn
+      // a clean JSON error into an opaque empty 503 by the time it reaches the
+      // client. 422 preserves the real error message end-to-end.
+      res.status(422).json({ message: "E-Mail konnte nicht gesendet werden." });
     }
   });
 

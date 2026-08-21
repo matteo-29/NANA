@@ -46,8 +46,8 @@ function registerFonts() {
   fontsRegistered = true;
 }
 
-const NAVY = "#1E3A78";
-const NAVY_DARK = "#132754";
+const NAVY = "#0B318F";
+const NAVY_DARK = "#082368";
 const CRIMSON = "#B5182A";
 const CREAM = "#F7F4EC";
 const HAIRLINE = "#D8D3C4";
@@ -288,6 +288,25 @@ const styles = StyleSheet.create({
     fontSize: 6,
     color: MUTED,
   },
+  classBadge: {
+    backgroundColor: CRIMSON,
+    borderRadius: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    alignSelf: "flex-start",
+    marginTop: 1,
+  },
+  classBadgeText: {
+    fontSize: 8,
+    fontWeight: 700,
+    color: "#FFFFFF",
+    letterSpacing: 0.3,
+  },
+  allianceLogo: {
+    width: 108,
+    height: 19,
+    marginBottom: 6,
+  },
 });
 
 // Split into sentences and render each on its own line. This sidesteps a
@@ -422,7 +441,9 @@ function GuestTicketPage({
             </View>
             <View style={styles.segmentFooterItem}>
               <Text style={styles.segmentFooterLabel}>{d.classLabel}</Text>
-              <Text style={styles.segmentFooterValue}>{d.classValue}</Text>
+              <View style={styles.classBadge}>
+                <Text style={styles.classBadgeText}>{d.classValue}</Text>
+              </View>
             </View>
             <View style={styles.segmentFooterItem}>
               <Text style={styles.segmentFooterLabel}>{d.seat}</Text>
@@ -469,7 +490,9 @@ function GuestTicketPage({
               </View>
               <View style={styles.segmentFooterItem}>
                 <Text style={styles.segmentFooterLabel}>{d.classLabel}</Text>
-                <Text style={styles.segmentFooterValue}>{d.classValue}</Text>
+                <View style={styles.classBadge}>
+                  <Text style={styles.classBadgeText}>{d.classValue}</Text>
+                </View>
               </View>
               <View style={styles.segmentFooterItem}>
                 <Text style={styles.segmentFooterLabel}>{d.seat}</Text>
@@ -518,6 +541,7 @@ function GuestTicketPage({
       </View>
 
       <View style={styles.footer}>
+        <Image src={path.join(moduleDir, "branding/kratz-alliance.jpg")} style={styles.allianceLogo} />
         {lang === "ja" ? (
           splitSentences(d.footerNotice).map((sentence, i) => (
             <Text key={i} style={styles.footerNotice}>

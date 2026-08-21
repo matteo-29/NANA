@@ -89,7 +89,7 @@ const de: TicketDict = {
   status: "STATUS",
   statusConfirmed: "OK — BESTÄTIGT",
   classLabel: "KLASSE",
-  classValue: "FIRST CLASS",
+  classValue: "FIRST FLEX",
   seat: "SITZPLATZ",
   seatValue: "Freie Platzwahl",
 
@@ -166,7 +166,7 @@ const en: TicketDict = {
   status: "STATUS",
   statusConfirmed: "OK — CONFIRMED",
   classLabel: "CLASS",
-  classValue: "FIRST CLASS",
+  classValue: "FIRST FLEX",
   seat: "SEAT",
   seatValue: "Open seating",
 
@@ -243,7 +243,7 @@ const ja: TicketDict = {
   status: "ステータス",
   statusConfirmed: "OK — 確定済み",
   classLabel: "クラス",
-  classValue: "ファーストクラス",
+  classValue: "ファーストフレックス",
   seat: "席",
   seatValue: "自由席",
 

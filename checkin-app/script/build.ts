@@ -62,6 +62,9 @@ async function buildAll() {
   await mkdir("dist/fonts", { recursive: true });
   await copyFile("server/fonts/NotoSansJP-Regular.ttf", "dist/fonts/NotoSansJP-Regular.ttf");
   await copyFile("server/fonts/NotoSansJP-Bold.ttf", "dist/fonts/NotoSansJP-Bold.ttf");
+  await mkdir("dist/branding", { recursive: true });
+  await copyFile("server/branding/kratz-alliance.jpg", "dist/branding/kratz-alliance.jpg");
+  await copyFile("server/branding/nana-logo.jpg", "dist/branding/nana-logo.jpg");
 }
 
 buildAll().catch((err) => {
