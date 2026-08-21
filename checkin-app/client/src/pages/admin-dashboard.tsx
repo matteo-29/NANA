@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { useLocation } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
@@ -10,6 +10,21 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+} from "@/components/ui/accordion";
 import {
   Dialog,
   DialogContent,
@@ -29,9 +44,88 @@ import {
 } from "@/components/ui/alert-dialog";
 import { Loader2, Plus, Trash2, Download, LogOut, Pencil } from "lucide-react";
 import type { Booking, Guest } from "@shared/schema";
+import { GENDER_OPTIONS, MEAL_OPTIONS, SPECIAL_ASSISTANCE_OPTIONS } from "@shared/schema";
+import { COUNTRIES } from "@shared/countries";
 
 type BookingWithGuests = Booking & { guests: Guest[] };
-type EditableGuest = { id?: string; firstName: string; lastName: string };
+type EditableGuest = {
+  id?: string;
+  firstName: string;
+  lastName: string;
+  afterpartyOptin: boolean | null;
+  nationality: string;
+  passportNumber: string;
+  birthDate: string;
+  email: string;
+  phone: string;
+  furigana: string;
+  gender: string;
+  country: string;
+  postalCode: string;
+  address: string;
+  mealChoice: string;
+  allergies: string;
+  specialAssistance: string[];
+  specialAssistanceOther: string;
+};
+
+function emptyGuest(): EditableGuest {
+  return {
+    firstName: "",
+    lastName: "",
+    afterpartyOptin: null,
+    nationality: "",
+    passportNumber: "",
+    birthDate: "",
+    email: "",
+    phone: "",
+    furigana: "",
+    gender: "",
+    country: "",
+    postalCode: "",
+    address: "",
+    mealChoice: "",
+    allergies: "",
+    specialAssistance: [],
+    specialAssistanceOther: "",
+  };
+}
+
+function guestFromRecord(g: Guest): EditableGuest {
+  return {
+    id: g.id,
+    firstName: g.first_name,
+    lastName: g.last_name,
+    afterpartyOptin: g.afterparty_optin,
+    nationality: g.nationality ?? "",
+    passportNumber: g.passport_number ?? "",
+    birthDate: g.birth_date ?? "",
+    email: g.email ?? "",
+    phone: g.phone ?? "",
+    furigana: g.furigana ?? "",
+    gender: g.gender ?? "",
+    country: g.country ?? "",
+    postalCode: g.postal_code ?? "",
+    address: g.address ?? "",
+    mealChoice: g.meal_choice ?? "",
+    allergies: g.allergies ?? "",
+    specialAssistance: g.special_assistance ?? [],
+    specialAssistanceOther: g.special_assistance_other ?? "",
+  };
+}
+
+function useCountryNames(lang: string) {
+  return useMemo(() => {
+    try {
+      const dn = new Intl.DisplayNames([lang], { type: "region" });
+      const entries = COUNTRIES.map((code) => ({ code, name: dn.of(code) ?? code }));
+      entries.sort((a, b) => a.name.localeCompare(b.name, lang));
+      return entries;
+    } catch {
+      return COUNTRIES.map((code) => ({ code, name: code }));
+    }
+  }, [lang]);
+}
 
 export default function AdminDashboardPage() {
   const { t } = useI18n();
@@ -233,13 +327,14 @@ function BookingEditDialog({
   password: string;
   onClose: () => void;
 }) {
-  const { t } = useI18n();
+  const { t, lang } = useI18n();
+  const countryNames = useCountryNames(lang);
   const [bookingCode, setBookingCode] = useState(initial?.booking_code ?? "");
   const [lastName, setLastName] = useState(initial?.last_name ?? "");
   const [firstName, setFirstName] = useState(initial?.first_name ?? "");
   const [guests, setGuests] = useState<EditableGuest[]>(
-    initial?.guests.map((g) => ({ id: g.id, firstName: g.first_name, lastName: g.last_name })) ?? [
-      { firstName: initial?.first_name ?? "", lastName: initial?.last_name ?? "" },
+    initial?.guests.map(guestFromRecord) ?? [
+      { ...emptyGuest(), firstName: initial?.first_name ?? "", lastName: initial?.last_name ?? "" },
     ]
   );
   const [error, setError] = useState<string | null>(null);
@@ -271,11 +366,23 @@ function BookingEditDialog({
   }
 
   function addGuest() {
-    setGuests((prev) => [...prev, { firstName: "", lastName: "" }]);
+    setGuests((prev) => [...prev, emptyGuest()]);
   }
 
   function removeGuest(idx: number) {
     setGuests((prev) => prev.filter((_, i) => i !== idx));
+  }
+
+  function toggleAssistance(idx: number, option: string, checked: boolean) {
+    setGuests((prev) =>
+      prev.map((g, i) => {
+        if (i !== idx) return g;
+        const next = checked
+          ? [...g.specialAssistance, option]
+          : g.specialAssistance.filter((o) => o !== option);
+        return { ...g, specialAssistance: next };
+      })
+    );
   }
 
   return (
@@ -314,32 +421,240 @@ function BookingEditDialog({
 
           <div className="flex flex-col gap-2">
             <Label>{t("admin.guestsHeading")}</Label>
-            {guests.map((g, idx) => (
-              <div key={idx} className="flex items-center gap-2">
-                <Input
-                  value={g.firstName}
-                  onChange={(e) => updateGuest(idx, { firstName: e.target.value })}
-                  placeholder={t("entry.firstName")}
-                  data-testid={`input-guest-first-${idx}`}
-                />
-                <Input
-                  value={g.lastName}
-                  onChange={(e) => updateGuest(idx, { lastName: e.target.value })}
-                  placeholder={t("entry.lastName")}
-                  data-testid={`input-guest-last-${idx}`}
-                />
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  type="button"
-                  disabled={guests.length <= 1}
-                  onClick={() => removeGuest(idx)}
-                  data-testid={`button-remove-guest-${idx}`}
+            <p className="text-xs text-muted-foreground -mt-1">{t("admin.prefillNote")}</p>
+            <Accordion type="multiple" className="flex flex-col gap-2">
+              {guests.map((g, idx) => (
+                <AccordionItem
+                  key={idx}
+                  value={`guest-${idx}`}
+                  className="border border-card-border rounded-lg px-3"
                 >
-                  <Trash2 className="h-4 w-4 text-destructive" />
-                </Button>
-              </div>
-            ))}
+                  <div className="flex items-center gap-2 py-2">
+                    <Input
+                      value={g.firstName}
+                      onChange={(e) => updateGuest(idx, { firstName: e.target.value })}
+                      placeholder={t("entry.firstName")}
+                      data-testid={`input-guest-first-${idx}`}
+                    />
+                    <Input
+                      value={g.lastName}
+                      onChange={(e) => updateGuest(idx, { lastName: e.target.value })}
+                      placeholder={t("entry.lastName")}
+                      data-testid={`input-guest-last-${idx}`}
+                    />
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      type="button"
+                      disabled={guests.length <= 1}
+                      onClick={() => removeGuest(idx)}
+                      data-testid={`button-remove-guest-${idx}`}
+                    >
+                      <Trash2 className="h-4 w-4 text-destructive" />
+                    </Button>
+                  </div>
+                  <AccordionTrigger
+                    className="text-xs text-muted-foreground py-2 hover:no-underline"
+                    data-testid={`trigger-advanced-${idx}`}
+                  >
+                    {t("admin.advancedDetails")}
+                  </AccordionTrigger>
+                  <AccordionContent className="flex flex-col gap-4 pt-1 pb-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.furigana")}</Label>
+                        <Input
+                          value={g.furigana}
+                          onChange={(e) => updateGuest(idx, { furigana: e.target.value })}
+                          data-testid={`input-guest-furigana-${idx}`}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.gender")}</Label>
+                        <Select
+                          value={g.gender}
+                          onValueChange={(v) => updateGuest(idx, { gender: v })}
+                        >
+                          <SelectTrigger data-testid={`select-guest-gender-${idx}`}>
+                            <SelectValue placeholder={t("details.genderPlaceholder")} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {GENDER_OPTIONS.map((opt) => (
+                              <SelectItem key={opt} value={opt}>
+                                {t(`details.gender.${opt}`)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.email")}</Label>
+                        <Input
+                          value={g.email}
+                          onChange={(e) => updateGuest(idx, { email: e.target.value })}
+                          type="email"
+                          data-testid={`input-guest-email-${idx}`}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.phone")}</Label>
+                        <Input
+                          value={g.phone}
+                          onChange={(e) => updateGuest(idx, { phone: e.target.value })}
+                          data-testid={`input-guest-phone-${idx}`}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <Label>{t("details.country")}</Label>
+                      <Select
+                        value={g.country}
+                        onValueChange={(v) => updateGuest(idx, { country: v })}
+                      >
+                        <SelectTrigger data-testid={`select-guest-country-${idx}`}>
+                          <SelectValue placeholder={t("details.countryPlaceholder")} />
+                        </SelectTrigger>
+                        <SelectContent className="max-h-72">
+                          {countryNames.map(({ code, name }) => (
+                            <SelectItem key={code} value={code}>
+                              {name}
+                            </SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.postalCode")}</Label>
+                        <Input
+                          value={g.postalCode}
+                          onChange={(e) => updateGuest(idx, { postalCode: e.target.value })}
+                          data-testid={`input-guest-postal-${idx}`}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.nationality")}</Label>
+                        <Input
+                          value={g.nationality}
+                          onChange={(e) => updateGuest(idx, { nationality: e.target.value })}
+                          data-testid={`input-guest-nationality-${idx}`}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex flex-col gap-1.5">
+                      <Label>{t("details.address")}</Label>
+                      <Input
+                        value={g.address}
+                        onChange={(e) => updateGuest(idx, { address: e.target.value })}
+                        data-testid={`input-guest-address-${idx}`}
+                      />
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.birthDate")}</Label>
+                        <Input
+                          value={g.birthDate}
+                          onChange={(e) => updateGuest(idx, { birthDate: e.target.value })}
+                          type="date"
+                          data-testid={`input-guest-birthdate-${idx}`}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("details.passport")}</Label>
+                        <Input
+                          value={g.passportNumber}
+                          onChange={(e) => updateGuest(idx, { passportNumber: e.target.value })}
+                          data-testid={`input-guest-passport-${idx}`}
+                        />
+                      </div>
+                    </div>
+
+                    <div className="border-t border-border pt-3 flex flex-col gap-3">
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("meal.mealChoice")}</Label>
+                        <Select
+                          value={g.mealChoice}
+                          onValueChange={(v) => updateGuest(idx, { mealChoice: v })}
+                        >
+                          <SelectTrigger data-testid={`select-guest-meal-${idx}`}>
+                            <SelectValue placeholder={t("meal.mealPlaceholder")} />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {MEAL_OPTIONS.map((opt) => (
+                              <SelectItem key={opt} value={opt}>
+                                {t(`meal.option.${opt}`)}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("meal.allergies")}</Label>
+                        <Textarea
+                          value={g.allergies}
+                          onChange={(e) => updateGuest(idx, { allergies: e.target.value })}
+                          data-testid={`textarea-guest-allergies-${idx}`}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Label>{t("meal.assistance")}</Label>
+                        <div className="flex flex-col gap-1.5">
+                          {SPECIAL_ASSISTANCE_OPTIONS.map((opt) => (
+                            <div key={opt} className="flex items-center gap-2">
+                              <Checkbox
+                                checked={g.specialAssistance.includes(opt)}
+                                onCheckedChange={(checked) =>
+                                  toggleAssistance(idx, opt, checked === true)
+                                }
+                                data-testid={`checkbox-guest-assist-${opt}-${idx}`}
+                              />
+                              <Label className="font-normal">{t(`assist.${opt}`)}</Label>
+                            </div>
+                          ))}
+                        </div>
+                        {g.specialAssistance.includes("other") && (
+                          <Input
+                            value={g.specialAssistanceOther}
+                            onChange={(e) =>
+                              updateGuest(idx, { specialAssistanceOther: e.target.value })
+                            }
+                            placeholder={t("assist.otherPlaceholder")}
+                            data-testid={`input-guest-assist-other-${idx}`}
+                          />
+                        )}
+                      </div>
+                      <div className="flex flex-col gap-1.5">
+                        <Label>{t("admin.afterpartyOptin")}</Label>
+                        <Select
+                          value={g.afterpartyOptin === true ? "yes" : g.afterpartyOptin === false ? "no" : "unset"}
+                          onValueChange={(v) =>
+                            updateGuest(idx, {
+                              afterpartyOptin: v === "yes" ? true : v === "no" ? false : null,
+                            })
+                          }
+                        >
+                          <SelectTrigger data-testid={`select-guest-afterparty-${idx}`}>
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="yes">{t("admin.afterpartyYes")}</SelectItem>
+                            <SelectItem value="no">{t("admin.afterpartyNo")}</SelectItem>
+                            <SelectItem value="unset">{t("admin.afterpartyUnset")}</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
+                  </AccordionContent>
+                </AccordionItem>
+              ))}
+            </Accordion>
             <Button
               variant="outline"
               size="sm"

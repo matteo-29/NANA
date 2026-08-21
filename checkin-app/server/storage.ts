@@ -1,5 +1,30 @@
 import supabase from "./supabase";
-import type { Booking, Guest } from "@shared/schema";
+import type { Booking, Guest, AdminBookingUpsertInput } from "@shared/schema";
+
+type AdminGuestInput = AdminBookingUpsertInput["guests"][number];
+
+// Maps the camelCase admin guest payload to the snake_case DB columns.
+// Only fields the admin actually sent (i.e. not `undefined`) are included,
+// so partial edits never clobber existing guest data with nulls.
+function mapAdminGuestFields(g: AdminGuestInput): Record<string, unknown> {
+  const row: Record<string, unknown> = {};
+  if (g.afterpartyOptin !== undefined) row.afterparty_optin = g.afterpartyOptin;
+  if (g.nationality !== undefined) row.nationality = g.nationality;
+  if (g.passportNumber !== undefined) row.passport_number = g.passportNumber;
+  if (g.birthDate !== undefined) row.birth_date = g.birthDate || null;
+  if (g.email !== undefined) row.email = g.email;
+  if (g.phone !== undefined) row.phone = g.phone;
+  if (g.furigana !== undefined) row.furigana = g.furigana;
+  if (g.gender !== undefined) row.gender = g.gender;
+  if (g.country !== undefined) row.country = g.country;
+  if (g.postalCode !== undefined) row.postal_code = g.postalCode;
+  if (g.address !== undefined) row.address = g.address;
+  if (g.mealChoice !== undefined) row.meal_choice = g.mealChoice;
+  if (g.allergies !== undefined) row.allergies = g.allergies;
+  if (g.specialAssistance !== undefined) row.special_assistance = g.specialAssistance;
+  if (g.specialAssistanceOther !== undefined) row.special_assistance_other = g.specialAssistanceOther;
+  return row;
+}
 
 export interface IStorage {
   findBookingByCode(bookingCode: string): Promise<Booking | undefined>;
@@ -14,14 +39,14 @@ export interface IStorage {
     bookingCode: string,
     lastName: string,
     firstName: string,
-    guests: { firstName: string; lastName: string }[]
+    guests: AdminGuestInput[]
   ): Promise<Booking & { guests: Guest[] }>;
   updateBooking(
     bookingId: string,
     bookingCode: string,
     lastName: string,
     firstName: string,
-    guests: { id?: string; firstName: string; lastName: string }[]
+    guests: AdminGuestInput[]
   ): Promise<Booking & { guests: Guest[] }>;
   deleteBooking(bookingId: string): Promise<void>;
   deleteGuest(guestId: string): Promise<void>;
@@ -124,7 +149,7 @@ class SupabaseStorage implements IStorage {
     bookingCode: string,
     lastName: string,
     firstName: string,
-    guests: { firstName: string; lastName: string }[]
+    guests: AdminGuestInput[]
   ): Promise<Booking & { guests: Guest[] }> {
     const { data: booking, error } = await supabase
       .from("bookings")
@@ -140,6 +165,7 @@ class SupabaseStorage implements IStorage {
           booking_id: booking.id,
           first_name: g.firstName,
           last_name: g.lastName,
+          ...mapAdminGuestFields(g),
         }))
       )
       .select("*");
@@ -153,7 +179,7 @@ class SupabaseStorage implements IStorage {
     bookingCode: string,
     lastName: string,
     firstName: string,
-    guests: { id?: string; firstName: string; lastName: string }[]
+    guests: AdminGuestInput[]
   ): Promise<Booking & { guests: Guest[] }> {
     const { data: booking, error } = await supabase
       .from("bookings")
@@ -178,7 +204,12 @@ class SupabaseStorage implements IStorage {
     for (const g of toUpdate) {
       const { error: uErr } = await supabase
         .from("guests")
-        .update({ first_name: g.firstName, last_name: g.lastName })
+        .update({
+          first_name: g.firstName,
+          last_name: g.lastName,
+          ...mapAdminGuestFields(g),
+          updated_at: new Date().toISOString(),
+        })
         .eq("id", g.id);
       if (uErr) throw uErr;
     }
@@ -190,6 +221,7 @@ class SupabaseStorage implements IStorage {
           booking_id: bookingId,
           first_name: g.firstName,
           last_name: g.lastName,
+          ...mapAdminGuestFields(g),
         }))
       );
       if (iErr) throw iErr;

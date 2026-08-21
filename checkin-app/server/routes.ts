@@ -204,7 +204,7 @@ export async function registerRoutes(
         d.bookingCode,
         d.lastName,
         d.firstName,
-        d.guests.map((g) => ({ firstName: g.firstName, lastName: g.lastName }))
+        d.guests
       );
       res.json({ booking });
     } catch (err: any) {

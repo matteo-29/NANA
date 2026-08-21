@@ -188,6 +188,13 @@ const de: Dict = {
   "admin.noBookings": "Noch keine Buchungen angelegt.",
   "admin.afterparty": "Afterparty",
   "admin.selected": "eingecheckt",
+  "admin.advancedDetails": "Erweiterte Angaben",
+  "admin.hideDetails": "Angaben ausblenden",
+  "admin.afterpartyOptin": "Afterparty-Teilnahme",
+  "admin.afterpartyYes": "Nimmt teil",
+  "admin.afterpartyNo": "Nimmt nicht teil",
+  "admin.afterpartyUnset": "Noch nicht angegeben",
+  "admin.prefillNote": "Diese Angaben sieht der Gast beim Check-in bereits vorausgefüllt vor und kann sie bei Bedarf noch ändern.",
 };
 
 const en: Dict = {
@@ -368,6 +375,13 @@ const en: Dict = {
   "admin.noBookings": "No bookings yet.",
   "admin.afterparty": "Afterparty",
   "admin.selected": "checked in",
+  "admin.advancedDetails": "Advanced Details",
+  "admin.hideDetails": "Hide Details",
+  "admin.afterpartyOptin": "Afterparty Attendance",
+  "admin.afterpartyYes": "Attending",
+  "admin.afterpartyNo": "Not attending",
+  "admin.afterpartyUnset": "Not specified yet",
+  "admin.prefillNote": "The guest will see these details pre-filled during check-in and can still adjust them if needed.",
 };
 
 const ja: Dict = {
@@ -547,6 +561,13 @@ const ja: Dict = {
   "admin.noBookings": "予約がまだありません。",
   "admin.afterparty": "アフターパーティー",
   "admin.selected": "チェックイン済み",
+  "admin.advancedDetails": "詳細情報",
+  "admin.hideDetails": "詳細を閉じる",
+  "admin.afterpartyOptin": "二次会への参加",
+  "admin.afterpartyYes": "参加する",
+  "admin.afterpartyNo": "参加しない",
+  "admin.afterpartyUnset": "未回答",
+  "admin.prefillNote": "ここで入力した内容はチェックイン時にゲストへ表示され、必要に応じて変更できます。",
 };
 
 const dictionaries: Record<Lang, Dict> = { de, en, ja };

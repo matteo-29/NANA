@@ -106,19 +106,32 @@ export const adminLoginSchema = z.object({
   password: z.string().min(1),
 });
 
+export const adminGuestSchema = z.object({
+  id: z.string().uuid().optional(),
+  firstName: z.string().min(1),
+  lastName: z.string().min(1),
+  afterpartyOptin: z.boolean().nullable().optional(),
+  nationality: z.string().nullable().optional(),
+  passportNumber: z.string().nullable().optional(),
+  birthDate: z.string().nullable().optional(),
+  email: z.string().nullable().optional(),
+  phone: z.string().nullable().optional(),
+  furigana: z.string().nullable().optional(),
+  gender: z.string().nullable().optional(),
+  country: z.string().nullable().optional(),
+  postalCode: z.string().nullable().optional(),
+  address: z.string().nullable().optional(),
+  mealChoice: z.string().nullable().optional(),
+  allergies: z.string().nullable().optional(),
+  specialAssistance: z.array(z.string()).optional(),
+  specialAssistanceOther: z.string().nullable().optional(),
+});
+
 export const adminBookingUpsertSchema = z.object({
   bookingCode: z.string().min(1),
   lastName: z.string().min(1),
   firstName: z.string().min(1),
-  guests: z
-    .array(
-      z.object({
-        id: z.string().uuid().optional(),
-        firstName: z.string().min(1),
-        lastName: z.string().min(1),
-      })
-    )
-    .min(1),
+  guests: z.array(adminGuestSchema).min(1),
 });
 
 export type LookupInput = z.infer<typeof lookupSchema>;
