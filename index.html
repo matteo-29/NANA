@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Nana & Matteo — Wedding Flight NM0329</title>
+<title>Nana & Matteo — Wedding</title>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -633,14 +633,14 @@ footer b{color:#263860}
 
 <section class="hero">
   <div class="container hero-inner">
-    <div class="flight-tag">FLIGHT NM 0329 · HND → HIJ · 29 MAR 2027</div>
+    <div class="flight-tag">FLIGHT NM 0329 · HIJ → FTG · 29 MAR 2027</div>
     <h1>Nana &<br>Matteo</h1>
     <p id="heroText">Willkommen an Bord unseres schönsten gemeinsamen Fluges.</p>
 
     <div class="route">
-      <span>HND</span>
-      <i></i>
       <span>HIJ</span>
+      <i></i>
+      <span>FTG</span>
     </div>
   </div>
 </section>
@@ -655,12 +655,12 @@ footer b{color:#263860}
   <div class="search-grid">
     <div class="field">
       <label data-t="from">ABFLUG</label>
-      <div>HND · Love Terminal</div>
+      <div>HIJ · Hiroshima Grand Prince Hotel</div>
     </div>
 
     <div class="field">
       <label data-t="to">ANKUNFT</label>
-      <div>HIJ · Grand Prince Hotel</div>
+      <div>FTG · Forever Together</div>
     </div>
 
     <div class="field">
@@ -710,7 +710,7 @@ footer b{color:#263860}
           <small>PILOT IN COMMAND</small>
           <b>MATTEO KRATZ</b>
         </div>
-        <div>NM0329</div>
+        <div></div>
       </div>
 
       <div class="passenger-body">
@@ -731,7 +731,7 @@ footer b{color:#263860}
           <small>CHIEF PURSER</small>
           <b>NANA KOGA KRATZ</b>
         </div>
-        <div>NM0329</div>
+        <div></div>
       </div>
 
       <div class="passenger-body">
@@ -741,7 +741,7 @@ footer b{color:#263860}
           <div><dt>Birthday</dt><dd>29.09.1992</dd></div>
           <div><dt>HOME BASE</dt><dd>Yokohama,JP</dd></div>
           <div><dt>INTERESTS</dt><dd>Travel · Food · Massage</dd></div>
-          <div><dt>FAVOURITE MEAL</dt><dd>AVOCADO SALAD</dd></div>
+          <div><dt>FAVOURITE MEAL</dt><dd>Avocado Salad</dd></div>
         </dl>
       </div>
     </article>
@@ -753,57 +753,52 @@ footer b{color:#263860}
   <div class="container">
 
     <div class="eyebrow" style="color:#f5cf63">DEPARTURE BOARD</div>
-    <h2 class="title" data-t="schedule">Flugplan des Tages</h2>
+    <h2 class="title" data-t="schedule">Zeitplan</h2>
 
     <div class="board">
       <div class="row">
         <span>TIME</span>
-        <span>FLIGHT</span>
+      
         <span>EVENT</span>
-        <span>STATUS</span>
+        <span></span>
       </div>
 
       <div class="row">
         <b>12:00</b>
-        <span>NM 0329</span>
-        <span data-t="s1">Gäste-Check-in & Welcome Drink</span>
-        <span class="status">CHECK-IN OPEN</span>
+        <span data-t="s1">Check-in & Lounge</span>
+        <span class="status"></span>
       </div>
 
       <div class="row">
-        <b>12:30</b>
-        <span>NM 0329</span>
-        <span data-t="s2">Boarding zu den Destination Tables</span>
-        <span class="status">NOW BOARDING</span>
+        <b>12:50</b>
+        <span data-t="s2">Gate schließt</span>
+        <span class="status"></span>
       </div>
 
       <div class="row">
         <b>13:00</b>
-        <span>NM 0329</span>
-        <span data-t="s3">Trauung — Departure</span>
-        <span class="status">DEPARTED</span>
+        <span data-t="s3">Abflug - Beginn der Zeremonie</span>
+        <span class="status"></span>
       </div>
 
       <div class="row">
-        <b>14:30</b>
-        <span>NM 0329</span>
-        <span data-t="s4">In-flight Service — Dinner & Reden</span>
-        <span class="status">CRUISING</span>
+        <b>14:00</b>
+        <span data-t="s4">In-flight Service — Dinner & Entertainment</span>
+        <span class="status"></span>
       </div>
 
       <div class="row">
-        <b>18:30</b>
-        <span>NM 0329</span>
-        <span data-t="s5">Night Flight — Party & Tanz</span>
-        <span class="status">ON TIME</span>
+        <b>18:00</b>
+        <span data-t="s5">Arrival Lounge - Afterparty</span>
+        <span class="status"></span>
       </div>
     </div>
   </div>
 </section>
 
 <section id="location" class="section container">
-  <div class="eyebrow">ARRIVAL TERMINAL</div>
-  <h2 class="title">Wo wir landen</h2>
+  <div class="eyebrow">DEPARTURE TERMINAL</div>
+  <h2 class="title">Wo wir abfliegen</h2>
 
   <div class="location">
     <div class="location-copy">
@@ -884,11 +879,11 @@ const copy={
     announceBody:"willkommen an Bord von Flight NM 0329 – dem schönsten Flug unseres Lebens. Bitte haltet eure Boarding Card bereit, nehmt eure Plätze ein und begleitet uns auf unserer Reise in ein neues Kapitel voller Liebe, Lachen und unvergesslicher Erinnerungen.",
     passengers:"Ihre Gastgeber",
     schedule:"Flugplan des Tages",
-    s1:"Gäste-Check-in & Welcome Drink",
-    s2:"Boarding zu den Destination Tables",
-    s3:"Trauung — Departure",
-    s4:"In-flight Service — Dinner & Reden",
-    s5:"Night Flight — Party & Tanz"
+    s1:"Check-in & Lounge",
+    s2:"Gate schließt",
+    s3:"Departure - Beginning of the ceremony",
+    s4:"In-flight Service — Dinner & Entertainment",
+    s5:"Arrival Lounge - Afterparty"
   },
 
   en:{
@@ -910,11 +905,11 @@ const copy={
     announceBody:"welcome aboard Flight NM 0329 — the most beautiful flight of our lives. Please have your boarding card ready, take your seats and join us as we travel into a new chapter full of love, laughter and unforgettable memories.",
     passengers:"Your hosts",
     schedule:"Flight schedule",
-    s1:"Guest check-in & welcome drink",
-    s2:"Boarding to the destination tables",
+    s1:"Check-in & Lounge",
+    s2:"Gate closes",
     s3:"Wedding ceremony — departure",
-    s4:"In-flight service — dinner & speeches",
-    s5:"Night flight — party & dancing"
+    s4:"In-flight Service — Dinner & Entertainment",
+    s5:"Arrival Lounge - Afterparty"
   },
 
   ja:{
@@ -936,11 +931,11 @@ const copy={
     announceBody:"フライト NM 0329 へようこそ。私たちの人生で最も美しい旅にご参加ください。搭乗券をご用意のうえ、お席にお座りいただき、愛と笑顔、そして忘れられない思い出に満ちた新しい章へご一緒に出発しましょう。",
     passengers:"ホスト紹介",
     schedule:"当日のフライトスケジュール",
-    s1:"ゲストチェックイン＆ウェルカムドリンク",
-    s2:"デスティネーションテーブルへご案内",
-    s3:"挙式 — 出発",
-    s4:"機内サービス — お食事＆スピーチ",
-    s5:"ナイトフライト — パーティー＆ダンス"
+    s1:"チェックイン＆ラウンジ",
+    s2:"搭乗口 締切",
+    s3:"結婚式 － 出発",
+    s4:"機内サービス － ディナー＆エンターテインメント",
+    s5:"到着ラウンジ － 二次会"
   }
 };
 

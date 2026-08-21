@@ -45,7 +45,7 @@ const de: Dict = {
   "entry.subtitle":
     "Bitte gib deinen Buchungscode und Nachnamen ein, um mit dem Check-in für die Hochzeit von Nana & Matteo zu beginnen.",
   "entry.bookingCode": "Buchungscode",
-  "entry.bookingCodePlaceholder": "z.B. NM0329",
+  "entry.bookingCodePlaceholder": "z.B. A1BX2TZ",
   "entry.lastName": "Nachname",
   "entry.lastNamePlaceholder": "Nachname",
   "entry.firstName": "Vorname",
@@ -232,7 +232,7 @@ const en: Dict = {
   "entry.subtitle":
     "Please enter your booking code and last name to begin check-in for Nana & Matteo's wedding.",
   "entry.bookingCode": "Booking Code",
-  "entry.bookingCodePlaceholder": "e.g. NM0329",
+  "entry.bookingCodePlaceholder": "e.g. A1BX2TZ",
   "entry.lastName": "Last Name",
   "entry.lastNamePlaceholder": "Last name",
   "entry.firstName": "First Name",
@@ -418,7 +418,7 @@ const ja: Dict = {
   "entry.title": "ご搭乗ありがとうございます",
   "entry.subtitle": "ナナ&マテオの結婚式チェックインのため、予約コードと姓を入力してください。",
   "entry.bookingCode": "予約コード",
-  "entry.bookingCodePlaceholder": "例: NM0329",
+  "entry.bookingCodePlaceholder": "例: A1BX2TZ",
   "entry.lastName": "姓",
   "entry.lastNamePlaceholder": "姓",
   "entry.firstName": "名",
