@@ -1,14 +1,18 @@
+import { useState } from "react";
 import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverTrigger,
   PopoverContent,
 } from "@/components/ui/popover";
 import { Link } from "wouter";
-import type { Guest } from "@shared/schema";
+import type { Booking, Guest } from "@shared/schema";
+import { apiRequest } from "@/lib/queryClient";
+import { useToast } from "@/hooks/use-toast";
 import {
   CheckCircle2,
   XCircle,
@@ -21,9 +25,114 @@ import {
   Wifi,
   Camera,
   PhoneOff,
+  Download,
+  Send,
+  Ticket,
   type LucideIcon,
 } from "lucide-react";
 import princeHotelImg from "@/assets/nana/prince_hotel.jpg";
+
+function TicketDelivery({ booking }: { booking: Booking }) {
+  const { t, lang } = useI18n();
+  const { toast } = useToast();
+  const [email, setEmail] = useState("");
+  const [downloading, setDownloading] = useState(false);
+  const [sending, setSending] = useState(false);
+
+  async function handleDownload() {
+    setDownloading(true);
+    try {
+      const res = await apiRequest("GET", `/api/ticket/${booking.id}/pdf?lang=${lang}`);
+      const blob = await res.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `NANA-${booking.booking_code}-ticket.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+    } catch (err) {
+      toast({ description: t("delivery.error"), variant: "destructive" });
+    } finally {
+      setDownloading(false);
+    }
+  }
+
+  async function handleSendEmail() {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      toast({ description: t("delivery.emailInvalid"), variant: "destructive" });
+      return;
+    }
+    setSending(true);
+    try {
+      const res = await apiRequest("POST", "/api/send-ticket", {
+        bookingId: booking.id,
+        lang,
+        email,
+      });
+      if (!res.ok) throw new Error("send failed");
+      toast({ description: t("delivery.sent", { email }) });
+    } catch (err) {
+      toast({ description: t("delivery.error"), variant: "destructive" });
+    } finally {
+      setSending(false);
+    }
+  }
+
+  return (
+    <Card className="border-card-border" data-testid="card-ticket-delivery">
+      <CardContent className="pt-5 flex flex-col gap-4">
+        <div className="flex items-center gap-2">
+          <Ticket className="h-4 w-4 text-primary" />
+          <div>
+            <div className="text-sm font-semibold text-foreground">{t("delivery.title")}</div>
+            <div className="text-xs text-muted-foreground">{t("delivery.subtitle")}</div>
+          </div>
+        </div>
+
+        <Button
+          type="button"
+          variant="outline"
+          className="rounded-full gap-2"
+          onClick={handleDownload}
+          disabled={downloading}
+          data-testid="button-download-ticket"
+        >
+          <Download className="h-4 w-4" />
+          {downloading ? t("delivery.downloading") : t("delivery.download")}
+        </Button>
+
+        <div className="flex flex-col gap-2 pt-2 border-t border-border">
+          <label className="text-xs font-medium text-foreground" htmlFor="delivery-email">
+            {t("delivery.emailLabel")}
+          </label>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <Input
+              id="delivery-email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder={t("delivery.emailPlaceholder")}
+              data-testid="input-delivery-email"
+              className="flex-1"
+            />
+            <Button
+              type="button"
+              className="rounded-full gap-2 shrink-0"
+              onClick={handleSendEmail}
+              disabled={sending}
+              data-testid="button-send-ticket-email"
+            >
+              <Send className="h-4 w-4" />
+              {sending ? t("delivery.sending") : t("delivery.sendEmail")}
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
 
 function ServiceIcon({
   icon: Icon,
@@ -63,11 +172,13 @@ function ServiceIcon({
 }
 
 export function ConfirmationStep({
+  booking,
   guests,
   onEditSelection,
   onEditAfterparty,
   onEditGuest,
 }: {
+  booking: Booking;
   guests: Guest[];
   onEditSelection: () => void;
   onEditAfterparty: () => void;
@@ -270,6 +381,12 @@ export function ConfirmationStep({
           </Card>
         </a>
       </div>
+
+      {selected.length > 0 && (
+        <div className="mt-8">
+          <TicketDelivery booking={booking} />
+        </div>
+      )}
 
       <p className="text-xs text-muted-foreground mt-6 text-center">{t("confirm.editHint")}</p>
 

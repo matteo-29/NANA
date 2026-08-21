@@ -236,6 +236,7 @@ export default function CheckinPage() {
 
       {step === "confirmation" && (
         <ConfirmationStep
+          booking={data.booking}
           guests={data.guests}
           onEditSelection={() => setStep("selection")}
           onEditAfterparty={() => setStep("afterparty")}

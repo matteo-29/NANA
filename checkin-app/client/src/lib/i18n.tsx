@@ -208,6 +208,18 @@ const de: Dict = {
   "admin.afterpartyNo": "Nimmt nicht teil",
   "admin.afterpartyUnset": "Noch nicht angegeben",
   "admin.prefillNote": "Diese Angaben sieht der Gast beim Check-in bereits vorausgefüllt vor und kann sie bei Bedarf noch ändern.",
+
+  "delivery.title": "Euer Ticket",
+  "delivery.subtitle": "Ladet euer E-Ticket herunter oder lasst es euch per E-Mail zusenden.",
+  "delivery.download": "PDF herunterladen",
+  "delivery.downloading": "Wird erstellt …",
+  "delivery.emailLabel": "E-Mail-Adresse",
+  "delivery.emailPlaceholder": "name@beispiel.de",
+  "delivery.sendEmail": "Per E-Mail senden",
+  "delivery.sending": "Wird gesendet …",
+  "delivery.sent": "Ticket wurde an {email} gesendet.",
+  "delivery.error": "Das hat leider nicht funktioniert. Bitte versucht es erneut.",
+  "delivery.emailInvalid": "Bitte gebt eine gültige E-Mail-Adresse ein.",
 };
 
 const en: Dict = {
@@ -408,6 +420,18 @@ const en: Dict = {
   "admin.afterpartyNo": "Not attending",
   "admin.afterpartyUnset": "Not specified yet",
   "admin.prefillNote": "The guest will see these details pre-filled during check-in and can still adjust them if needed.",
+
+  "delivery.title": "Your ticket",
+  "delivery.subtitle": "Download your e-ticket or have it sent to you by e-mail.",
+  "delivery.download": "Download PDF",
+  "delivery.downloading": "Preparing …",
+  "delivery.emailLabel": "E-mail address",
+  "delivery.emailPlaceholder": "name@example.com",
+  "delivery.sendEmail": "Send by e-mail",
+  "delivery.sending": "Sending …",
+  "delivery.sent": "Ticket sent to {email}.",
+  "delivery.error": "Something went wrong. Please try again.",
+  "delivery.emailInvalid": "Please enter a valid e-mail address.",
 };
 
 const ja: Dict = {
@@ -607,6 +631,18 @@ const ja: Dict = {
   "admin.afterpartyNo": "参加しない",
   "admin.afterpartyUnset": "未回答",
   "admin.prefillNote": "ここで入力した内容はチェックイン時にゲストへ表示され、必要に応じて変更できます。",
+
+  "delivery.title": "チケット",
+  "delivery.subtitle": "eチケットをダウンロード、またはメールで送信できます。",
+  "delivery.download": "PDFをダウンロード",
+  "delivery.downloading": "作成中…",
+  "delivery.emailLabel": "メールアドレス",
+  "delivery.emailPlaceholder": "name@example.com",
+  "delivery.sendEmail": "メールで送信",
+  "delivery.sending": "送信中…",
+  "delivery.sent": "{email} 宛にチケットを送信しました。",
+  "delivery.error": "エラーが発生しました。もう一度お試しください。",
+  "delivery.emailInvalid": "有効なメールアドレスを入力してください。",
 };
 
 const dictionaries: Record<Lang, Dict> = { de, en, ja };

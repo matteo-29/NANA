@@ -10,7 +10,15 @@ import {
   mealDetailsSchema,
   adminLoginSchema,
   adminBookingUpsertSchema,
+  sendTicketSchema,
 } from "@shared/schema";
+import { renderTicketPdf } from "./ticket-pdf";
+import { sendTicketEmail } from "./ticket-email";
+import type { TicketLang } from "@shared/ticket-i18n";
+
+function parseLang(v: unknown): TicketLang {
+  return v === "de" || v === "en" || v === "ja" ? v : "en";
+}
 
 function requireAdmin(req: Request, res: Response, next: NextFunction) {
   const password = req.header("x-admin-password");
@@ -174,6 +182,51 @@ export async function registerRoutes(
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Serverfehler" });
+    }
+  });
+
+  // ---- Ticket delivery: download the PDF e-ticket for a booking ----
+  app.get("/api/ticket/:bookingId/pdf", async (req, res) => {
+    try {
+      const booking = await storage.getBooking(req.params.bookingId);
+      if (!booking) return res.status(404).json({ message: "notfound" });
+      const guests = await storage.getGuestsByBooking(booking.id);
+      const attending = guests.filter((g) => g.selected);
+      if (attending.length === 0) {
+        return res.status(400).json({ message: "Keine teilnehmenden Gäste in dieser Buchung." });
+      }
+      const lang = parseLang(req.query.lang);
+      const pdf = await renderTicketPdf(booking, guests, lang);
+      res.setHeader("Content-Type", "application/pdf");
+      res.setHeader(
+        "Content-Disposition",
+        `attachment; filename=NANA-${booking.booking_code}-ticket.pdf`
+      );
+      res.send(pdf);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Ticket konnte nicht erstellt werden." });
+    }
+  });
+
+  // ---- Ticket delivery: e-mail the PDF e-ticket to the guest ----
+  app.post("/api/send-ticket", async (req, res) => {
+    const parsed = sendTicketSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: "Ungültige Eingabe." });
+    try {
+      const { bookingId, lang, email } = parsed.data;
+      const booking = await storage.getBooking(bookingId);
+      if (!booking) return res.status(404).json({ message: "notfound" });
+      const guests = await storage.getGuestsByBooking(booking.id);
+      const attending = guests.filter((g) => g.selected);
+      if (attending.length === 0) {
+        return res.status(400).json({ message: "Keine teilnehmenden Gäste in dieser Buchung." });
+      }
+      await sendTicketEmail(booking, guests, lang, email);
+      res.json({ ok: true });
+    } catch (err) {
+      console.error(err);
+      res.status(502).json({ message: "E-Mail konnte nicht gesendet werden." });
     }
   });
 
