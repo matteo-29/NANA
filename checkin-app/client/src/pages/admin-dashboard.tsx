@@ -357,7 +357,16 @@ function BookingEditDialog({
       onClose();
     },
     onError: (err: Error) => {
-      setError(err.message.includes("409") ? "Buchungscode existiert bereits." : t("common.genericError"));
+      console.error("Booking save failed:", err);
+      const statusMatch = err.message.match(/^(\d{3}):/);
+      const status = statusMatch?.[1];
+      if (status === "409") {
+        setError("Buchungscode existiert bereits.");
+      } else if (status) {
+        setError(`${t("common.genericError")} (${status}: ${err.message.slice(err.message.indexOf(":") + 1).trim()})`);
+      } else {
+        setError(`${t("common.genericError")} (${err.message})`);
+      }
     },
   });
 
