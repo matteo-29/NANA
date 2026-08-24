@@ -10,10 +10,8 @@ import {
   mealDetailsSchema,
   adminLoginSchema,
   adminBookingUpsertSchema,
-  sendTicketSchema,
 } from "@shared/schema";
 import { renderTicketPdf } from "./ticket-pdf";
-import { sendTicketEmail } from "./ticket-email";
 import type { TicketLang } from "@shared/ticket-i18n";
 
 function parseLang(v: unknown): TicketLang {
@@ -206,31 +204,6 @@ export async function registerRoutes(
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Ticket konnte nicht erstellt werden." });
-    }
-  });
-
-  // ---- Ticket delivery: e-mail the PDF e-ticket to the guest ----
-  app.post("/api/send-ticket", async (req, res) => {
-    const parsed = sendTicketSchema.safeParse(req.body);
-    if (!parsed.success) return res.status(400).json({ message: "Ungültige Eingabe." });
-    try {
-      const { bookingId, lang, email } = parsed.data;
-      const booking = await storage.getBooking(bookingId);
-      if (!booking) return res.status(404).json({ message: "notfound" });
-      const guests = await storage.getGuestsByBooking(booking.id);
-      const attending = guests.filter((g) => g.selected);
-      if (attending.length === 0) {
-        return res.status(400).json({ message: "Keine teilnehmenden Gäste in dieser Buchung." });
-      }
-      await sendTicketEmail(booking, guests, lang, email);
-      res.json({ ok: true });
-    } catch (err) {
-      console.error(err);
-      // Use a 4xx (not 5xx) status here: some proxy layers treat 5xx as an
-      // upstream health signal and retry/replace the response, which can turn
-      // a clean JSON error into an opaque empty 503 by the time it reaches the
-      // client. 422 preserves the real error message end-to-end.
-      res.status(422).json({ message: "E-Mail konnte nicht gesendet werden." });
     }
   });
 

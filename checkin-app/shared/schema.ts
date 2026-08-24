@@ -48,16 +48,7 @@ export const SPECIAL_ASSISTANCE_OPTIONS = [
   "other",
 ] as const;
 
-export const MEAL_OPTIONS = [
-  "standard",
-  "vegetarian",
-  "vegan",
-  "halal",
-  "kosher",
-  "gluten_free",
-  "child",
-  "none",
-] as const;
+export const MEAL_OPTIONS = ["standard", "vegetarian", "child"] as const;
 
 // ---- Zod schemas for API payloads ----
 
@@ -144,12 +135,6 @@ export const adminBookingUpsertSchema = z.object({
   guests: z.array(adminGuestSchema).min(1),
 });
 
-export const sendTicketSchema = z.object({
-  bookingId: z.string().uuid(),
-  lang: z.enum(["de", "en", "ja"]).default("en"),
-  email: z.string().email(),
-});
-
 export type LookupInput = z.infer<typeof lookupSchema>;
 export type SelectionInput = z.infer<typeof selectionSchema>;
 export type AfterpartyInput = z.infer<typeof afterpartySchema>;
@@ -157,4 +142,3 @@ export type PersonalDetailsInput = z.infer<typeof personalDetailsSchema>;
 export type MealDetailsInput = z.infer<typeof mealDetailsSchema>;
 export type AdminLoginInput = z.infer<typeof adminLoginSchema>;
 export type AdminBookingUpsertInput = z.infer<typeof adminBookingUpsertSchema>;
-export type SendTicketInput = z.infer<typeof sendTicketSchema>;

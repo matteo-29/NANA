@@ -43,7 +43,8 @@ const de: Dict = {
   "entry.eyebrow": "Online Check-in",
   "entry.title": "Willkommen an Bord",
   "entry.subtitle":
-    "Bitte gib deinen Buchungscode und Nachnamen ein, um mit dem Check-in für die Hochzeit von Nana & Matteo zu beginnen.",
+    "Bitte gib deinen Buchungscode, Nachnamen und Vornamen ein, um mit dem Check-in für die Hochzeit von Nana & Matteo zu beginnen.",
+  "entry.mandatoryNote": "* Pflichtangabe",
   "entry.bookingCode": "Buchungscode",
   "entry.bookingCodePlaceholder": "z.B. A1BX2TZ",
   "entry.lastName": "Nachname",
@@ -67,19 +68,20 @@ const de: Dict = {
   "selection.notAttending": "Nimmt nicht teil",
 
   "declined.eyebrow": "Rückmeldung erhalten",
-  "declined.title": "Schade, dass es nicht klappt",
-  "declined.message": "Danke für deine Rückmeldung. Es ist schade, dass ihr leider nicht teilnehmen könnt — wir hätten uns sehr gefreut.",
+  "declined.title": "Danke für eure Rückmeldung",
+  "declined.message": "Danke für deine Rückmeldung. Wir freuen uns, euch bei einer anderen Gelegenheit wiederzusehen.",
   "declined.hint": "Falls sich etwas ändert, kannst du jederzeit über diesen Link zurückkommen und deine Angaben aktualisieren.",
   "declined.changeMind": "Doch teilnehmen",
 
   "afterparty.eyebrow": "Schritt 4 von 4",
   "afterparty.title": "Afterparty",
   "afterparty.subtitle": "Ihr seid herzlich eingeladen, mit uns weiterzufeiern — so wie eine Einladung in unsere Lounge.",
-  "afterparty.venueName": "Top of Hiroshima Lounge",
-  "afterparty.venueSub": "Grand Prince Hotel Hiroshima",
-  "afterparty.venueTime": "18:00 – 20:00 Uhr",
+  "afterparty.venueName": "Riho Chinese Restaurant",
+  "afterparty.venueSub": "Grand Prince Hotel Hiroshima, 21. Stock",
+  "afterparty.venueTime": "18:00 – 22:00 Uhr",
   "afterparty.venueFree": "IHR SEID EINGELADEN",
-  "afterparty.mapLink": "Auf der Karte ansehen",
+  "afterparty.mapLink": "Restaurants im Hotel ansehen",
+  "afterparty.leaveNote": "Kein Zwang, bis zum Ende zu bleiben — geht ganz nach eurem eigenen Gefühl.",
   "afterparty.optinFor": "Nimmt teil:",
   "afterparty.notAttendingWedding": "Nimmt nicht an der Hochzeit teil",
 
@@ -131,12 +133,7 @@ const de: Dict = {
 
   "meal.option.standard": "Standard",
   "meal.option.vegetarian": "Vegetarisch",
-  "meal.option.vegan": "Vegan",
-  "meal.option.halal": "Halal",
-  "meal.option.kosher": "Koscher",
-  "meal.option.gluten_free": "Glutenfrei",
   "meal.option.child": "Kindermenü",
-  "meal.option.none": "Keine Angabe",
 
   "assist.wheelchair": "Rollstuhlzugang",
   "assist.visual": "Sehbehinderung",
@@ -162,6 +159,7 @@ const de: Dict = {
   "confirm.arrivalCity": "Forever together",
   "confirm.flightDate": "29.03.2027",
   "confirm.gateOpensLabel": "Gate öffnet",
+  "confirm.gateClosesLabel": "Gate schließt",
   "confirm.departureTimeLabel": "Abflug",
   "confirm.arrivalTimeLabel": "Ankunft",
   "confirm.mealLabel": "In-Flight Dining Option",
@@ -174,9 +172,6 @@ const de: Dict = {
   "confirm.icon.wifi": "WLAN verfügbar",
   "confirm.icon.photos": "Fotos erlaubt",
   "confirm.icon.mobileOff": "Handy aus",
-  "confirm.accommodationTitle": "Habt ihr schon eine Unterkunft gebucht?",
-  "confirm.accommodationSubtitle": "Grand Prince Hotel Hiroshima — hier findet auch die Afterparty statt.",
-  "confirm.accommodationCta": "Zimmer beim Grand Prince Hotel Hiroshima ansehen",
 
   "admin.title": "Admin-Bereich",
   "admin.passwordLabel": "Passwort",
@@ -210,16 +205,10 @@ const de: Dict = {
   "admin.prefillNote": "Diese Angaben sieht der Gast beim Check-in bereits vorausgefüllt vor und kann sie bei Bedarf noch ändern.",
 
   "delivery.title": "Euer Ticket",
-  "delivery.subtitle": "Ladet euer E-Ticket herunter oder lasst es euch per E-Mail zusenden.",
+  "delivery.subtitle": "Ladet euer E-Ticket als PDF herunter.",
   "delivery.download": "PDF herunterladen",
   "delivery.downloading": "Wird erstellt …",
-  "delivery.emailLabel": "E-Mail-Adresse",
-  "delivery.emailPlaceholder": "name@beispiel.de",
-  "delivery.sendEmail": "Per E-Mail senden",
-  "delivery.sending": "Wird gesendet …",
-  "delivery.sent": "Ticket wurde an {email} gesendet.",
   "delivery.error": "Das hat leider nicht funktioniert. Bitte versucht es erneut.",
-  "delivery.emailInvalid": "Bitte gebt eine gültige E-Mail-Adresse ein.",
 };
 
 const en: Dict = {
@@ -255,7 +244,8 @@ const en: Dict = {
   "entry.eyebrow": "Online Check-in",
   "entry.title": "Welcome Aboard",
   "entry.subtitle":
-    "Please enter your booking code and last name to begin check-in for Nana & Matteo's wedding.",
+    "Please enter your booking code, last name, and first name to begin check-in for Nana & Matteo's wedding.",
+  "entry.mandatoryNote": "* mandatory answer",
   "entry.bookingCode": "Booking Code",
   "entry.bookingCodePlaceholder": "e.g. A1BX2TZ",
   "entry.lastName": "Last Name",
@@ -279,19 +269,20 @@ const en: Dict = {
   "selection.notAttending": "Not attending",
 
   "declined.eyebrow": "Response received",
-  "declined.title": "Sorry it won't work out",
-  "declined.message": "Thank you for letting us know. We're sad you won't be able to join us — we would have loved to celebrate with you.",
+  "declined.title": "Thank you for your response",
+  "declined.message": "Thank you for letting us know. We hope to see you at another occasion.",
   "declined.hint": "If anything changes, you can come back to this link anytime to update your response.",
   "declined.changeMind": "Actually, I'll attend",
 
   "afterparty.eyebrow": "Step 4 of 4",
   "afterparty.title": "Afterparty",
   "afterparty.subtitle": "You're warmly invited to keep celebrating with us — just like an invitation to our lounge.",
-  "afterparty.venueName": "Top of Hiroshima Lounge",
-  "afterparty.venueSub": "Grand Prince Hotel Hiroshima",
-  "afterparty.venueTime": "6:00 PM – 8:00 PM",
+  "afterparty.venueName": "Riho Chinese Restaurant",
+  "afterparty.venueSub": "Grand Prince Hotel Hiroshima, 21st floor",
+  "afterparty.venueTime": "6:00 PM – 10:00 PM",
   "afterparty.venueFree": "YOU'RE INVITED",
-  "afterparty.mapLink": "View on map",
+  "afterparty.mapLink": "View hotel restaurants",
+  "afterparty.leaveNote": "Feel free to leave anytime on your personal comfort.",
   "afterparty.optinFor": "Attending:",
   "afterparty.notAttendingWedding": "Not attending the wedding",
 
@@ -343,12 +334,7 @@ const en: Dict = {
 
   "meal.option.standard": "Standard",
   "meal.option.vegetarian": "Vegetarian",
-  "meal.option.vegan": "Vegan",
-  "meal.option.halal": "Halal",
-  "meal.option.kosher": "Kosher",
-  "meal.option.gluten_free": "Gluten-free",
   "meal.option.child": "Children's meal",
-  "meal.option.none": "No preference",
 
   "assist.wheelchair": "Wheelchair access",
   "assist.visual": "Visual impairment",
@@ -374,6 +360,7 @@ const en: Dict = {
   "confirm.arrivalCity": "Forever together",
   "confirm.flightDate": "29 MAR 2027",
   "confirm.gateOpensLabel": "Gate opens",
+  "confirm.gateClosesLabel": "Gate closes",
   "confirm.departureTimeLabel": "Departure",
   "confirm.arrivalTimeLabel": "Arrival",
   "confirm.mealLabel": "In-Flight Dining Option",
@@ -386,9 +373,6 @@ const en: Dict = {
   "confirm.icon.wifi": "Wifi available",
   "confirm.icon.photos": "Photos OK",
   "confirm.icon.mobileOff": "Mobile-phone off",
-  "confirm.accommodationTitle": "Have you booked your accommodation?",
-  "confirm.accommodationSubtitle": "Grand Prince Hotel Hiroshima — also the venue for the afterparty.",
-  "confirm.accommodationCta": "View rooms at Grand Prince Hotel Hiroshima",
 
   "admin.title": "Admin Area",
   "admin.passwordLabel": "Password",
@@ -422,16 +406,10 @@ const en: Dict = {
   "admin.prefillNote": "The guest will see these details pre-filled during check-in and can still adjust them if needed.",
 
   "delivery.title": "Your ticket",
-  "delivery.subtitle": "Download your e-ticket or have it sent to you by e-mail.",
+  "delivery.subtitle": "Download your e-ticket as a PDF.",
   "delivery.download": "Download PDF",
   "delivery.downloading": "Preparing …",
-  "delivery.emailLabel": "E-mail address",
-  "delivery.emailPlaceholder": "name@example.com",
-  "delivery.sendEmail": "Send by e-mail",
-  "delivery.sending": "Sending …",
-  "delivery.sent": "Ticket sent to {email}.",
   "delivery.error": "Something went wrong. Please try again.",
-  "delivery.emailInvalid": "Please enter a valid e-mail address.",
 };
 
 const ja: Dict = {
@@ -466,7 +444,8 @@ const ja: Dict = {
 
   "entry.eyebrow": "オンラインチェックイン",
   "entry.title": "ご搭乗ありがとうございます",
-  "entry.subtitle": "ナナ&マテオの結婚式チェックインのため、予約コードと姓を入力してください。",
+  "entry.subtitle": "ナナ&マテオの結婚式チェックインのため、予約コード・姓・名を入力してください。",
+  "entry.mandatoryNote": "※必須項目",
   "entry.bookingCode": "予約コード",
   "entry.bookingCodePlaceholder": "例: A1BX2TZ",
   "entry.lastName": "姓",
@@ -490,19 +469,20 @@ const ja: Dict = {
   "selection.notAttending": "不参加",
 
   "declined.eyebrow": "ご回答を受け取りました",
-  "declined.title": "ご参加いただけず残念です",
-  "declined.message": "ご回答ありがとうございます。一緒にお祝いできないことをとても残念に思います。",
+  "declined.title": "ご回答ありがとうございました",
+  "declined.message": "ご回答ありがとうございました。別の機会でお会いできるのを楽しみにしています。",
   "declined.hint": "予定が変わった場合は、このリンクからいつでも回答を変更できます。",
   "declined.changeMind": "やっぱり参加する",
 
   "afterparty.eyebrow": "ステップ 4/4",
   "afterparty.title": "アフターパーティー",
   "afterparty.subtitle": "空港のラウンジにご招待するように、私たちと一緒に楽しいひとときをお過ごしください。",
-  "afterparty.venueName": "Top of Hiroshima Lounge",
-  "afterparty.venueSub": "グランドプリンスホテル広島",
-  "afterparty.venueTime": "18:00 – 20:00",
+  "afterparty.venueName": "中国料理 李芳",
+  "afterparty.venueSub": "グランドプリンスホテル広島 21F 個室",
+  "afterparty.venueTime": "18:00 – 22:00",
   "afterparty.venueFree": "ご招待",
-  "afterparty.mapLink": "地図で見る",
+  "afterparty.mapLink": "ホテル内レストランを見る",
+  "afterparty.leaveNote": "無理をせず、ご自身のタイミングでご退席いただいて構いません。",
   "afterparty.optinFor": "参加者:",
   "afterparty.notAttendingWedding": "結婚式に不参加",
 
@@ -554,12 +534,7 @@ const ja: Dict = {
 
   "meal.option.standard": "スタンダード",
   "meal.option.vegetarian": "ベジタリアン",
-  "meal.option.vegan": "ヴィーガン",
-  "meal.option.halal": "ハラール",
-  "meal.option.kosher": "コーシャ",
-  "meal.option.gluten_free": "グルテンフリー",
   "meal.option.child": "キッズメニュー",
-  "meal.option.none": "指定なし",
 
   "assist.wheelchair": "車椅子での移動",
   "assist.visual": "視覚障がい",
@@ -585,6 +560,7 @@ const ja: Dict = {
   "confirm.arrivalCity": "Forever together",
   "confirm.flightDate": "2027年3月29日",
   "confirm.gateOpensLabel": "ゲートオープン",
+  "confirm.gateClosesLabel": "ゲートクローズ",
   "confirm.departureTimeLabel": "出発時刻",
   "confirm.arrivalTimeLabel": "到着時刻",
   "confirm.mealLabel": "In-Flight Dining Option",
@@ -597,9 +573,6 @@ const ja: Dict = {
   "confirm.icon.wifi": "Wi-Fi利用可能",
   "confirm.icon.photos": "写真撮影OK",
   "confirm.icon.mobileOff": "携帯電話の電源をお切りください",
-  "confirm.accommodationTitle": "宿泊先のご予約はお済みですか？",
-  "confirm.accommodationSubtitle": "グランドプリンスホテル広島 — アフターパーティーの会場でもあります。",
-  "confirm.accommodationCta": "グランドプリンスホテル広島の客室を見る",
 
   "admin.title": "管理者ページ",
   "admin.passwordLabel": "パスワード",
@@ -633,16 +606,10 @@ const ja: Dict = {
   "admin.prefillNote": "ここで入力した内容はチェックイン時にゲストへ表示され、必要に応じて変更できます。",
 
   "delivery.title": "チケット",
-  "delivery.subtitle": "eチケットをダウンロード、またはメールで送信できます。",
+  "delivery.subtitle": "eチケットをPDFでダウンロードできます。",
   "delivery.download": "PDFをダウンロード",
   "delivery.downloading": "作成中…",
-  "delivery.emailLabel": "メールアドレス",
-  "delivery.emailPlaceholder": "name@example.com",
-  "delivery.sendEmail": "メールで送信",
-  "delivery.sending": "送信中…",
-  "delivery.sent": "{email} 宛にチケットを送信しました。",
   "delivery.error": "エラーが発生しました。もう一度お試しください。",
-  "delivery.emailInvalid": "有効なメールアドレスを入力してください。",
 };
 
 const dictionaries: Record<Lang, Dict> = { de, en, ja };

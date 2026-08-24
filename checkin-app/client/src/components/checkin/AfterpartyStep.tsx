@@ -60,8 +60,9 @@ export function AfterpartyStep({
             <Clock className="h-4 w-4" />
             {t("afterparty.venueTime")}
           </div>
+          <p className="text-xs text-muted-foreground -mt-1">{t("afterparty.leaveNote")}</p>
           <a
-            href="https://www.princehotels.com/hiroshima/restaurants/top-of-hiroshima-lounge/"
+            href="https://www.princehotels.com/hiroshima/restaurants/"
             target="_blank"
             rel="noreferrer"
             className="flex items-center gap-2 text-sm text-primary hover:underline underline-offset-2"

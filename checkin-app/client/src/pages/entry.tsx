@@ -53,8 +53,13 @@ export default function EntryPage() {
       <Card className="border-card-border shadow-lg rounded-2xl">
         <CardContent className="pt-6">
           <form onSubmit={onSubmit} className="flex flex-col gap-5" data-testid="form-entry">
+            <p className="text-xs text-muted-foreground -mb-1" data-testid="text-mandatory-note">
+              {t("entry.mandatoryNote")}
+            </p>
             <div className="flex flex-col gap-1.5">
-              <Label htmlFor="bookingCode">{t("entry.bookingCode")}</Label>
+              <Label htmlFor="bookingCode">
+                {t("entry.bookingCode")} <span className="text-destructive">*</span>
+              </Label>
               <Input
                 id="bookingCode"
                 data-testid="input-booking-code"
@@ -67,7 +72,9 @@ export default function EntryPage() {
             </div>
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="lastName">{t("entry.lastName")}</Label>
+                <Label htmlFor="lastName">
+                  {t("entry.lastName")} <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="lastName"
                   data-testid="input-last-name"
@@ -79,7 +86,9 @@ export default function EntryPage() {
                 />
               </div>
               <div className="flex flex-col gap-1.5">
-                <Label htmlFor="firstName">{t("entry.firstName")}</Label>
+                <Label htmlFor="firstName">
+                  {t("entry.firstName")} <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="firstName"
                   data-testid="input-first-name"

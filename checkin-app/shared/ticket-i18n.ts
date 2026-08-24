@@ -34,6 +34,7 @@ export interface TicketDict {
   classValue: string;
   seat: string;
   seatValue: string;
+  afterpartyLeaveNote: string;
 
   // ---- Special service request ----
   ssrTitle: string;
@@ -85,13 +86,14 @@ const de: TicketDict = {
   arrival: "ANKUNFT",
   flightNo: "FLUG NR.",
   date: "DATUM",
-  gate: "GATE ÖFFNET",
+  gate: "GATE",
   status: "STATUS",
   statusConfirmed: "OK — BESTÄTIGT",
   classLabel: "KLASSE",
   classValue: "FIRST FLEX",
   seat: "SITZPLATZ",
   seatValue: "Freie Platzwahl",
+  afterpartyLeaveNote: "Fühlt euch nicht verpflichtet, bis zum Ende zu bleiben — geht ganz nach eurem eigenen Gefühl.",
 
   ssrTitle: "BESONDERE WÜNSCHE (SSR)",
   meal: "Menü",
@@ -126,12 +128,7 @@ const de: TicketDict = {
   mealLabels: {
     standard: "Standard",
     vegetarian: "Vegetarisch",
-    vegan: "Vegan",
-    halal: "Halal",
-    kosher: "Koscher",
-    gluten_free: "Glutenfrei",
     child: "Kindermenü",
-    none: "Keine Angabe",
   },
   assistanceLabels: {
     wheelchair: "Rollstuhl",
@@ -162,13 +159,14 @@ const en: TicketDict = {
   arrival: "ARRIVAL",
   flightNo: "FLIGHT NO.",
   date: "DATE",
-  gate: "GATE OPENS",
+  gate: "GATE",
   status: "STATUS",
   statusConfirmed: "OK — CONFIRMED",
   classLabel: "CLASS",
   classValue: "FIRST FLEX",
   seat: "SEAT",
   seatValue: "Open seating",
+  afterpartyLeaveNote: "Feel free to leave anytime, whenever feels right for you.",
 
   ssrTitle: "SPECIAL SERVICE REQUEST (SSR)",
   meal: "Meal",
@@ -203,12 +201,7 @@ const en: TicketDict = {
   mealLabels: {
     standard: "Standard",
     vegetarian: "Vegetarian",
-    vegan: "Vegan",
-    halal: "Halal",
-    kosher: "Kosher",
-    gluten_free: "Gluten-free",
     child: "Children's meal",
-    none: "No preference",
   },
   assistanceLabels: {
     wheelchair: "Wheelchair",
@@ -239,13 +232,14 @@ const ja: TicketDict = {
   arrival: "到着",
   flightNo: "フライト番号",
   date: "日付",
-  gate: "ゲートオープン",
+  gate: "ゲート",
   status: "ステータス",
   statusConfirmed: "OK — 確定済み",
   classLabel: "クラス",
   classValue: "ファーストフレックス",
   seat: "席",
   seatValue: "自由席",
+  afterpartyLeaveNote: "無理をせず、ご自身のタイミングでご退席いただいて構いません。",
 
   ssrTitle: "特別サービスリクエスト（SSR）",
   meal: "メニュー",
@@ -279,12 +273,7 @@ const ja: TicketDict = {
   mealLabels: {
     standard: "スタンダード",
     vegetarian: "ベジタリアン",
-    vegan: "ヴィーガン",
-    halal: "ハラール",
-    kosher: "コーシャ",
-    gluten_free: "グルテンフリー",
     child: "キッズメニュー",
-    none: "指定なし",
   },
   assistanceLabels: {
     wheelchair: "車椅子",

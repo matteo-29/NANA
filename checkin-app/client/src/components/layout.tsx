@@ -56,12 +56,16 @@ export function Header() {
   return (
     <header className="bg-white border-b border-border sticky top-0 z-20">
       <div className="mx-auto max-w-3xl px-4 h-[64px] flex items-center justify-between gap-4">
-        <Link href="/" className="flex items-center gap-3 shrink-0" data-testid="link-home">
+        <a
+          href="https://matteo-29.github.io/NANA/"
+          className="flex items-center gap-3 shrink-0"
+          data-testid="link-home"
+        >
           <img src={nanaLogo} alt="NANA" className="h-6 sm:h-7 w-auto object-contain" />
           <span className="hidden sm:inline text-xs font-semibold text-foreground/60 tracking-wide">
             {t("app.tagline")}
           </span>
-        </Link>
+        </a>
         <nav className="flex items-center gap-3 sm:gap-5">
           <Link
             href="/admin"

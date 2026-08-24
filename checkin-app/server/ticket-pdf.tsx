@@ -64,40 +64,46 @@ const styles = StyleSheet.create({
     paddingBottom: 32,
   },
   headerBar: {
-    backgroundColor: NAVY,
+    backgroundColor: "#FFFFFF",
     paddingHorizontal: 36,
     paddingVertical: 18,
     flexDirection: "row",
     justifyContent: "space-between",
-    alignItems: "center",
+    alignItems: "flex-end",
+    borderBottomWidth: 1,
+    borderBottomColor: HAIRLINE,
   },
-  brand: {
-    fontSize: 22,
-    fontWeight: 700,
-    color: "#FFFFFF",
-    letterSpacing: 2,
+  headerLogoRow: {
+    flexDirection: "row",
+    alignItems: "flex-end",
+  },
+  headerNanaLogo: {
+    width: 132,
+    height: 32.4,
+  },
+  headerAllianceLogo: {
+    width: 91,
+    height: 16.2,
+    marginLeft: 16,
+    marginBottom: 1,
   },
   allianceTag: {
     fontSize: 7,
-    color: "#C9D3EA",
+    color: MUTED,
     letterSpacing: 1,
     marginTop: 2,
   },
   docTitleBlock: { alignItems: "flex-end" },
   docTitle: {
     fontSize: 10,
-    color: "#FFFFFF",
+    color: NAVY,
     fontWeight: 700,
     letterSpacing: 0.5,
   },
   docSubtitle: {
     fontSize: 8,
-    color: "#C9D3EA",
+    color: MUTED,
     marginTop: 2,
-  },
-  crimsonStrip: {
-    height: 4,
-    backgroundColor: CRIMSON,
   },
   body: {
     paddingHorizontal: 36,
@@ -366,16 +372,18 @@ function GuestTicketPage({
   return (
     <Page size="A4" style={styles.page}>
       <View style={styles.headerBar}>
-        <View>
-          <Text style={styles.brand}>{d.brand}</Text>
-          <Text style={styles.allianceTag}>{d.allianceTag}</Text>
+        <View style={styles.headerLogoRow}>
+          <Image src={path.join(moduleDir, "branding/nana-logo.jpg")} style={styles.headerNanaLogo} />
+          <Image
+            src={path.join(moduleDir, "branding/kratz-alliance.jpg")}
+            style={styles.headerAllianceLogo}
+          />
         </View>
         <View style={styles.docTitleBlock}>
           <Text style={styles.docTitle}>{d.documentTitle}</Text>
           <Text style={styles.docSubtitle}>{d.documentSubtitle}</Text>
         </View>
       </View>
-      <View style={styles.crimsonStrip} />
 
       <View style={styles.body}>
         <View style={styles.infoGrid}>
@@ -437,7 +445,7 @@ function GuestTicketPage({
             </View>
             <View style={styles.segmentFooterItem}>
               <Text style={styles.segmentFooterLabel}>{d.gate}</Text>
-              <Text style={styles.segmentFooterValue}>12:00</Text>
+              <Text style={styles.segmentFooterValue}>12:00–12:50</Text>
             </View>
             <View style={styles.segmentFooterItem}>
               <Text style={styles.segmentFooterLabel}>{d.classLabel}</Text>
@@ -478,9 +486,9 @@ function GuestTicketPage({
               </View>
               <View style={styles.segmentColRight}>
                 <Text style={styles.segmentCityLabel}>{d.arrival}</Text>
-                <Text style={styles.segmentCity}>Top of Hiroshima Lounge</Text>
-                <Text style={styles.segmentVenue}>Grand Prince Hotel Hiroshima</Text>
-                <Text style={styles.segmentTime}>20:00</Text>
+                <Text style={styles.segmentCity}>Riho Chinese Restaurant</Text>
+                <Text style={styles.segmentVenue}>Grand Prince Hotel Hiroshima, 21F</Text>
+                <Text style={styles.segmentTime}>22:00</Text>
               </View>
             </View>
             <View style={styles.segmentFooter}>
@@ -506,6 +514,9 @@ function GuestTicketPage({
                 </Text>
               </View>
             </View>
+            <Text style={{ fontSize: 6.5, color: MUTED, marginTop: 6, paddingHorizontal: 14, paddingBottom: 8 }}>
+              {d.afterpartyLeaveNote}
+            </Text>
           </View>
         )}
 

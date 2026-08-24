@@ -3,7 +3,6 @@ import { useI18n } from "@/lib/i18n";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Input } from "@/components/ui/input";
 import {
   Popover,
   PopoverTrigger,
@@ -26,18 +25,14 @@ import {
   Camera,
   PhoneOff,
   Download,
-  Send,
   Ticket,
   type LucideIcon,
 } from "lucide-react";
-import princeHotelImg from "@/assets/nana/prince_hotel.jpg";
 
 function TicketDelivery({ booking }: { booking: Booking }) {
   const { t, lang } = useI18n();
   const { toast } = useToast();
-  const [email, setEmail] = useState("");
   const [downloading, setDownloading] = useState(false);
-  const [sending, setSending] = useState(false);
 
   async function handleDownload() {
     setDownloading(true);
@@ -56,27 +51,6 @@ function TicketDelivery({ booking }: { booking: Booking }) {
       toast({ description: t("delivery.error"), variant: "destructive" });
     } finally {
       setDownloading(false);
-    }
-  }
-
-  async function handleSendEmail() {
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      toast({ description: t("delivery.emailInvalid"), variant: "destructive" });
-      return;
-    }
-    setSending(true);
-    try {
-      const res = await apiRequest("POST", "/api/send-ticket", {
-        bookingId: booking.id,
-        lang,
-        email,
-      });
-      if (!res.ok) throw new Error("send failed");
-      toast({ description: t("delivery.sent", { email }) });
-    } catch (err) {
-      toast({ description: t("delivery.error"), variant: "destructive" });
-    } finally {
-      setSending(false);
     }
   }
 
@@ -102,33 +76,6 @@ function TicketDelivery({ booking }: { booking: Booking }) {
           <Download className="h-4 w-4" />
           {downloading ? t("delivery.downloading") : t("delivery.download")}
         </Button>
-
-        <div className="flex flex-col gap-2 pt-2 border-t border-border">
-          <label className="text-xs font-medium text-foreground" htmlFor="delivery-email">
-            {t("delivery.emailLabel")}
-          </label>
-          <div className="flex flex-col sm:flex-row gap-2">
-            <Input
-              id="delivery-email"
-              type="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder={t("delivery.emailPlaceholder")}
-              data-testid="input-delivery-email"
-              className="flex-1"
-            />
-            <Button
-              type="button"
-              className="rounded-full gap-2 shrink-0"
-              onClick={handleSendEmail}
-              disabled={sending}
-              data-testid="button-send-ticket-email"
-            >
-              <Send className="h-4 w-4" />
-              {sending ? t("delivery.sending") : t("delivery.sendEmail")}
-            </Button>
-          </div>
-        </div>
       </CardContent>
     </Card>
   );
@@ -302,9 +249,10 @@ export function ConfirmationStep({
                   </div>
                 </div>
 
-                <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground border-t border-border pt-2" data-testid={`text-flight-schedule-${g.id}`}>
+                <div className="flex items-center justify-between gap-2 text-[11px] text-muted-foreground border-t border-border pt-2 flex-wrap" data-testid={`text-flight-schedule-${g.id}`}>
                   <span className="font-medium text-foreground">{t("confirm.flightDate")}</span>
                   <span>{t("confirm.gateOpensLabel")} 12:00</span>
+                  <span>{t("confirm.gateClosesLabel")} 12:50</span>
                   <span>{t("confirm.departureTimeLabel")} 13:00</span>
                   <span>{t("confirm.arrivalTimeLabel")} 16:30</span>
                 </div>
@@ -352,34 +300,6 @@ export function ConfirmationStep({
             </CardContent>
           </Card>
         ))}
-      </div>
-
-      <div className="mt-8">
-        <p className="text-sm font-semibold text-foreground mb-1 text-center">
-          {t("confirm.accommodationTitle")}
-        </p>
-        <p className="text-xs text-muted-foreground mb-3 text-center">
-          {t("confirm.accommodationSubtitle")}
-        </p>
-        <a
-          href="https://rsv.seibuprince.com/?adult=2&arrive=2027-03-28&chain=31483&child=0&currency=JPY&depart=2027-03-31&dsclid=79920180943130624&hotel=43739&level=hotel&locale=en-US&productcurrency=JPY&rooms=1&utm_campaign=derbysoft&utm_medium=metasearch&utm_source=google-hotelads"
-          target="_blank"
-          rel="noreferrer"
-          className="block"
-          data-testid="link-accommodation"
-        >
-          <Card className="border-card-border overflow-hidden hover-elevate">
-            <img
-              src={princeHotelImg}
-              alt="Grand Prince Hotel Hiroshima"
-              className="w-full h-40 object-cover"
-              data-testid="img-prince-hotel"
-            />
-            <CardContent className="py-3 text-center text-sm text-primary font-medium">
-              {t("confirm.accommodationCta")}
-            </CardContent>
-          </Card>
-        </a>
       </div>
 
       {selected.length > 0 && (
