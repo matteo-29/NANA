@@ -18,6 +18,7 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog";
 import { StepBar } from "@/components/layout";
+import { DateRangeCalendar } from "@/components/checkin/DateRangeCalendar";
 import { apiRequest } from "@/lib/queryClient";
 import {
   ROOM_TYPES,
@@ -134,8 +135,8 @@ export function HotelStep({
 }) {
   const { t, lang } = useI18n();
   const [wantsHotel, setWantsHotel] = useState<boolean>(initial?.wants_hotel ?? false);
-  const [checkIn, setCheckIn] = useState<string>(initial?.check_in ?? "2027-03-29");
-  const [checkOut, setCheckOut] = useState<string>(initial?.check_out ?? "2027-03-30");
+  const [checkIn, setCheckIn] = useState<string | null>(initial?.check_in ?? "2027-03-29");
+  const [checkOut, setCheckOut] = useState<string | null>(initial?.check_out ?? "2027-03-30");
   const [rooms, setRooms] = useState<HotelRoom[]>(
     initial?.rooms && initial.rooms.length > 0 ? initial.rooms : [emptyRoom()]
   );
@@ -145,7 +146,22 @@ export function HotelStep({
   const [priceLoading, setPriceLoading] = useState(false);
   const [fx, setFx] = useState<{ rate: number; approx: boolean } | null>(null);
 
-  const datesValid = checkIn < checkOut;
+  const datesValid = !!checkIn && !!checkOut && checkIn < checkOut;
+
+  const sortedDates = [...HOTEL_DATE_OPTIONS].sort();
+  const minDate = sortedDates[0];
+  const maxDate = sortedDates[sortedDates.length - 1];
+  const minD = new Date(minDate);
+  const maxD = new Date(maxDate);
+  const calYear1 = minD.getFullYear();
+  const calMonth1 = minD.getMonth();
+  const calYear2 = maxD.getFullYear();
+  const calMonth2 = maxD.getMonth();
+
+  const nights =
+    datesValid
+      ? Math.round((new Date(checkOut as string).getTime() - new Date(checkIn as string).getTime()) / 86400000)
+      : 0;
 
   useEffect(() => {
     apiRequest("GET", "/api/fx-rate")
@@ -162,7 +178,7 @@ export function HotelStep({
     let cancelled = false;
     setPriceLoading(true);
     const handle = setTimeout(() => {
-      apiRequest("POST", "/api/hotel-price", { wantsHotel: true, checkIn, checkOut, rooms })
+      apiRequest("POST", "/api/hotel-price", { wantsHotel: true, checkIn: checkIn as string, checkOut: checkOut as string, rooms })
         .then((res) => res.json())
         .then((d) => {
           if (!cancelled) setPrice(d);
@@ -203,6 +219,7 @@ export function HotelStep({
       onSubmit({ wantsHotel: false });
       return;
     }
+    if (!checkIn || !checkOut) return;
     onSubmit({ wantsHotel: true, checkIn, checkOut, rooms });
   }
 
@@ -261,41 +278,55 @@ export function HotelStep({
 
           {wantsHotel && (
             <>
-              <div className="grid grid-cols-2 gap-3">
-                <div className="flex flex-col gap-1.5">
-                  <Label>{t("hotel.checkIn")}</Label>
-                  <Select value={checkIn} onValueChange={setCheckIn}>
-                    <SelectTrigger data-testid="select-checkin">
-                      <SelectValue placeholder={t("hotel.selectDate")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {HOTEL_DATE_OPTIONS.filter((d) => d !== "2027-04-02").map((d) => (
-                        <SelectItem key={d} value={d} data-testid={`option-checkin-${d}`}>
-                          {d}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+              <div className="rounded-xl border border-border bg-card p-4">
+                <div className="flex flex-wrap items-center justify-between gap-2 mb-4">
+                  <div className="flex items-center gap-4">
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        {t("hotel.checkIn")}
+                      </div>
+                      <div className="text-sm font-semibold text-foreground" data-testid="text-checkin-value">
+                        {checkIn ?? t("hotel.selectDate")}
+                      </div>
+                    </div>
+                    <div className="text-muted-foreground">→</div>
+                    <div>
+                      <div className="text-[11px] uppercase tracking-wide text-muted-foreground">
+                        {t("hotel.checkOut")}
+                      </div>
+                      <div className="text-sm font-semibold text-foreground" data-testid="text-checkout-value">
+                        {checkOut ?? t("hotel.selectDate")}
+                      </div>
+                    </div>
+                  </div>
+                  {datesValid && (
+                    <div
+                      className="text-xs font-medium text-primary bg-primary/10 rounded-full px-3 py-1"
+                      data-testid="text-nights-count"
+                    >
+                      {nights} {nights === 1 ? t("hotel.nightSingular") : t("hotel.nightPlural")}
+                    </div>
+                  )}
                 </div>
-                <div className="flex flex-col gap-1.5">
-                  <Label>{t("hotel.checkOut")}</Label>
-                  <Select value={checkOut} onValueChange={setCheckOut}>
-                    <SelectTrigger data-testid="select-checkout">
-                      <SelectValue placeholder={t("hotel.selectDate")} />
-                    </SelectTrigger>
-                    <SelectContent>
-                      {HOTEL_DATE_OPTIONS.filter((d) => d !== "2027-03-25").map((d) => (
-                        <SelectItem key={d} value={d} data-testid={`option-checkout-${d}`}>
-                          {d}
-                        </SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
-                </div>
+                <DateRangeCalendar
+                  year1={calYear1}
+                  month1={calMonth1}
+                  year2={calYear2}
+                  month2={calMonth2}
+                  minDate={minDate}
+                  maxDate={maxDate}
+                  checkIn={checkIn ?? undefined}
+                  checkOut={checkOut ?? undefined}
+                  onSelect={(ci, co) => {
+                    setCheckIn(ci ?? null);
+                    setCheckOut(co ?? null);
+                  }}
+                  lang={lang}
+                />
               </div>
               {!datesValid && (
                 <p className="text-xs text-destructive -mt-2" data-testid="text-dates-error">
-                  {t("hotel.datesError")}
+                  {checkIn && checkOut ? t("hotel.datesError") : t("hotel.selectDates")}
                 </p>
               )}
 

@@ -32,6 +32,7 @@ export interface TicketDict {
   statusConfirmed: string;
   classLabel: string;
   classValue: string;
+  busClassValue: string;
   seat: string;
   seatValue: string;
   afterpartyLeaveNote: string;
@@ -123,6 +124,7 @@ const de: TicketDict = {
   statusConfirmed: "OK — BESTÄTIGT",
   classLabel: "KLASSE",
   classValue: "FIRST FLEX",
+  busClassValue: "ECONOMY CLASS",
   seat: "SITZPLATZ",
   seatValue: "Freie Platzwahl",
   afterpartyLeaveNote: "Fühlt euch nicht verpflichtet, bis zum Ende zu bleiben — geht ganz nach eurem eigenen Gefühl.",
@@ -235,6 +237,7 @@ const en: TicketDict = {
   statusConfirmed: "OK — CONFIRMED",
   classLabel: "CLASS",
   classValue: "FIRST FLEX",
+  busClassValue: "ECONOMY CLASS",
   seat: "SEAT",
   seatValue: "Open seating",
   afterpartyLeaveNote: "Feel free to leave anytime, whenever feels right for you.",
@@ -347,6 +350,7 @@ const ja: TicketDict = {
   statusConfirmed: "OK — 確定済み",
   classLabel: "クラス",
   classValue: "ファーストフレックス",
+  busClassValue: "エコノミークラス",
   seat: "席",
   seatValue: "自由席",
   afterpartyLeaveNote: "無理をせず、ご自身のタイミングでご退席いただいて構いません。",

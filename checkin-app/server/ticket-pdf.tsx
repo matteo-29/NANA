@@ -845,7 +845,7 @@ function BusTicketPage({
             <View style={styles.segmentFooterItem}>
               <Text style={styles.segmentFooterLabel}>{d.classLabel}</Text>
               <View style={styles.classBadge}>
-                <Text style={styles.classBadgeText}>{d.classValue}</Text>
+                <Text style={styles.classBadgeText}>{d.busClassValue}</Text>
               </View>
             </View>
             <View style={styles.segmentFooterItem}>
