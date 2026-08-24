@@ -34,8 +34,8 @@ export function AfterpartyStep({
     <div>
       <StepBar
         step={3}
-        total={4}
-        labels={[t("step.selection"), t("step.details"), t("step.meal"), t("step.afterparty")]}
+        total={6}
+        labels={[t("step.selection"), t("step.details"), t("step.meal"), t("step.afterparty"), t("step.hotel"), t("step.bus")]}
       />
       <div className="mb-6">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-2">
@@ -134,7 +134,7 @@ export function AfterpartyStep({
               {t("common.saving")}
             </span>
           ) : (
-            t("common.finish")
+            t("common.next")
           )}
         </Button>
       </div>

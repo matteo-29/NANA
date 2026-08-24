@@ -9,7 +9,7 @@ import {
   PopoverContent,
 } from "@/components/ui/popover";
 import { Link } from "wouter";
-import type { Booking, Guest } from "@shared/schema";
+import type { Booking, Guest, HotelBooking } from "@shared/schema";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 import {
@@ -26,6 +26,8 @@ import {
   PhoneOff,
   Download,
   Ticket,
+  BedDouble,
+  Bus,
   type LucideIcon,
 } from "lucide-react";
 
@@ -121,19 +123,26 @@ function ServiceIcon({
 export function ConfirmationStep({
   booking,
   guests,
+  hotelBooking,
   onEditSelection,
   onEditAfterparty,
+  onEditHotel,
+  onEditBus,
   onEditGuest,
 }: {
   booking: Booking;
   guests: Guest[];
+  hotelBooking?: HotelBooking | null;
   onEditSelection: () => void;
   onEditAfterparty: () => void;
+  onEditHotel: () => void;
+  onEditBus: () => void;
   onEditGuest: (guestIndex: number) => void;
 }) {
   const { t } = useI18n();
   const selected = guests.filter((g) => g.selected);
   const notAttending = guests.filter((g) => !g.selected);
+  const busOptinCount = selected.filter((g) => g.bus_optin).length;
 
   return (
     <div>
@@ -189,6 +198,52 @@ export function ConfirmationStep({
                     {selected.filter((g) => g.afterparty_optin).length} / {selected.length}{" "}
                     {t("afterparty.optinFor")}
                   </div>
+                </div>
+                <span className="text-xs text-primary underline underline-offset-2">
+                  {t("common.edit")}
+                </span>
+              </CardContent>
+            </Card>
+          </button>
+        )}
+
+        {selected.length > 0 && (
+          <button
+            type="button"
+            onClick={onEditHotel}
+            className="text-left"
+            data-testid="button-edit-hotel"
+          >
+            <Card className="border-card-border hover-elevate">
+              <CardContent className="py-4 flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-semibold text-foreground">
+                    {hotelBooking?.wants_hotel ? t("confirm.hotelYes") : t("confirm.hotelNo")}
+                  </div>
+                  <div className="text-xs text-muted-foreground">{t("hotel.title")}</div>
+                </div>
+                <span className="text-xs text-primary underline underline-offset-2">
+                  {t("common.edit")}
+                </span>
+              </CardContent>
+            </Card>
+          </button>
+        )}
+
+        {selected.length > 0 && (
+          <button
+            type="button"
+            onClick={onEditBus}
+            className="text-left"
+            data-testid="button-edit-bus"
+          >
+            <Card className="border-card-border hover-elevate">
+              <CardContent className="py-4 flex items-center justify-between">
+                <div>
+                  <div className="text-sm font-semibold text-foreground">
+                    {busOptinCount} / {selected.length} {t("bus.optinFor")}
+                  </div>
+                  <div className="text-xs text-muted-foreground">{t("bus.title")}</div>
                 </div>
                 <span className="text-xs text-primary underline underline-offset-2">
                   {t("common.edit")}
@@ -267,6 +322,18 @@ export function ConfirmationStep({
                       label={g.afterparty_optin ? t("confirm.icon.afterparty") : t("confirm.afterpartyNo")}
                       disabled={!g.afterparty_optin}
                       testId={`icon-afterparty-${g.id}`}
+                    />
+                    <ServiceIcon
+                      icon={BedDouble}
+                      label={hotelBooking?.wants_hotel ? t("confirm.hotelYes") : t("confirm.hotelNo")}
+                      disabled={!hotelBooking?.wants_hotel}
+                      testId={`icon-hotel-${g.id}`}
+                    />
+                    <ServiceIcon
+                      icon={Bus}
+                      label={g.bus_optin ? t("confirm.busYes") : t("confirm.busNo")}
+                      disabled={!g.bus_optin}
+                      testId={`icon-bus-${g.id}`}
                     />
                     <ServiceIcon icon={Gift} label={t("confirm.icon.amenities")} testId={`icon-amenities-${g.id}`} />
                     <ServiceIcon icon={Wifi} label={t("confirm.icon.wifi")} testId={`icon-wifi-${g.id}`} />

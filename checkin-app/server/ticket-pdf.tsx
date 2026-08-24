@@ -11,8 +11,9 @@ import {
 } from "@react-pdf/renderer";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import type { Booking, Guest } from "@shared/schema";
+import type { Booking, Guest, HotelBooking } from "@shared/schema";
 import { getTicketDict, type TicketLang } from "@shared/ticket-i18n";
+import { computeHotelPrice, nightsBetween } from "./pricing";
 
 // Resolve this module's directory in a way that works both in dev (tsx runs
 // this as true ESM, so `import.meta.url` is defined and there is no native
@@ -313,6 +314,51 @@ const styles = StyleSheet.create({
     height: 19,
     marginBottom: 6,
   },
+  roomCard: {
+    borderWidth: 1,
+    borderColor: HAIRLINE,
+    borderRadius: 4,
+    marginBottom: 10,
+    overflow: "hidden",
+  },
+  roomCardHeader: {
+    backgroundColor: CREAM,
+    paddingVertical: 6,
+    paddingHorizontal: 12,
+    flexDirection: "row",
+    justifyContent: "space-between",
+    borderBottomWidth: 1,
+    borderBottomColor: HAIRLINE,
+  },
+  roomCardBody: {
+    flexDirection: "row",
+    paddingVertical: 12,
+    paddingHorizontal: 14,
+  },
+  roomCardCol: { flex: 1 },
+  totalBar: {
+    flexDirection: "row",
+    justifyContent: "space-between",
+    alignItems: "center",
+    borderWidth: 1,
+    borderColor: NAVY,
+    borderRadius: 4,
+    backgroundColor: "#EEF1FA",
+    paddingVertical: 10,
+    paddingHorizontal: 14,
+    marginTop: 4,
+  },
+  totalBarLabel: {
+    fontSize: 8,
+    fontWeight: 700,
+    color: NAVY_DARK,
+    letterSpacing: 0.8,
+  },
+  totalBarValue: {
+    fontSize: 15,
+    fontWeight: 700,
+    color: NAVY,
+  },
 });
 
 // Split into sentences and render each on its own line. This sidesteps a
@@ -325,6 +371,25 @@ function splitSentences(text: string): string[] {
     .split(/(?<=[。.!?])\s*/)
     .map((s) => s.trim())
     .filter(Boolean);
+}
+
+function formatStayDate(dateStr: string, lang: TicketLang): string {
+  const d = new Date(dateStr + "T00:00:00Z");
+  if (lang === "ja") {
+    return `${d.getUTCFullYear()}年${d.getUTCMonth() + 1}月${d.getUTCDate()}日`;
+  }
+  const day = String(d.getUTCDate()).padStart(2, "0");
+  const months = [
+    "JAN", "FEB", "MAR", "APR", "MAY", "JUN",
+    "JUL", "AUG", "SEP", "OCT", "NOV", "DEC",
+  ];
+  return `${day} ${months[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+}
+
+function voucherNumberFor(bookingId: string): string {
+  const digits = bookingId.replace(/[^0-9]/g, "") || "0";
+  const seed = (digits + "2703270327032").slice(0, 10).padEnd(10, "0");
+  return `HTL-${seed}`;
 }
 
 function ticketNumberFor(guestId: string): string {
@@ -573,17 +638,274 @@ function GuestTicketPage({
   );
 }
 
+function HotelVoucherPage({
+  booking,
+  hotelBooking,
+  lang,
+}: {
+  booking: Booking;
+  hotelBooking: HotelBooking;
+  lang: TicketLang;
+}) {
+  const d = getTicketDict(lang);
+  const checkIn = hotelBooking.check_in!;
+  const checkOut = hotelBooking.check_out!;
+  const nights = nightsBetween(checkIn, checkOut);
+  const priceResult = computeHotelPrice(hotelBooking.rooms, checkIn, checkOut);
+  const totalJpy = hotelBooking.total_price_jpy ?? priceResult.totalJpy;
+
+  return (
+    <Page size="A4" style={styles.page}>
+      <View style={styles.headerBar}>
+        <View style={styles.headerLogoRow}>
+          <Image src={path.join(moduleDir, "branding/nana-logo.jpg")} style={styles.headerNanaLogo} />
+          <Image
+            src={path.join(moduleDir, "branding/kratz-alliance.jpg")}
+            style={styles.headerAllianceLogo}
+          />
+        </View>
+        <View style={styles.docTitleBlock}>
+          <Text style={styles.docTitle}>{d.hotelVoucherTitle}</Text>
+          <Text style={styles.docSubtitle}>{d.hotelVoucherSubtitle}</Text>
+        </View>
+      </View>
+
+      <View style={styles.body}>
+        <View style={styles.infoGrid}>
+          <View style={styles.infoCell}>
+            <Text style={styles.infoLabel}>{d.passengerName}</Text>
+            <Text style={styles.infoValue}>
+              {booking.last_name}/{booking.first_name}
+            </Text>
+          </View>
+          <View style={styles.infoCell}>
+            <Text style={styles.infoLabel}>{d.reservationCode}</Text>
+            <Text style={styles.infoValue}>{booking.booking_code}</Text>
+          </View>
+          <View style={styles.infoCellLast}>
+            <Text style={styles.infoLabel}>{d.voucherNumber}</Text>
+            <Text style={styles.infoValueSmall}>{voucherNumberFor(booking.id)}</Text>
+          </View>
+        </View>
+
+        <View style={[styles.infoGrid, { marginTop: 6 }]}>
+          <View style={styles.infoCell}>
+            <Text style={styles.infoLabel}>{d.checkIn}</Text>
+            <Text style={styles.infoValueSmall}>{formatStayDate(checkIn, lang)}</Text>
+          </View>
+          <View style={styles.infoCell}>
+            <Text style={styles.infoLabel}>{d.checkOut}</Text>
+            <Text style={styles.infoValueSmall}>{formatStayDate(checkOut, lang)}</Text>
+          </View>
+          <View style={styles.infoCellLast}>
+            <Text style={styles.infoLabel}>{d.nights}</Text>
+            <Text style={styles.infoValueSmall}>{nights.length}</Text>
+          </View>
+        </View>
+
+        <Text style={styles.sectionHeading}>{d.hotelName}</Text>
+        <Text style={{ fontSize: 8, color: MUTED, marginTop: -6, marginBottom: 10 }}>
+          {d.hotelAddress}
+        </Text>
+
+        {hotelBooking.rooms.map((room, i) => (
+          <View key={i} style={styles.roomCard}>
+            <View style={styles.roomCardHeader}>
+              <Text style={styles.segmentHeaderText}>
+                {d.roomSegment} {i + 1}
+              </Text>
+              <Text style={styles.segmentFlight}>
+                {d.roomTypeLabels[room.roomType] ?? room.roomType}
+              </Text>
+            </View>
+            <View style={styles.roomCardBody}>
+              <View style={styles.roomCardCol}>
+                <Text style={styles.segmentCityLabel}>{d.occupancyLabel}</Text>
+                <Text style={styles.infoValueSmall}>
+                  {room.adults} {d.adultsShort}
+                  {room.children + room.childrenUnder6 > 0
+                    ? `, ${room.children + room.childrenUnder6} ${d.childrenShort}`
+                    : ""}
+                </Text>
+              </View>
+              <View style={styles.roomCardCol}>
+                <Text style={styles.segmentCityLabel}>{d.mealPlanLabel}</Text>
+                <Text style={styles.infoValueSmall}>
+                  {d.mealPlanLabels[room.mealPlan] ?? room.mealPlan}
+                </Text>
+              </View>
+            </View>
+          </View>
+        ))}
+
+        <View style={styles.totalBar}>
+          <Text style={styles.totalBarLabel}>{d.totalPrice}</Text>
+          <Text style={styles.totalBarValue}>
+            ¥{totalJpy.toLocaleString("en-US")}
+          </Text>
+        </View>
+      </View>
+
+      <View style={styles.footer}>
+        <Image src={path.join(moduleDir, "branding/kratz-alliance.jpg")} style={styles.allianceLogo} />
+        {lang === "ja" ? (
+          splitSentences(d.hotelVoucherNote).map((sentence, i) => (
+            <Text key={i} style={styles.footerNotice}>
+              {sentence}
+            </Text>
+          ))
+        ) : (
+          <Text style={styles.footerNotice}>{d.hotelVoucherNote}</Text>
+        )}
+        <View style={styles.footerMeta}>
+          <Text style={styles.footerMetaText}>{d.issuingOfficeValue}</Text>
+          <Text style={styles.footerMetaText}>
+            {d.printedOn}: {formatDateOfIssue(lang)}
+          </Text>
+        </View>
+      </View>
+    </Page>
+  );
+}
+
+function BusTicketPage({
+  booking,
+  guest,
+  lang,
+}: {
+  booking: Booking;
+  guest: Guest;
+  lang: TicketLang;
+}) {
+  const d = getTicketDict(lang);
+  const name = `${guest.last_name}/${guest.first_name}${honorific(guest.gender, lang)}`;
+
+  return (
+    <Page size="A4" style={styles.page}>
+      <View style={styles.headerBar}>
+        <View style={styles.headerLogoRow}>
+          <Image src={path.join(moduleDir, "branding/nana-logo.jpg")} style={styles.headerNanaLogo} />
+          <Image
+            src={path.join(moduleDir, "branding/kratz-alliance.jpg")}
+            style={styles.headerAllianceLogo}
+          />
+        </View>
+        <View style={styles.docTitleBlock}>
+          <Text style={styles.docTitle}>{d.busTicketTitle}</Text>
+          <Text style={styles.docSubtitle}>{d.busTicketSubtitle}</Text>
+        </View>
+      </View>
+
+      <View style={styles.body}>
+        <View style={styles.infoGrid}>
+          <View style={styles.infoCell}>
+            <Text style={styles.infoLabel}>{d.passengerName}</Text>
+            <Text style={styles.infoValue}>{name}</Text>
+          </View>
+          <View style={styles.infoCellLast}>
+            <Text style={styles.infoLabel}>{d.reservationCode}</Text>
+            <Text style={styles.infoValue}>{booking.booking_code}</Text>
+          </View>
+        </View>
+
+        <Text style={styles.sectionHeading}>{d.itinerary}</Text>
+
+        <View style={styles.segmentCard}>
+          <View style={styles.segmentHeader}>
+            <Text style={styles.segmentHeaderText}>{d.busSegment}</Text>
+            <Text style={styles.segmentFlight}>NM 0329S</Text>
+          </View>
+          <View style={styles.segmentBody}>
+            <View style={styles.segmentCol}>
+              <Text style={styles.segmentCityLabel}>{d.boardingPoint}</Text>
+              <Text style={styles.segmentCity}>Hiroshima Sta.</Text>
+              <Text style={styles.segmentVenue}>Shinkansen Exit</Text>
+              <Text style={styles.segmentTime}>11:30</Text>
+            </View>
+            <View style={styles.planeCol}>
+              <Text style={{ fontSize: 10, color: NAVY }}>{"\u2192"}</Text>
+              <View style={styles.planeLine} />
+            </View>
+            <View style={styles.segmentColRight}>
+              <Text style={styles.segmentCityLabel}>{d.destinationPoint}</Text>
+              <Text style={styles.segmentCity}>Grand Prince Hotel</Text>
+              <Text style={styles.segmentVenue}>Hiroshima</Text>
+              <Text style={styles.segmentTime}>12:00</Text>
+            </View>
+          </View>
+          <View style={styles.segmentFooter}>
+            <View style={styles.segmentFooterItem}>
+              <Text style={styles.segmentFooterLabel}>{d.date}</Text>
+              <Text style={styles.segmentFooterValue}>29 MAR 2027</Text>
+            </View>
+            <View style={styles.segmentFooterItem}>
+              <Text style={styles.segmentFooterLabel}>{d.boardingTime}</Text>
+              <Text style={styles.segmentFooterValue}>11:20</Text>
+            </View>
+            <View style={styles.segmentFooterItem}>
+              <Text style={styles.segmentFooterLabel}>{d.classLabel}</Text>
+              <View style={styles.classBadge}>
+                <Text style={styles.classBadgeText}>{d.classValue}</Text>
+              </View>
+            </View>
+            <View style={styles.segmentFooterItem}>
+              <Text style={styles.segmentFooterLabel}>{d.gate}</Text>
+              <Text style={styles.segmentFooterValue}>8/9</Text>
+            </View>
+            <View style={styles.segmentFooterItem}>
+              <Text style={styles.segmentFooterLabel}>{d.status}</Text>
+              <Text style={[styles.segmentFooterValue, { color: CRIMSON }]}>
+                {d.statusConfirmed}
+              </Text>
+            </View>
+          </View>
+        </View>
+      </View>
+
+      <View style={styles.footer}>
+        <Image src={path.join(moduleDir, "branding/kratz-alliance.jpg")} style={styles.allianceLogo} />
+        {lang === "ja" ? (
+          splitSentences(d.busTicketNote).map((sentence, i) => (
+            <Text key={i} style={styles.footerNotice}>
+              {sentence}
+            </Text>
+          ))
+        ) : (
+          <Text style={styles.footerNotice}>{d.busTicketNote}</Text>
+        )}
+        <View style={styles.footerMeta}>
+          <Text style={styles.footerMetaText}>{d.issuingOfficeValue}</Text>
+          <Text style={styles.footerMetaText}>
+            {d.printedOn}: {formatDateOfIssue(lang)}
+          </Text>
+        </View>
+      </View>
+    </Page>
+  );
+}
+
 export async function renderTicketPdf(
   booking: Booking,
   guests: Guest[],
-  lang: TicketLang
+  lang: TicketLang,
+  hotelBooking?: HotelBooking | null
 ): Promise<Buffer> {
   registerFonts();
   const attending = guests.filter((g) => g.selected);
+  const busGuests = attending.filter((g) => g.bus_optin);
+  const showHotelVoucher = Boolean(
+    hotelBooking && hotelBooking.wants_hotel && hotelBooking.check_in && hotelBooking.check_out && hotelBooking.rooms?.length
+  );
   const doc = (
     <Document title={`${booking.booking_code} — ${getTicketDict(lang).brand} E-Ticket`}>
       {attending.map((guest) => (
         <GuestTicketPage key={guest.id} booking={booking} guest={guest} lang={lang} />
+      ))}
+      {showHotelVoucher && (
+        <HotelVoucherPage booking={booking} hotelBooking={hotelBooking as HotelBooking} lang={lang} />
+      )}
+      {busGuests.map((guest) => (
+        <BusTicketPage key={`bus-${guest.id}`} booking={booking} guest={guest} lang={lang} />
       ))}
     </Document>
   );

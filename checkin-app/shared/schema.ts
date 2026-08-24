@@ -36,9 +36,75 @@ export interface Guest {
   special_assistance: string[];
   special_assistance_other: string | null;
   checkin_completed: boolean;
+  bus_optin: boolean | null;
   created_at: string;
   updated_at: string;
 }
+
+// ---- Hotel booking (Phase 2) ----
+export const ROOM_TYPES = ["twin", "family"] as const;
+export const MEAL_PLANS = ["room_only", "breakfast", "breakfast_onsen"] as const;
+
+// The bookable stay window is fixed to the days around the wedding
+// (25 Mar – 2 Apr 2027). Check-out has no separate "night" of its own, so the
+// last valid check-in is one day before the last valid check-out.
+export const HOTEL_DATE_OPTIONS = [
+  "2027-03-25",
+  "2027-03-26",
+  "2027-03-27",
+  "2027-03-28",
+  "2027-03-29",
+  "2027-03-30",
+  "2027-03-31",
+  "2027-04-01",
+  "2027-04-02",
+] as const;
+
+export interface HotelRoom {
+  roomType: (typeof ROOM_TYPES)[number];
+  adults: number;
+  children: number; // paying children, age 6+
+  childrenUnder6: number; // free, do not affect price/occupancy tier
+  mealPlan: (typeof MEAL_PLANS)[number];
+}
+
+export interface HotelBooking {
+  id: string;
+  booking_id: string;
+  wants_hotel: boolean;
+  check_in: string | null;
+  check_out: string | null;
+  rooms: HotelRoom[];
+  total_price_jpy: number | null;
+  created_at: string;
+  updated_at: string;
+}
+
+export const hotelRoomSchema = z.object({
+  roomType: z.enum(ROOM_TYPES),
+  adults: z.number().int().min(1).max(4),
+  children: z.number().int().min(0).max(3),
+  childrenUnder6: z.number().int().min(0).max(3),
+  mealPlan: z.enum(MEAL_PLANS),
+});
+
+export const hotelBookingSchema = z
+  .object({
+    bookingId: z.string().uuid(),
+    wantsHotel: z.boolean(),
+    checkIn: z.enum(HOTEL_DATE_OPTIONS).optional(),
+    checkOut: z.enum(HOTEL_DATE_OPTIONS).optional(),
+    rooms: z.array(hotelRoomSchema).min(1).max(5).optional(),
+  })
+  .refine(
+    (d) => !d.wantsHotel || (d.checkIn && d.checkOut && d.checkIn < d.checkOut && d.rooms && d.rooms.length > 0),
+    { message: "Bei Hotelwunsch sind An-/Abreise und mindestens ein Zimmer erforderlich." }
+  );
+
+export const busOptinSchema = z.object({
+  guestId: z.string().uuid(),
+  busOptin: z.boolean(),
+});
 
 export const SPECIAL_ASSISTANCE_OPTIONS = [
   "wheelchair",
@@ -126,6 +192,7 @@ export const adminGuestSchema = z.object({
   allergies: z.string().nullable().optional(),
   specialAssistance: z.array(z.string()).optional(),
   specialAssistanceOther: z.string().nullable().optional(),
+  busOptin: z.boolean().nullable().optional(),
 });
 
 export const adminBookingUpsertSchema = z.object({
@@ -142,3 +209,5 @@ export type PersonalDetailsInput = z.infer<typeof personalDetailsSchema>;
 export type MealDetailsInput = z.infer<typeof mealDetailsSchema>;
 export type AdminLoginInput = z.infer<typeof adminLoginSchema>;
 export type AdminBookingUpsertInput = z.infer<typeof adminBookingUpsertSchema>;
+export type HotelBookingInput = z.infer<typeof hotelBookingSchema>;
+export type BusOptinInput = z.infer<typeof busOptinSchema>;

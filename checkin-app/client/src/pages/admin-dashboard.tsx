@@ -44,11 +44,11 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Loader2, Plus, Trash2, Download, LogOut, Pencil } from "lucide-react";
-import type { Booking, Guest } from "@shared/schema";
+import type { Booking, Guest, HotelBooking } from "@shared/schema";
 import { GENDER_OPTIONS, MEAL_OPTIONS, SPECIAL_ASSISTANCE_OPTIONS } from "@shared/schema";
 import { COUNTRIES } from "@shared/countries";
 
-type BookingWithGuests = Booking & { guests: Guest[] };
+type BookingWithGuests = Booking & { guests: Guest[]; hotelBooking?: HotelBooking | null };
 type EditableGuest = {
   id?: string;
   firstName: string;
@@ -261,6 +261,8 @@ export default function AdminDashboardPage() {
         {bookings.map((b) => {
           const doneCount = b.guests.filter((g) => g.checkin_completed).length;
           const afterpartyCount = b.guests.filter((g) => g.afterparty_optin).length;
+          const busCount = b.guests.filter((g) => g.bus_optin).length;
+          const hasHotel = !!b.hotelBooking;
           return (
             <Card key={b.id} className="border-card-border" data-testid={`card-booking-${b.id}`}>
               <CardContent className="pt-5 flex flex-col gap-3">
@@ -275,6 +277,12 @@ export default function AdminDashboardPage() {
                       </Badge>
                       <Badge variant="outline">
                         {afterpartyCount} {t("admin.afterparty")}
+                      </Badge>
+                      <Badge variant={hasHotel ? "default" : "outline"} data-testid={`badge-hotel-${b.id}`}>
+                        {hasHotel ? t("admin.hotelYes") : t("admin.hotelNo")}
+                      </Badge>
+                      <Badge variant="outline" data-testid={`badge-bus-${b.id}`}>
+                        {busCount} {t("admin.busShort")}
                       </Badge>
                     </div>
                     <div className="text-sm text-muted-foreground mt-1">

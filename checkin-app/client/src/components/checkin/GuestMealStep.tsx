@@ -96,8 +96,8 @@ export function GuestMealStep({
     <div>
       <StepBar
         step={2}
-        total={4}
-        labels={[t("step.selection"), t("step.details"), t("step.meal"), t("step.afterparty")]}
+        total={6}
+        labels={[t("step.selection"), t("step.details"), t("step.meal"), t("step.afterparty"), t("step.hotel"), t("step.bus")]}
       />
       <div className="mb-6">
         <p className="text-xs font-semibold tracking-widest uppercase text-primary mb-2">

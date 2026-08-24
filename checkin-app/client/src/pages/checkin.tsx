@@ -7,9 +7,11 @@ import { SelectionStep } from "@/components/checkin/SelectionStep";
 import { AfterpartyStep } from "@/components/checkin/AfterpartyStep";
 import { GuestDetailsStep } from "@/components/checkin/GuestDetailsStep";
 import { GuestMealStep } from "@/components/checkin/GuestMealStep";
+import { HotelStep } from "@/components/checkin/HotelStep";
+import { BusStep } from "@/components/checkin/BusStep";
 import { ConfirmationStep } from "@/components/checkin/ConfirmationStep";
 import { DeclinedStep } from "@/components/checkin/DeclinedStep";
-import type { Booking, Guest } from "@shared/schema";
+import type { Booking, Guest, HotelBooking, HotelRoom } from "@shared/schema";
 import { useI18n } from "@/lib/i18n";
 import { Loader2 } from "lucide-react";
 
@@ -18,6 +20,8 @@ type WizardStep =
   | "afterparty"
   | "guest-details"
   | "guest-meal"
+  | "hotel"
+  | "bus"
   | "confirmation"
   | "declined";
 
@@ -29,7 +33,7 @@ export default function CheckinPage() {
     queryKey: ["/api/booking", bookingId],
     queryFn: async () => {
       const res = await apiRequest("GET", `/api/booking/${bookingId}`);
-      return (await res.json()) as { booking: Booking; guests: Guest[] };
+      return (await res.json()) as { booking: Booking; guests: Guest[]; hotelBooking: HotelBooking | null };
     },
   });
 
@@ -65,10 +69,15 @@ export default function CheckinPage() {
   // server response on every step (the array position of unrelated guests
   // never changes mid-flow).
   function patchGuests(updater: (guests: Guest[]) => Guest[]) {
-    queryClient.setQueryData<{ booking: Booking; guests: Guest[] } | undefined>(
-      ["/api/booking", bookingId],
-      (old) => (old ? { ...old, guests: updater(old.guests) } : old)
-    );
+    queryClient.setQueryData<
+      { booking: Booking; guests: Guest[]; hotelBooking: HotelBooking | null } | undefined
+    >(["/api/booking", bookingId], (old) => (old ? { ...old, guests: updater(old.guests) } : old));
+  }
+
+  function patchHotelBooking(hotelBooking: HotelBooking | null) {
+    queryClient.setQueryData<
+      { booking: Booking; guests: Guest[]; hotelBooking: HotelBooking | null } | undefined
+    >(["/api/booking", bookingId], (old) => (old ? { ...old, hotelBooking } : old));
   }
 
   function advanceAfterMeal() {
@@ -102,6 +111,38 @@ export default function CheckinPage() {
       const results = await Promise.all(
         Object.entries(optins).map(async ([guestId, afterpartyOptin]) => {
           const res = await apiRequest("POST", "/api/afterparty", { guestId, afterpartyOptin });
+          return (await res.json()) as { guest: Guest };
+        })
+      );
+      return results.map((r) => r.guest);
+    },
+    onSuccess: (updatedGuests) => {
+      patchGuests((guests) => guests.map((g) => updatedGuests.find((u) => u.id === g.id) ?? g));
+      setStep("hotel");
+    },
+  });
+
+  const hotelMutation = useMutation({
+    mutationFn: async (values: {
+      wantsHotel: boolean;
+      checkIn?: string;
+      checkOut?: string;
+      rooms?: HotelRoom[];
+    }) => {
+      const res = await apiRequest("POST", "/api/hotel-booking", { bookingId, ...values });
+      return (await res.json()) as { hotelBooking: HotelBooking };
+    },
+    onSuccess: ({ hotelBooking }) => {
+      patchHotelBooking(hotelBooking);
+      setStep("bus");
+    },
+  });
+
+  const busMutation = useMutation({
+    mutationFn: async (optins: Record<string, boolean>) => {
+      const results = await Promise.all(
+        Object.entries(optins).map(async ([guestId, busOptin]) => {
+          const res = await apiRequest("POST", "/api/bus", { guestId, busOptin });
           return (await res.json()) as { guest: Guest };
         })
       );
@@ -198,6 +239,25 @@ export default function CheckinPage() {
         />
       )}
 
+      {step === "hotel" && (
+        <HotelStep
+          bookingId={bookingId!}
+          initial={data.hotelBooking}
+          onSubmit={(values) => hotelMutation.mutate(values)}
+          onBack={() => setStep("afterparty")}
+          isSubmitting={hotelMutation.isPending}
+        />
+      )}
+
+      {step === "bus" && (
+        <BusStep
+          guests={data.guests}
+          onSubmit={(optins) => busMutation.mutate(optins)}
+          onBack={() => setStep("hotel")}
+          isSubmitting={busMutation.isPending}
+        />
+      )}
+
       {step === "guest-details" && selectedGuests[guestIndex] && (
         <GuestDetailsStep
           guest={selectedGuests[guestIndex]}
@@ -238,8 +298,11 @@ export default function CheckinPage() {
         <ConfirmationStep
           booking={data.booking}
           guests={data.guests}
+          hotelBooking={data.hotelBooking}
           onEditSelection={() => setStep("selection")}
           onEditAfterparty={() => setStep("afterparty")}
+          onEditHotel={() => setStep("hotel")}
+          onEditBus={() => setStep("bus")}
           onEditGuest={(idx) => {
             setGuestIndex(idx);
             setStep("guest-details");

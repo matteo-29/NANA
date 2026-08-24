@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useLocation } from "wouter";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest } from "@/lib/queryClient";
@@ -14,9 +14,13 @@ import { useAdminAuth } from "@/lib/admin-auth";
 export default function AdminLoginPage() {
   const { t } = useI18n();
   const [, navigate] = useLocation();
-  const { setPassword } = useAdminAuth();
+  const { password: activePassword, setPassword } = useAdminAuth();
   const [input, setInput] = useState("");
   const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (activePassword) navigate("/admin/dashboard");
+  }, [activePassword, navigate]);
 
   const login = useMutation({
     mutationFn: async () => {
@@ -25,7 +29,6 @@ export default function AdminLoginPage() {
     },
     onSuccess: () => {
       setPassword(input);
-      navigate("/admin/dashboard");
     },
     onError: () => setError(t("admin.wrongPassword")),
   });

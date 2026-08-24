@@ -10,8 +10,11 @@ import {
   mealDetailsSchema,
   adminLoginSchema,
   adminBookingUpsertSchema,
+  hotelBookingSchema,
+  busOptinSchema,
 } from "@shared/schema";
 import { renderTicketPdf } from "./ticket-pdf";
+import { computeHotelPrice } from "./pricing";
 import type { TicketLang } from "@shared/ticket-i18n";
 
 function parseLang(v: unknown): TicketLang {
@@ -67,10 +70,93 @@ export async function registerRoutes(
       const booking = await storage.getBooking(req.params.bookingId);
       if (!booking) return res.status(404).json({ message: "notfound" });
       const guests = await storage.getGuestsByBooking(booking.id);
-      res.json({ booking, guests });
+      const hotelBooking = await storage.getHotelBooking(booking.id);
+      res.json({ booking, guests, hotelBooking: hotelBooking ?? null });
     } catch (err) {
       console.error(err);
       res.status(500).json({ message: "Serverfehler" });
+    }
+  });
+
+  // ---- Live hotel price quote (does not persist anything) ----
+  app.post("/api/hotel-price", async (req, res) => {
+    const parsed = hotelBookingSchema.safeParse({ ...req.body, bookingId: req.body.bookingId ?? "00000000-0000-0000-0000-000000000000" });
+    if (!parsed.success || !parsed.data.wantsHotel || !parsed.data.checkIn || !parsed.data.checkOut || !parsed.data.rooms) {
+      return res.status(400).json({ message: "Ungültige Eingabe." });
+    }
+    try {
+      const result = computeHotelPrice(parsed.data.rooms, parsed.data.checkIn, parsed.data.checkOut);
+      res.json(result);
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Preis konnte nicht berechnet werden." });
+    }
+  });
+
+  // ---- Hotel booking (per family/group booking, Phase 2) ----
+  app.post("/api/hotel-booking", async (req, res) => {
+    const parsed = hotelBookingSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: "Ungültige Eingabe." });
+    try {
+      const d = parsed.data;
+      let totalPriceJpy: number | undefined = undefined;
+      if (d.wantsHotel && d.checkIn && d.checkOut && d.rooms) {
+        totalPriceJpy = computeHotelPrice(d.rooms, d.checkIn, d.checkOut).totalJpy;
+      }
+      const hotelBooking = await storage.upsertHotelBooking(d.bookingId, {
+        wantsHotel: d.wantsHotel,
+        checkIn: d.checkIn,
+        checkOut: d.checkOut,
+        rooms: d.rooms,
+        totalPriceJpy,
+      });
+      res.json({ hotelBooking });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Serverfehler" });
+    }
+  });
+
+  // ---- Bus opt-in per guest ----
+  app.post("/api/bus", async (req, res) => {
+    const parsed = busOptinSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ message: "Ungültige Eingabe." });
+    try {
+      const guest = await storage.updateGuest(parsed.data.guestId, {
+        bus_optin: parsed.data.busOptin,
+      });
+      res.json({ guest });
+    } catch (err) {
+      console.error(err);
+      res.status(500).json({ message: "Serverfehler" });
+    }
+  });
+
+  // ---- Live JPY -> EUR exchange rate, cached in memory for 1 hour ----
+  let fxCache: { rate: number; asOf: string; approx: boolean } | null = null;
+  let fxCacheAt = 0;
+  app.get("/api/fx-rate", async (_req, res) => {
+    const ONE_HOUR = 60 * 60 * 1000;
+    if (fxCache && Date.now() - fxCacheAt < ONE_HOUR) {
+      return res.json(fxCache);
+    }
+    try {
+      const r = await fetch("https://open.er-api.com/v6/latest/JPY");
+      const data = await r.json();
+      const rate = data?.rates?.EUR;
+      if (typeof rate !== "number") throw new Error("no EUR rate in response");
+      fxCache = { rate, asOf: data.time_last_update_utc ?? new Date().toISOString(), approx: false };
+      fxCacheAt = Date.now();
+      res.json(fxCache);
+    } catch (err) {
+      console.error("FX rate fetch failed, falling back to approximate rate", err);
+      // [Vermutung] Fallback rate if the live FX API is unreachable — a rough
+      // approximation, clearly flagged as such via `approx: true` so the UI
+      // can show a disclaimer.
+      const fallback = { rate: 0.0061, asOf: new Date().toISOString(), approx: true };
+      fxCache = fallback;
+      fxCacheAt = Date.now();
+      res.json(fallback);
     }
   });
 
@@ -194,7 +280,8 @@ export async function registerRoutes(
         return res.status(400).json({ message: "Keine teilnehmenden Gäste in dieser Buchung." });
       }
       const lang = parseLang(req.query.lang);
-      const pdf = await renderTicketPdf(booking, guests, lang);
+      const hotelBooking = await storage.getHotelBooking(booking.id);
+      const pdf = await renderTicketPdf(booking, guests, lang, hotelBooking ?? null);
       res.setHeader("Content-Type", "application/pdf");
       res.setHeader(
         "Content-Disposition",

@@ -1,5 +1,5 @@
 import supabase from "./supabase";
-import type { Booking, Guest, AdminBookingUpsertInput } from "@shared/schema";
+import type { Booking, Guest, AdminBookingUpsertInput, HotelBooking, HotelRoom } from "@shared/schema";
 
 type AdminGuestInput = AdminBookingUpsertInput["guests"][number];
 
@@ -26,6 +26,7 @@ function mapAdminGuestFields(g: AdminGuestInput): Record<string, unknown> {
   if (g.allergies !== undefined) row.allergies = g.allergies;
   if (g.specialAssistance !== undefined) row.special_assistance = g.specialAssistance;
   if (g.specialAssistanceOther !== undefined) row.special_assistance_other = g.specialAssistanceOther;
+  if (g.busOptin !== undefined) row.bus_optin = g.busOptin;
   return row;
 }
 
@@ -37,7 +38,7 @@ export interface IStorage {
   setSelection(bookingId: string, selectedGuestIds: string[]): Promise<void>;
   updateGuest(guestId: string, patch: Partial<Guest>): Promise<Guest>;
 
-  listBookingsWithGuests(): Promise<(Booking & { guests: Guest[] })[]>;
+  listBookingsWithGuests(): Promise<(Booking & { guests: Guest[]; hotelBooking: HotelBooking | null })[]>;
   createBooking(
     bookingCode: string,
     lastName: string,
@@ -53,6 +54,12 @@ export interface IStorage {
   ): Promise<Booking & { guests: Guest[] }>;
   deleteBooking(bookingId: string): Promise<void>;
   deleteGuest(guestId: string): Promise<void>;
+
+  getHotelBooking(bookingId: string): Promise<HotelBooking | undefined>;
+  upsertHotelBooking(
+    bookingId: string,
+    patch: { wantsHotel: boolean; checkIn?: string; checkOut?: string; rooms?: HotelRoom[]; totalPriceJpy?: number }
+  ): Promise<HotelBooking>;
 }
 
 class SupabaseStorage implements IStorage {
@@ -130,7 +137,7 @@ class SupabaseStorage implements IStorage {
     return data;
   }
 
-  async listBookingsWithGuests(): Promise<(Booking & { guests: Guest[] })[]> {
+  async listBookingsWithGuests(): Promise<(Booking & { guests: Guest[]; hotelBooking: HotelBooking | null })[]> {
     const { data: bookings, error } = await supabase
       .from("bookings")
       .select("*")
@@ -142,9 +149,12 @@ class SupabaseStorage implements IStorage {
       .order("created_at", { ascending: true })
       .order("id", { ascending: true });
     if (gErr) throw gErr;
+    const { data: hotelBookings, error: hErr } = await supabase.from("hotel_bookings").select("*");
+    if (hErr) throw hErr;
     return (bookings ?? []).map((b) => ({
       ...b,
       guests: (guests ?? []).filter((g) => g.booking_id === b.id),
+      hotelBooking: (hotelBookings ?? []).find((h) => h.booking_id === b.id) ?? null,
     }));
   }
 
@@ -242,6 +252,49 @@ class SupabaseStorage implements IStorage {
   async deleteGuest(guestId: string): Promise<void> {
     const { error } = await supabase.from("guests").delete().eq("id", guestId);
     if (error) throw error;
+  }
+
+  async getHotelBooking(bookingId: string): Promise<HotelBooking | undefined> {
+    const { data, error } = await supabase
+      .from("hotel_bookings")
+      .select("*")
+      .eq("booking_id", bookingId)
+      .maybeSingle();
+    if (error) throw error;
+    return data ?? undefined;
+  }
+
+  async upsertHotelBooking(
+    bookingId: string,
+    patch: { wantsHotel: boolean; checkIn?: string; checkOut?: string; rooms?: HotelRoom[]; totalPriceJpy?: number }
+  ): Promise<HotelBooking> {
+    const row: Record<string, unknown> = {
+      wants_hotel: patch.wantsHotel,
+      updated_at: new Date().toISOString(),
+    };
+    if (patch.checkIn !== undefined) row.check_in = patch.checkIn;
+    if (patch.checkOut !== undefined) row.check_out = patch.checkOut;
+    if (patch.rooms !== undefined) row.rooms = patch.rooms;
+    if (patch.totalPriceJpy !== undefined) row.total_price_jpy = patch.totalPriceJpy;
+
+    const existing = await this.getHotelBooking(bookingId);
+    if (existing) {
+      const { data, error } = await supabase
+        .from("hotel_bookings")
+        .update(row)
+        .eq("id", existing.id)
+        .select("*")
+        .single();
+      if (error) throw error;
+      return data;
+    }
+    const { data, error } = await supabase
+      .from("hotel_bookings")
+      .insert({ booking_id: bookingId, ...row })
+      .select("*")
+      .single();
+    if (error) throw error;
+    return data;
   }
 }
 
