@@ -185,34 +185,6 @@ nav a:hover{color:var(--blue)}
   font-size:17px;
 }
 
-.route{
-  display:flex;
-  align-items:center;
-  gap:15px;
-  margin-top:28px;
-  font-weight:800;
-}
-
-.route i{
-  height:1px;
-  width:100px;
-  background:#fff;
-  position:relative;
-}
-
-.route i:after{
-  content:"✈";
-  position:absolute;
-  right:-3px;
-  top:-13px;
-  font-style:normal;
-  animation:fly 4s ease-in-out infinite;
-}
-
-@keyframes fly{
-  50%{transform:translateX(-78px) translateY(-6px)}
-}
-
 .booking{
   margin:-112px auto 0;
   position:relative;
@@ -636,12 +608,6 @@ footer b{color:#263860}
     <div class="flight-tag">FLIGHT NM 0329 · HIJ → FTG · 29 MAR 2027</div>
     <h1>Nana &<br>Matteo</h1>
     <p id="heroText">Willkommen an Bord unseres schönsten gemeinsamen Fluges.</p>
-
-    <div class="route">
-      <span>HIJ</span>
-      <i></i>
-      <span>FTG</span>
-    </div>
   </div>
 </section>
 
@@ -782,7 +748,7 @@ footer b{color:#263860}
       </div>
 
       <div class="row">
-        <b>14:00</b>
+        <b>14:00 – 16:30</b>
         <span data-t="s4">In-flight Service — Dinner & Entertainment</span>
         <span class="status"></span>
       </div>
@@ -799,7 +765,7 @@ footer b{color:#263860}
 
 <section id="location" class="section container">
   <div class="eyebrow">DEPARTURE TERMINAL</div>
-  <h2 class="title">Wo wir abfliegen</h2>
+  <h2 class="title" data-t="locationTitle">Wo wir abfliegen</h2>
 
   <div class="location">
     <div class="location-copy">
@@ -812,7 +778,7 @@ footer b{color:#263860}
         </b>
       </p>
 
-      <p>
+      <p data-t="locationBody">
         Unser Arrival Terminal liegt direkt an der Hiroshima-Bucht.
         Der Check-in Counter öffnet um 12:00 Uhr.
       </p>
@@ -882,10 +848,12 @@ const copy={
     schedule:"Flugplan des Tages",
     s1:"Check-in & Lounge",
     s2:"Gate schließt",
-    s3:"Departure - Beginning of the ceremony",
+    s3:"Abflug – Beginn der Zeremonie",
     s4:"In-flight Service — Dinner & Entertainment",
     s5:"Afterparty",
-    s6:"Fühlt euch nicht verpflichtet, bis zum Ende zu bleiben — geht ganz nach eurem eigenen Gefühl."
+    s6:"Fühlt euch nicht verpflichtet, bis zum Ende zu bleiben — geht ganz nach eurem eigenen Gefühl.",
+    locationTitle:"Wo wir abfliegen",
+    locationBody:"Unser Arrival Terminal liegt direkt an der Hiroshima-Bucht. Der Check-in Counter öffnet um 12:00 Uhr."
   },
 
   en:{
@@ -912,7 +880,9 @@ const copy={
     s3:"Wedding ceremony — departure",
     s4:"In-flight Service — Dinner & Entertainment",
     s5:"Afterparty",
-    s6:"Feel free to leave anytime on your personal comfort."
+    s6:"Feel free to leave anytime on your personal comfort.",
+    locationTitle:"Where we depart from",
+    locationBody:"Our arrival terminal sits directly on Hiroshima Bay. The check-in counter opens at 12:00."
   },
 
   ja:{
@@ -939,7 +909,9 @@ const copy={
     s3:"結婚式 － 出発",
     s4:"機内サービス － ディナー＆エンターテインメント",
     s5:"アフターパーティー",
-    s6:"無理をせず、ご自身のタイミングでご退席いただいて構いません。"
+    s6:"無理をせず、ご自身のタイミングでご退席いただいて構いません。",
+    locationTitle:"出発地について",
+    locationBody:"到着ロビーは広島湾に面しています。チェックインカウンターは12時にオープンします。"
   }
 };
 
