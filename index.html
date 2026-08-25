@@ -400,13 +400,18 @@ nav a:hover{color:var(--blue)}
 }
 
 .row{
-  display:grid;
-  grid-template-columns:95px 120px 1fr 130px;
-  gap:12px;
+  display:flex;
+  flex-wrap:wrap;
+  justify-content:center;
+  align-items:center;
+  gap:6px 22px;
   padding:15px 20px;
   border-bottom:1px solid rgba(255,255,255,.14);
-  align-items:center;
+  text-align:center;
 }
+
+.row > b,
+.row > span{white-space:nowrap}
 
 .row:first-child{
   background:#071836;
@@ -478,6 +483,31 @@ nav a:hover{color:var(--blue)}
   color:#fff;
 }
 
+.mobile-checkin{display:none}
+
+.menu-toggle{
+  display:none;
+  flex-direction:column;
+  justify-content:center;
+  align-items:center;
+  gap:4px;
+  width:34px;
+  height:34px;
+  border:0;
+  background:transparent;
+  cursor:pointer;
+  padding:0;
+  flex:0 0 auto;
+}
+
+.menu-toggle span{
+  display:block;
+  width:22px;
+  height:2px;
+  background:#263960;
+  border-radius:2px;
+}
+
 footer{
   background:#fff;
   border-top:1px solid #e5e9f1;
@@ -490,14 +520,31 @@ footer b{color:#263860}
 .private{margin-top:12px;font-size:11px}
 
 @media(max-width:760px){
-  nav a:not(.nav-checkin){display:none}
-
   .head{
-    min-height:64px;
-    gap:10px;
+    min-height:auto;
+    flex-wrap:wrap;
+    padding:10px 0;
+    gap:8px;
   }
 
-  .brand{gap:9px}
+  .mobile-checkin{
+    display:flex;
+    order:1;
+    width:100%;
+    justify-content:center;
+    padding:9px 0;
+    font-size:13px;
+  }
+
+  .desktop-checkin{display:none}
+
+  .brand{
+    order:2;
+    gap:9px;
+    flex:1 1 auto;
+    min-width:0;
+    overflow:hidden;
+  }
 
   .brand-logo{
     height:27px;
@@ -518,9 +565,33 @@ footer b{color:#263860}
     max-width:16px;
   }
 
-  .nav-checkin{
-    padding:7px 11px;
-    font-size:12px;
+  .menu-toggle{
+    display:flex;
+    order:3;
+  }
+
+  nav{
+    order:4;
+    display:none;
+    flex-direction:column;
+    align-items:stretch;
+    width:100%;
+    gap:0;
+    border-top:1px solid #e5e9f1;
+    margin-top:8px;
+    padding-top:10px;
+  }
+
+  nav.open{display:flex}
+
+  nav a{
+    padding:12px 4px;
+    border-bottom:1px solid #eef1f6;
+  }
+
+  .lang{
+    margin:10px 4px 2px;
+    align-self:flex-start;
   }
 
   .hero-inner{padding:55px 0 150px}
@@ -540,12 +611,6 @@ footer b{color:#263860}
     height:70px;
   }
 
-  .row{
-    grid-template-columns:65px 85px 1fr;
-  }
-
-  .row span:last-child{display:none}
-
   .section{padding:55px 0}
 
   .announcement{
@@ -560,6 +625,26 @@ footer b{color:#263860}
 
   .welcome-photo{height:260px}
   .map{min-height:270px}
+
+  .row:first-child{display:none}
+
+  .row{
+    flex-direction:column;
+    gap:4px;
+    text-align:center;
+  }
+
+  .row > b,
+  .row > span{white-space:normal}
+}
+
+@media(max-width:340px){
+  .kratz-alliance span{display:none}
+
+  .kratz-alliance{
+    padding-left:6px;
+    gap:0;
+  }
 }
 </style>
 </head>
@@ -576,6 +661,8 @@ footer b{color:#263860}
 <header>
   <div class="container head">
 
+    <a class="checkin-link nav-checkin mobile-checkin" href="https://nana-matteo-checkin.pplx.app" target="_blank" rel="noopener" data-t="navCheckin">Check-in</a>
+
     <div class="brand">
       <img class="brand-logo" src="./nana_logo.jpg" alt="Nana & Matteo">
 
@@ -585,11 +672,15 @@ footer b{color:#263860}
       </div>
     </div>
 
-    <nav>
+    <button class="menu-toggle" aria-label="Menu" aria-expanded="false" onclick="toggleMenu()">
+      <span></span><span></span><span></span>
+    </button>
+
+    <nav id="siteNav">
       <a href="#welcome" data-t="navWelcome">Willkommen</a>
       <a href="#schedule" data-t="navSchedule">Flugplan</a>
       <a href="#location" data-t="navLocation">Anreise</a>
-      <a class="checkin-link nav-checkin" href="https://nana-matteo-checkin.pplx.app" target="_blank" rel="noopener" data-t="navCheckin">Check-in</a>
+      <a class="checkin-link nav-checkin desktop-checkin" href="https://nana-matteo-checkin.pplx.app" target="_blank" rel="noopener" data-t="navCheckin">Check-in</a>
 
       <select class="lang" onchange="setLang(this.value)" aria-label="Sprache">
         <option value="de">DE</option>
@@ -724,39 +815,32 @@ footer b{color:#263860}
     <div class="board">
       <div class="row">
         <span>TIME</span>
-      
         <span>EVENT</span>
-        <span></span>
       </div>
 
       <div class="row">
         <b data-t="t1">12:00</b>
         <span data-t="s1">Check-in & Lounge</span>
-        <span class="status"></span>
       </div>
 
       <div class="row">
         <b>12:50</b>
         <span data-t="s2">Gate schließt</span>
-        <span class="status"></span>
       </div>
 
       <div class="row">
         <b data-t="t3">13:00</b>
         <span data-t="s3">Abflug - Beginn der Zeremonie</span>
-        <span class="status"></span>
       </div>
 
       <div class="row">
         <b data-t="t4">14:00 – 16:30</b>
         <span data-t="s4">In-flight Service — Dinner & Entertainment</span>
-        <span class="status"></span>
       </div>
 
       <div class="row">
         <b data-t="t5">18:00 – 22:00</b>
         <span data-t="s5">Afterparty</span>
-        <span class="status"></span>
       </div>
     </div>
     <p style="margin-top:16px;opacity:.75;font-size:.9em" data-t="s6">Feel free to leave anytime on your personal comfort.</p>
@@ -940,6 +1024,20 @@ function setLang(lang){
 
   document.querySelector("#heroText").textContent=copy[lang].heroText;
 }
+
+function toggleMenu(){
+  const nav=document.querySelector("#siteNav");
+  const btn=document.querySelector(".menu-toggle");
+  const isOpen=nav.classList.toggle("open");
+  btn.setAttribute("aria-expanded",isOpen?"true":"false");
+}
+
+document.querySelectorAll("#siteNav a").forEach(a=>{
+  a.addEventListener("click",()=>{
+    document.querySelector("#siteNav").classList.remove("open");
+    document.querySelector(".menu-toggle").setAttribute("aria-expanded","false");
+  });
+});
 </script>
 
 </body>
