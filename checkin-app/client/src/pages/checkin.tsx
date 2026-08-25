@@ -119,10 +119,16 @@ export default function CheckinPage() {
   });
 
   const afterpartyMutation = useMutation({
-    mutationFn: async (optins: Record<string, boolean>) => {
+    mutationFn: async (
+      optins: Record<string, { afterpartyOptin: boolean; favoriteSong?: string }>
+    ) => {
       const results = await Promise.all(
-        Object.entries(optins).map(async ([guestId, afterpartyOptin]) => {
-          const res = await apiRequest("POST", "/api/afterparty", { guestId, afterpartyOptin });
+        Object.entries(optins).map(async ([guestId, { afterpartyOptin, favoriteSong }]) => {
+          const res = await apiRequest("POST", "/api/afterparty", {
+            guestId,
+            afterpartyOptin,
+            favoriteSong,
+          });
           return (await res.json()) as { guest: Guest };
         })
       );
@@ -241,7 +247,7 @@ export default function CheckinPage() {
       {step === "afterparty" && (
         <AfterpartyStep
           guests={data.guests}
-          onSubmit={(optins) => afterpartyMutation.mutate(optins)}
+          onSubmit={(entries) => afterpartyMutation.mutate(entries)}
           onBack={() => {
             setGuestIndex(selectedGuests.length - 1);
             setStep("guest-meal");

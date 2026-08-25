@@ -42,6 +42,7 @@ export interface Guest {
   special_assistance_other: string | null;
   checkin_completed: boolean;
   bus_optin: boolean | null;
+  favorite_song: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -137,6 +138,7 @@ export const selectionSchema = z.object({
 export const afterpartySchema = z.object({
   guestId: z.string().uuid(),
   afterpartyOptin: z.boolean(),
+  favoriteSong: z.string().max(200).nullable().optional(),
 });
 
 export const GENDER_OPTIONS = [

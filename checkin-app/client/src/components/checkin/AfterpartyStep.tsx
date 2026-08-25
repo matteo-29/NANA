@@ -5,9 +5,10 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
+import { Input } from "@/components/ui/input";
 import type { Guest } from "@shared/schema";
 import { StepBar } from "@/components/layout";
-import { Loader2, MapPin, Clock } from "lucide-react";
+import { Loader2, MapPin, Clock, Music } from "lucide-react";
 
 export function AfterpartyStep({
   guests,
@@ -16,7 +17,7 @@ export function AfterpartyStep({
   isSubmitting,
 }: {
   guests: Guest[];
-  onSubmit: (optins: Record<string, boolean>) => void;
+  onSubmit: (entries: Record<string, { afterpartyOptin: boolean; favoriteSong?: string }>) => void;
   onBack: () => void;
   isSubmitting: boolean;
 }) {
@@ -25,9 +26,18 @@ export function AfterpartyStep({
   const [optins, setOptins] = useState<Record<string, boolean>>(() =>
     Object.fromEntries(attendingGuests.map((g) => [g.id, g.afterparty_optin ?? true]))
   );
+  const [songs, setSongs] = useState<Record<string, string>>(() =>
+    Object.fromEntries(attendingGuests.map((g) => [g.id, g.favorite_song ?? ""]))
+  );
 
   function handleSubmit() {
-    onSubmit(optins);
+    const entries = Object.fromEntries(
+      Object.entries(optins).map(([guestId, afterpartyOptin]) => [
+        guestId,
+        { afterpartyOptin, favoriteSong: afterpartyOptin ? songs[guestId] ?? "" : "" },
+      ])
+    );
+    onSubmit(entries);
   }
 
   return (
@@ -78,33 +88,55 @@ export function AfterpartyStep({
             </div>
             {guests.map((g) => {
               const attending = g.selected;
+              const checked = attending ? !!optins[g.id] : false;
               return (
-                <Label
-                  key={g.id}
-                  htmlFor={attending ? `optin-${g.id}` : undefined}
-                  className={`flex items-center gap-3 py-2.5 px-2 rounded-md ${
-                    attending ? "hover-elevate cursor-pointer" : "opacity-40 cursor-not-allowed"
-                  }`}
-                  data-testid={`row-optin-${g.id}`}
-                >
-                  <Checkbox
-                    id={`optin-${g.id}`}
-                    checked={attending ? !!optins[g.id] : false}
-                    disabled={!attending}
-                    onCheckedChange={(v) =>
-                      setOptins((prev) => ({ ...prev, [g.id]: !!v }))
-                    }
-                    data-testid={`checkbox-optin-${g.id}`}
-                  />
-                  <span className="text-sm font-medium">
-                    {g.last_name} {g.first_name}
-                  </span>
-                  {!attending && (
-                    <span className="text-xs text-muted-foreground ml-auto">
-                      {t("afterparty.notAttendingWedding")}
+                <div key={g.id}>
+                  <Label
+                    htmlFor={attending ? `optin-${g.id}` : undefined}
+                    className={`flex items-center gap-3 py-2.5 px-2 rounded-md ${
+                      attending ? "hover-elevate cursor-pointer" : "opacity-40 cursor-not-allowed"
+                    }`}
+                    data-testid={`row-optin-${g.id}`}
+                  >
+                    <Checkbox
+                      id={`optin-${g.id}`}
+                      checked={checked}
+                      disabled={!attending}
+                      onCheckedChange={(v) =>
+                        setOptins((prev) => ({ ...prev, [g.id]: !!v }))
+                      }
+                      data-testid={`checkbox-optin-${g.id}`}
+                    />
+                    <span className="text-sm font-medium">
+                      {g.last_name} {g.first_name}
                     </span>
+                    {!attending && (
+                      <span className="text-xs text-muted-foreground ml-auto">
+                        {t("afterparty.notAttendingWedding")}
+                      </span>
+                    )}
+                  </Label>
+                  {checked && (
+                    <div className="pl-2 pr-2 pb-2 -mt-1">
+                      <Label
+                        htmlFor={`song-${g.id}`}
+                        className="text-xs text-muted-foreground flex items-center gap-1.5 mb-1"
+                      >
+                        <Music className="h-3.5 w-3.5" />
+                        {t("afterparty.songQuestion")}
+                      </Label>
+                      <Input
+                        id={`song-${g.id}`}
+                        value={songs[g.id] ?? ""}
+                        onChange={(e) =>
+                          setSongs((prev) => ({ ...prev, [g.id]: e.target.value }))
+                        }
+                        placeholder={t("afterparty.songPlaceholder")}
+                        data-testid={`input-song-${g.id}`}
+                      />
+                    </div>
                   )}
-                </Label>
+                </div>
               );
             })}
           </div>

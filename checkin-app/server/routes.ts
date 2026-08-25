@@ -181,6 +181,9 @@ export async function registerRoutes(
     try {
       const guest = await storage.updateGuest(parsed.data.guestId, {
         afterparty_optin: parsed.data.afterpartyOptin,
+        favorite_song: parsed.data.afterpartyOptin
+          ? (parsed.data.favoriteSong ?? null)
+          : null,
       });
       res.json({ guest });
     } catch (err) {
@@ -380,6 +383,15 @@ export async function registerRoutes(
   app.get("/api/admin/export.csv", requireAdmin, async (_req, res) => {
     try {
       const bookings = await storage.listBookingsWithGuests();
+      const roomTypeLabel: Record<string, string> = {
+        twin: "Twin",
+        family: "Family",
+      };
+      const mealPlanLabel: Record<string, string> = {
+        room_only: "Nur Zimmer",
+        breakfast: "Frühstück",
+        breakfast_onsen: "Frühstück + Onsen",
+      };
       const rows = [
         [
           "Buchungscode",
@@ -393,6 +405,7 @@ export async function registerRoutes(
           "Teilnahme Zeremonie",
           "Check-in abgeschlossen",
           "Teilnahme Afterparty",
+          "Lieblingssong",
           "Nationalität",
           "Land",
           "PLZ",
@@ -405,9 +418,41 @@ export async function registerRoutes(
           "Allergien",
           "Assistenz",
           "Assistenz (Sonstiges)",
+          "Bus-Teilnahme",
+          "Hotel gewünscht",
+          "Hotel Check-in",
+          "Hotel Check-out",
+          "Hotel Nächte",
+          "Hotel Zimmer",
+          "Hotel Zimmeranzahl",
+          "Hotel Erwachsene (gesamt)",
+          "Hotel Kinder ab 6 (gesamt)",
+          "Hotel Kinder unter 6 (gesamt)",
+          "Hotel Verpflegung",
+          "Hotel Preis (JPY)",
         ],
       ];
       for (const b of bookings) {
+        const hb = b.hotelBooking;
+        let nights = "";
+        if (hb?.check_in && hb?.check_out) {
+          const diffMs = new Date(hb.check_out).getTime() - new Date(hb.check_in).getTime();
+          nights = String(Math.round(diffMs / (1000 * 60 * 60 * 24)));
+        }
+        const rooms = hb?.rooms ?? [];
+        const roomsSummary = rooms
+          .map(
+            (r) =>
+              `${roomTypeLabel[r.roomType] ?? r.roomType} (${r.adults}E${r.children ? `+${r.children}K` : ""}${r.childrenUnder6 ? `+${r.childrenUnder6}K<6` : ""}, ${mealPlanLabel[r.mealPlan] ?? r.mealPlan})`
+          )
+          .join("; ");
+        const mealPlansSummary = Array.from(
+          new Set(rooms.map((r) => mealPlanLabel[r.mealPlan] ?? r.mealPlan))
+        ).join("; ");
+        const totalAdults = rooms.reduce((sum, r) => sum + (r.adults ?? 0), 0);
+        const totalChildren = rooms.reduce((sum, r) => sum + (r.children ?? 0), 0);
+        const totalChildrenUnder6 = rooms.reduce((sum, r) => sum + (r.childrenUnder6 ?? 0), 0);
+
         for (const g of b.guests) {
           rows.push([
             b.booking_code,
@@ -425,6 +470,7 @@ export async function registerRoutes(
               : g.afterparty_optin === false
                 ? "nimmt nicht teil"
                 : "noch offen",
+            g.favorite_song ?? "",
             g.nationality ?? "",
             g.country ?? "",
             g.postal_code ?? "",
@@ -437,6 +483,22 @@ export async function registerRoutes(
             (g.allergies ?? "").replace(/\n/g, " "),
             (g.special_assistance ?? []).join("; "),
             g.special_assistance_other ?? "",
+            g.bus_optin === true
+              ? "nimmt teil"
+              : g.bus_optin === false
+                ? "nimmt nicht teil"
+                : "noch offen",
+            hb?.wants_hotel ? "ja" : "nein",
+            hb?.check_in ?? "",
+            hb?.check_out ?? "",
+            nights,
+            roomsSummary,
+            String(rooms.length || ""),
+            String(totalAdults || ""),
+            String(totalChildren || ""),
+            String(totalChildrenUnder6 || ""),
+            mealPlansSummary,
+            hb?.total_price_jpy != null ? String(hb.total_price_jpy) : "",
           ]);
         }
       }

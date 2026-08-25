@@ -107,6 +107,8 @@ const de: Dict = {
   "afterparty.leaveNote": "Kein Zwang, bis zum Ende zu bleiben — geht ganz nach eurem eigenen Gefühl.",
   "afterparty.optinFor": "Nimmt teil:",
   "afterparty.notAttendingWedding": "Nimmt nicht an der Hochzeit teil",
+  "afterparty.songQuestion": "Was ist dein Lieblingssong? (z. B. YOASOBI – 夜に駆ける)",
+  "afterparty.songPlaceholder": "Titel eingeben …",
 
   "hotel.eyebrow": "Schritt 5 von 6",
   "hotel.title": "Hotelübernachtung",
@@ -382,6 +384,8 @@ const en: Dict = {
   "afterparty.leaveNote": "Feel free to leave anytime on your personal comfort.",
   "afterparty.optinFor": "Attending:",
   "afterparty.notAttendingWedding": "Not attending the wedding",
+  "afterparty.songQuestion": "What is your favourite song? (e.g. YOASOBI – Yoru ni Kakeru)",
+  "afterparty.songPlaceholder": "Enter a song title …",
 
   "hotel.eyebrow": "Step 5 of 6",
   "hotel.title": "Hotel Stay",
@@ -656,6 +660,8 @@ const ja: Dict = {
   "afterparty.leaveNote": "無理をせず、ご自身のタイミングでご退席いただいて構いません。",
   "afterparty.optinFor": "参加者:",
   "afterparty.notAttendingWedding": "結婚式に不参加",
+  "afterparty.songQuestion": "好きな曲は何ですか？（例: YOASOBI – 夜に駆ける）",
+  "afterparty.songPlaceholder": "曲名を入力してください …",
 
   "hotel.eyebrow": "ステップ 5/6",
   "hotel.title": "ホテル宿泊",
