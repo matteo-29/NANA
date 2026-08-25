@@ -686,7 +686,7 @@ footer b{color:#263860}
           <div><dt>Birthday</dt><dd>29.06.1997</dd></div>
           <div><dt>HOME BASE</dt><dd>Fichtelberg, DE</dd></div>
           <div><dt>INTERESTS</dt><dd>Cars · Aviation · Travel</dd></div>
-          <div><dt>FAVOURITE MEAL</dt><dd>Yakiniku</dd></div>
+          <div><dt>FAVOURITE DRINK / FOOD</dt><dd>Jever · Yakiniku</dd></div>
         </dl>
       </div>
     </article>
@@ -706,8 +706,8 @@ footer b{color:#263860}
         <dl>
           <div><dt>Birthday</dt><dd>29.09.1992</dd></div>
           <div><dt>HOME BASE</dt><dd>Yokohama,JP</dd></div>
-          <div><dt>INTERESTS</dt><dd>Travel · Food · Massage</dd></div>
-          <div><dt>FAVOURITE MEAL</dt><dd>Avocado Salad</dd></div>
+          <div><dt>INTERESTS</dt><dd>Travel · Basketball · Food</dd></div>
+          <div><dt>FAVOURITE DRINK / FOOD</dt><dd>Coffee · Any good food</dd></div>
         </dl>
       </div>
     </article>
@@ -730,7 +730,7 @@ footer b{color:#263860}
       </div>
 
       <div class="row">
-        <b>12:00</b>
+        <b data-t="t1">12:00</b>
         <span data-t="s1">Check-in & Lounge</span>
         <span class="status"></span>
       </div>
@@ -742,19 +742,19 @@ footer b{color:#263860}
       </div>
 
       <div class="row">
-        <b>13:00</b>
+        <b data-t="t3">13:00</b>
         <span data-t="s3">Abflug - Beginn der Zeremonie</span>
         <span class="status"></span>
       </div>
 
       <div class="row">
-        <b>14:00 – 16:30</b>
+        <b data-t="t4">14:00 – 16:30</b>
         <span data-t="s4">In-flight Service — Dinner & Entertainment</span>
         <span class="status"></span>
       </div>
 
       <div class="row">
-        <b>18:00 – 22:00</b>
+        <b data-t="t5">18:00 – 22:00</b>
         <span data-t="s5">Afterparty</span>
         <span class="status"></span>
       </div>
@@ -769,13 +769,10 @@ footer b{color:#263860}
 
   <div class="location">
     <div class="location-copy">
-      <h3>Grand Prince Hotel Hiroshima</h3>
+      <h3 data-t="hotelName">Grand Prince Hotel Hiroshima</h3>
 
       <p>
-        <b>
-          23-1 Motoujinamachi, Minami Ward,<br>
-          Hiroshima 734-8543, Japan
-        </b>
+        <b data-t="hotelAddress">23-1 Motoujina-machi, Minami-ku, Hiroshima 734-8543, Japan</b>
       </p>
 
       <p data-t="locationBody">
@@ -852,8 +849,14 @@ const copy={
     s4:"In-flight Service — Dinner & Entertainment",
     s5:"Afterparty",
     s6:"Fühlt euch nicht verpflichtet, bis zum Ende zu bleiben — geht ganz nach eurem eigenen Gefühl.",
+    t1:"12:00",
+    t3:"13:00",
+    t4:"14:00 – 16:30",
+    t5:"18:00 – 22:00",
     locationTitle:"Wo wir abfliegen",
-    locationBody:"Unser Arrival Terminal liegt direkt an der Hiroshima-Bucht. Der Check-in Counter öffnet um 12:00 Uhr."
+    locationBody:"Unser Arrival Terminal liegt direkt an der Hiroshima-Bucht. Der Check-in Counter öffnet um 12:00 Uhr.",
+    hotelName:"Grand Prince Hotel Hiroshima",
+    hotelAddress:"23-1 Motoujina-machi, Minami-ku, Hiroshima 734-8543, Japan"
   },
 
   en:{
@@ -881,8 +884,14 @@ const copy={
     s4:"In-flight Service — Dinner & Entertainment",
     s5:"Afterparty",
     s6:"Feel free to leave anytime on your personal comfort.",
+    t1:"12:00",
+    t3:"13:00",
+    t4:"14:00 – 16:30",
+    t5:"18:00 – 22:00",
     locationTitle:"Where we depart from",
-    locationBody:"Our arrival terminal sits directly on Hiroshima Bay. The check-in counter opens at 12:00."
+    locationBody:"Our arrival terminal sits directly on Hiroshima Bay. The check-in counter opens at 12:00.",
+    hotelName:"Grand Prince Hotel Hiroshima",
+    hotelAddress:"23-1 Motoujina-machi, Minami-ku, Hiroshima 734-8543, Japan"
   },
 
   ja:{
@@ -902,16 +911,22 @@ const copy={
     welcomeTitle:"ご搭乗ありがとうございます",
     announceLead:"ご搭乗のお客様へ",
     announceBody:"フライト NM 0329 へようこそ。私たちの人生で最も美しい旅にご参加ください。搭乗券をご用意のうえ、お席にお座りいただき、愛と笑顔、そして忘れられない思い出に満ちた新しい章へご一緒に出発しましょう。",
-    passengers:"ホスト紹介",
+    passengers:"メインクルー紹介",
     schedule:"当日のフライトスケジュール",
     s1:"チェックイン＆ラウンジ",
     s2:"搭乗口 締切",
     s3:"結婚式 － 出発",
     s4:"機内サービス － ディナー＆エンターテインメント",
     s5:"アフターパーティー",
-    s6:"無理をせず、ご自身のタイミングでご退席いただいて構いません。",
+    s6:"※アフターパーティーはご自身のタイミングで退席いただいて問題ございません",
+    t1:"12:00 (受付開始)",
+    t3:"13:00 (挙式)",
+    t4:"14:00-16:30 (披露宴)",
+    t5:"18:00-22:00 (二次会)",
     locationTitle:"出発地について",
-    locationBody:"到着ロビーは広島湾に面しています。チェックインカウンターは12時にオープンします。"
+    locationBody:"到着ロビーは広島湾に面しています。チェックインカウンターは12時にオープンします。",
+    hotelName:"グランドプリンスホテル広島",
+    hotelAddress:"〒734-8543 広島県広島市南区元宇品町23-1"
   }
 };
 
