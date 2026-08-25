@@ -303,6 +303,14 @@ const styles = StyleSheet.create({
     alignSelf: "flex-start",
     marginTop: 1,
   },
+  classBadgeGreen: {
+    backgroundColor: "#059669",
+    borderRadius: 2,
+    paddingHorizontal: 5,
+    paddingVertical: 1.5,
+    alignSelf: "flex-start",
+    marginTop: 1,
+  },
   classBadgeText: {
     fontSize: 8,
     fontWeight: 700,
@@ -744,6 +752,7 @@ function HotelVoucherPage({
             ¥{totalJpy.toLocaleString("en-US")}
           </Text>
         </View>
+        <Text style={[styles.footerNotice, { marginTop: 4 }]}>{d.hotelVatNote}</Text>
       </View>
 
       <View style={styles.footer}>
@@ -818,8 +827,8 @@ function BusTicketPage({
           <View style={styles.segmentBody}>
             <View style={styles.segmentCol}>
               <Text style={styles.segmentCityLabel}>{d.boardingPoint}</Text>
-              <Text style={styles.segmentCity}>Hiroshima Sta.</Text>
-              <Text style={styles.segmentVenue}>Shinkansen Exit</Text>
+              <Text style={styles.segmentCity}>{d.busBoardingCity}</Text>
+              <Text style={styles.segmentVenue}>{d.busBoardingVenue}</Text>
               <Text style={styles.segmentTime}>11:30</Text>
             </View>
             <View style={styles.planeCol}>
@@ -844,7 +853,7 @@ function BusTicketPage({
             </View>
             <View style={styles.segmentFooterItem}>
               <Text style={styles.segmentFooterLabel}>{d.classLabel}</Text>
-              <View style={styles.classBadge}>
+              <View style={styles.classBadgeGreen}>
                 <Text style={styles.classBadgeText}>{d.busClassValue}</Text>
               </View>
             </View>

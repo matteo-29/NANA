@@ -86,6 +86,7 @@ export interface TicketDict {
   adultsShort: string;
   childrenShort: string;
   hotelVoucherNote: string;
+  hotelVatNote: string;
 
   // ---- Bus ticket (Phase 2) ----
   busTicketTitle: string;
@@ -97,6 +98,8 @@ export interface TicketDict {
   departureTime: string;
   arrivalTime: string;
   busTicketNote: string;
+  busBoardingCity: string;
+  busBoardingVenue: string;
 }
 
 const de: TicketDict = {
@@ -123,7 +126,7 @@ const de: TicketDict = {
   status: "STATUS",
   statusConfirmed: "OK — BESTÄTIGT",
   classLabel: "KLASSE",
-  classValue: "FIRST FLEX",
+  classValue: "FIRST CLASS",
   busClassValue: "ECONOMY CLASS",
   seat: "SITZPLATZ",
   seatValue: "Freie Platzwahl",
@@ -175,7 +178,7 @@ const de: TicketDict = {
   hotelVoucherTitle: "Hotel-Voucher",
   hotelVoucherSubtitle: "宿泊確認書",
   hotelName: "Grand Prince Hotel Hiroshima",
-  hotelAddress: "23-1 Motoujina-cho, Naka-ku, Hiroshima, 734-8543 Japan",
+  hotelAddress: "23-1 Motoujina-machi, Minami-ku, Hiroshima, 734-8543 Japan",
   voucherNumber: "VOUCHER-NR.",
   checkIn: "ANREISE",
   checkOut: "ABREISE",
@@ -199,6 +202,8 @@ const de: TicketDict = {
   childrenShort: "Kinder",
   hotelVoucherNote:
     "Dieser Voucher bestätigt Ihre Zimmerreservierung im Rahmen des Hochzeitsblocks von Nana & Matteo. Bitte legen Sie ihn (digital oder ausgedruckt) beim Check-in im Grand Prince Hotel Hiroshima vor. Bei Fragen wenden Sie sich direkt an Nana oder Matteo.",
+  hotelVatNote:
+    "Der Preis versteht sich inkl. 10% Mehrwertsteuer. Die Zahlung erfolgt individuell direkt beim Check-out im Hotel.",
 
   busTicketTitle: "Bus-Ticket — Shuttle",
   busTicketSubtitle: "シャトルバス乗車券",
@@ -210,6 +215,8 @@ const de: TicketDict = {
   arrivalTime: "ANKUNFT",
   busTicketNote:
     "Dieses Ticket berechtigt zur Fahrt mit dem Hochzeits-Shuttlebus zwischen Hiroshima Station und dem Grand Prince Hotel. Bitte seien Sie pünktlich am Einstiegspunkt. Ein Rückshuttle steht am Abend ebenfalls zur Verfügung.",
+  busBoardingCity: "Bahnhof Hiroshima",
+  busBoardingVenue: "29.03.2027, Shinkansen-Ausgang",
 };
 
 const en: TicketDict = {
@@ -236,7 +243,7 @@ const en: TicketDict = {
   status: "STATUS",
   statusConfirmed: "OK — CONFIRMED",
   classLabel: "CLASS",
-  classValue: "FIRST FLEX",
+  classValue: "FIRST CLASS",
   busClassValue: "ECONOMY CLASS",
   seat: "SEAT",
   seatValue: "Open seating",
@@ -288,7 +295,7 @@ const en: TicketDict = {
   hotelVoucherTitle: "Hotel Voucher",
   hotelVoucherSubtitle: "宿泊確認書",
   hotelName: "Grand Prince Hotel Hiroshima",
-  hotelAddress: "23-1 Motoujina-cho, Naka-ku, Hiroshima, 734-8543 Japan",
+  hotelAddress: "23-1 Motoujina-machi, Minami-ku, Hiroshima, 734-8543 Japan",
   voucherNumber: "VOUCHER NO.",
   checkIn: "CHECK-IN",
   checkOut: "CHECK-OUT",
@@ -312,6 +319,8 @@ const en: TicketDict = {
   childrenShort: "Children",
   hotelVoucherNote:
     "This voucher confirms your room reservation within the wedding block of Nana & Matteo. Please present it (digital or printed) at check-in at the Grand Prince Hotel Hiroshima. For any questions, please contact Nana or Matteo directly.",
+  hotelVatNote:
+    "Prices include 10% VAT. Payment is made individually at hotel check-out.",
 
   busTicketTitle: "Bus Ticket — Shuttle",
   busTicketSubtitle: "シャトルバス乗車券",
@@ -323,6 +332,8 @@ const en: TicketDict = {
   arrivalTime: "ARRIVAL",
   busTicketNote:
     "This ticket entitles you to travel on the wedding shuttle bus between Hiroshima Station and the Grand Prince Hotel. Please arrive at the boarding point on time. A return shuttle is also available in the evening.",
+  busBoardingCity: "Hiroshima Sta.",
+  busBoardingVenue: "29 MAR 2027, Shinkansen Exit",
 };
 
 const ja: TicketDict = {
@@ -349,7 +360,7 @@ const ja: TicketDict = {
   status: "ステータス",
   statusConfirmed: "OK — 確定済み",
   classLabel: "クラス",
-  classValue: "ファーストフレックス",
+  classValue: "FIRST CLASS",
   busClassValue: "エコノミークラス",
   seat: "席",
   seatValue: "自由席",
@@ -400,7 +411,7 @@ const ja: TicketDict = {
   hotelVoucherTitle: "宿泊確認書",
   hotelVoucherSubtitle: "Hotel Voucher",
   hotelName: "グランドプリンスホテル広島",
-  hotelAddress: "日本、〒734-8543 広島市中区元宇品町23-1",
+  hotelAddress: "日本、〒734-8543 広島市南区元宇品町23-1",
   voucherNumber: "バウチャー番号",
   checkIn: "チェックイン",
   checkOut: "チェックアウト",
@@ -424,6 +435,8 @@ const ja: TicketDict = {
   childrenShort: "小人",
   hotelVoucherNote:
     "このバウチャーは、ナナ＆マテオの結婚式ブロックでご予約いただいた部屋を確認するものです。グランドプリンスホテル広島のチェックイン時に、デジタルまたは印刷してご提示ください。ご質問はナナまたはマテオへ直接お問い合わせください。",
+  hotelVatNote:
+    "価格には消費税10%が含まれており、お支払いはホテルチェックアウト時に各自で行っていただきます。",
 
   busTicketTitle: "バス乗車券 ～ シャトルバス",
   busTicketSubtitle: "Bus Ticket — Shuttle",
@@ -435,6 +448,8 @@ const ja: TicketDict = {
   arrivalTime: "到着時刻",
   busTicketNote:
     "このチケットで、広島駅とグランドプリンスホテル広島を結ぶ結婚式シャトルバスにご乗車いただけます。乗車地点には時間に余裕をもってお集まりください。夜間の帰りのシャトルバスもご用意しております。",
+  busBoardingCity: "広島駅",
+  busBoardingVenue: "2027年3月29日、新幹線口",
 };
 
 export const ticketI18n: Record<TicketLang, TicketDict> = { de, en, ja };

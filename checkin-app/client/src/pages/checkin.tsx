@@ -46,12 +46,24 @@ export default function CheckinPage() {
     if (data && !initialized) {
       const guests = data.guests;
       const anySelected = guests.some((g) => g.selected);
-      const preselected = anySelected
-        ? guests.filter((g) => g.selected).map((g) => g.id)
-        : guests.map((g) => g.id);
-      setSelectedIds(preselected);
-      const allDone = anySelected && guests.filter((g) => g.selected).every((g) => g.checkin_completed);
-      setStep(allDone ? "confirmation" : "selection");
+      if (anySelected) {
+        const preselected = guests.filter((g) => g.selected).map((g) => g.id);
+        setSelectedIds(preselected);
+        const allDone = guests.filter((g) => g.selected).every((g) => g.checkin_completed);
+        setStep(allDone ? "confirmation" : "selection");
+      } else if (data.booking.responded) {
+        // The guest already submitted a selection before and explicitly
+        // declined for everyone — don't silently re-select all guests just
+        // because "selected=false" also happens to be the untouched-booking
+        // default. Show the decline screen again; "change my mind" is an
+        // explicit action from there.
+        setSelectedIds([]);
+        setStep("declined");
+      } else {
+        // Genuinely untouched booking — pre-check everyone as before.
+        setSelectedIds(guests.map((g) => g.id));
+        setStep("selection");
+      }
       setInitialized(true);
     }
   }, [data, initialized]);
@@ -158,7 +170,6 @@ export default function CheckinPage() {
     mutationFn: async (values: {
       guestId: string;
       nationality?: string;
-      passportNumber?: string;
       birthDate?: string;
       email: string;
       phone?: string;

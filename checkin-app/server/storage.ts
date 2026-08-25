@@ -124,6 +124,16 @@ class SupabaseStorage implements IStorage {
         .eq("booking_id", bookingId);
       if (e2) throw e2;
     }
+    // Mark the booking as having received an explicit answer (attending or
+    // declining) so a later page reload can tell "never responded yet" apart
+    // from "deliberately declined" — otherwise both look identical (no guest
+    // has selected=true) and a decline would silently revert to everyone
+    // pre-checked on next load.
+    const { error: e3 } = await supabase
+      .from("bookings")
+      .update({ responded: true })
+      .eq("id", bookingId);
+    if (e3) throw e3;
   }
 
   async updateGuest(guestId: string, patch: Partial<Guest>): Promise<Guest> {

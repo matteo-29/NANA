@@ -58,7 +58,7 @@ export default function EntryPage() {
             </p>
             <div className="flex flex-col gap-1.5">
               <Label htmlFor="bookingCode">
-                {t("entry.bookingCode")} <span className="text-destructive">*</span>
+                {t("entry.bookingCode")}
               </Label>
               <Input
                 id="bookingCode"
@@ -73,7 +73,7 @@ export default function EntryPage() {
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="lastName">
-                  {t("entry.lastName")} <span className="text-destructive">*</span>
+                  {t("entry.lastName")}
                 </Label>
                 <Input
                   id="lastName"
@@ -87,7 +87,7 @@ export default function EntryPage() {
               </div>
               <div className="flex flex-col gap-1.5">
                 <Label htmlFor="firstName">
-                  {t("entry.firstName")} <span className="text-destructive">*</span>
+                  {t("entry.firstName")}
                 </Label>
                 <Input
                   id="firstName"

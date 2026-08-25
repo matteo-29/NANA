@@ -28,17 +28,22 @@ import { StepBar } from "@/components/layout";
 import { apiRequest } from "@/lib/queryClient";
 import { Loader2 } from "lucide-react";
 
-function buildDetailsFormSchema(emailInvalidMessage: string) {
+function buildDetailsFormSchema(
+  emailInvalidMessage: string,
+  requiredMessage: string,
+  isJa: boolean,
+) {
+  const requiredJaString = () =>
+    isJa ? z.string().min(1, { message: requiredMessage }) : z.string().optional();
   return z.object({
     nationality: z.string().optional(),
-    passportNumber: z.string().optional(),
     birthDate: z.string().optional(),
-    email: z.string().email({ message: emailInvalidMessage }),
+    email: z.string().min(1, { message: requiredMessage }).email({ message: emailInvalidMessage }),
     phone: z.string().optional(),
-    furiganaLastName: z.string().optional(),
-    furiganaFirstName: z.string().optional(),
-    kanjiLastName: z.string().optional(),
-    kanjiFirstName: z.string().optional(),
+    furiganaLastName: requiredJaString(),
+    furiganaFirstName: requiredJaString(),
+    kanjiLastName: requiredJaString(),
+    kanjiFirstName: requiredJaString(),
     gender: z.string().optional(),
     country: z.string().optional(),
     postalCode: z.string().optional(),
@@ -79,7 +84,11 @@ export function GuestDetailsStep({
   isSubmitting: boolean;
 }) {
   const { t, lang } = useI18n();
-  const detailsFormSchema = buildDetailsFormSchema(t("details.emailInvalid"));
+  const detailsFormSchema = buildDetailsFormSchema(
+    t("details.emailInvalid"),
+    t("common.required"),
+    lang === "ja",
+  );
   const countryNames = useCountryNames(lang);
   const [postalStatus, setPostalStatus] = useState<"idle" | "loading" | "not_found">("idle");
   const lookupTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -88,7 +97,6 @@ export function GuestDetailsStep({
     resolver: zodResolver(detailsFormSchema),
     defaultValues: {
       nationality: guest.nationality ?? "",
-      passportNumber: guest.passport_number ?? "",
       birthDate: guest.birth_date ?? "",
       email: guest.email ?? "",
       phone: guest.phone ?? "",
@@ -188,7 +196,10 @@ export function GuestDetailsStep({
                   name="furiganaLastName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("details.furiganaLastName")}</FormLabel>
+                      <FormLabel>
+                        {t("details.furiganaLastName")}
+                        {lang === "ja" && <span className="text-destructive"> *</span>}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -205,7 +216,10 @@ export function GuestDetailsStep({
                   name="furiganaFirstName"
                   render={({ field }) => (
                     <FormItem>
-                      <FormLabel>{t("details.furiganaFirstName")}</FormLabel>
+                      <FormLabel>
+                        {t("details.furiganaFirstName")}
+                        {lang === "ja" && <span className="text-destructive"> *</span>}
+                      </FormLabel>
                       <FormControl>
                         <Input
                           {...field}
@@ -227,9 +241,13 @@ export function GuestDetailsStep({
                     <FormItem>
                       <FormLabel>
                         {t("details.kanjiLastName")}{" "}
-                        <span className="text-muted-foreground font-normal">
-                          ({t("common.optional")})
-                        </span>
+                        {lang === "ja" ? (
+                          <span className="text-destructive">*</span>
+                        ) : (
+                          <span className="text-muted-foreground font-normal">
+                            ({t("common.optional")})
+                          </span>
+                        )}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -249,9 +267,13 @@ export function GuestDetailsStep({
                     <FormItem>
                       <FormLabel>
                         {t("details.kanjiFirstName")}{" "}
-                        <span className="text-muted-foreground font-normal">
-                          ({t("common.optional")})
-                        </span>
+                        {lang === "ja" ? (
+                          <span className="text-destructive">*</span>
+                        ) : (
+                          <span className="text-muted-foreground font-normal">
+                            ({t("common.optional")})
+                          </span>
+                        )}
                       </FormLabel>
                       <FormControl>
                         <Input
@@ -444,24 +466,6 @@ export function GuestDetailsStep({
                   )}
                 />
               </div>
-              <FormField
-                control={form.control}
-                name="passportNumber"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>{t("details.passport")}</FormLabel>
-                    <FormControl>
-                      <Input
-                        {...field}
-                        placeholder={t("details.passportPlaceholder")}
-                        data-testid="input-passport"
-                      />
-                    </FormControl>
-                    <FormMessage />
-                  </FormItem>
-                )}
-              />
-
               <div className="flex gap-3 mt-2">
                 <Button
                   type="button"

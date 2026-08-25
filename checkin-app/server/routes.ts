@@ -197,7 +197,6 @@ export async function registerRoutes(
       const d = parsed.data;
       const guest = await storage.updateGuest(d.guestId, {
         nationality: d.nationality || null,
-        passport_number: d.passportNumber || null,
         birth_date: d.birthDate || null,
         email: d.email,
         phone: d.phone || null,

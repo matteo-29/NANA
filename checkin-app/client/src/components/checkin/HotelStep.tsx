@@ -404,9 +404,9 @@ export function HotelStep({
                         </div>
                       </div>
 
-                      <div className="grid grid-cols-3 gap-3">
+                      <div className="grid grid-cols-2 gap-3">
                         <div className="flex flex-col gap-1.5 items-start">
-                          <Label className="text-xs">{t("hotel.adults")}</Label>
+                          <Label className="text-xs min-h-[2rem] flex items-center">{t("hotel.adults")}</Label>
                           <Stepper
                             value={room.adults}
                             min={1}
@@ -416,17 +416,7 @@ export function HotelStep({
                           />
                         </div>
                         <div className="flex flex-col gap-1.5 items-start">
-                          <Label className="text-xs">{t("hotel.children")}</Label>
-                          <Stepper
-                            value={room.children}
-                            min={0}
-                            max={Math.max(0, maxOccupancy(room.roomType) - room.adults)}
-                            onChange={(v) => updateRoom(idx, { children: v })}
-                            testId={`children-${idx}`}
-                          />
-                        </div>
-                        <div className="flex flex-col gap-1.5 items-start">
-                          <Label className="text-xs">{t("hotel.childrenUnder6")}</Label>
+                          <Label className="text-xs min-h-[2rem] flex items-center">{t("hotel.childrenUnder6")}</Label>
                           <Stepper
                             value={room.childrenUnder6}
                             min={0}
@@ -510,6 +500,7 @@ export function HotelStep({
               {lang !== "ja" && price && (
                 <p className="text-[11px] text-muted-foreground -mt-3">{t("hotel.priceApprox")}</p>
               )}
+              <p className="text-xs text-muted-foreground">{t("hotel.vatNote")}</p>
             </>
           )}
         </CardContent>

@@ -7,6 +7,11 @@ export interface Booking {
   last_name: string;
   first_name: string;
   created_at: string;
+  // True once the guest has submitted a selection (attending or declining)
+  // at least once. Distinguishes "never touched this booking yet" from
+  // "explicitly declined" — both look identical via guests[].selected=false,
+  // but only the former should default back to pre-checking everyone.
+  responded: boolean;
 }
 
 // ---- Guest ----
