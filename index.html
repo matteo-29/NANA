@@ -400,18 +400,24 @@ nav a:hover{color:var(--blue)}
 }
 
 .row{
-  display:flex;
-  flex-wrap:wrap;
-  justify-content:center;
+  display:grid;
+  grid-template-columns:1fr 120px minmax(0,360px) 1fr;
+  column-gap:24px;
   align-items:center;
-  gap:6px 22px;
   padding:15px 20px;
   border-bottom:1px solid rgba(255,255,255,.14);
-  text-align:center;
 }
 
-.row > b,
-.row > span{white-space:nowrap}
+.row > b{
+  grid-column:2;
+  text-align:left;
+  white-space:nowrap;
+}
+
+.row > span{
+  grid-column:3;
+  text-align:left;
+}
 
 .row:first-child{
   background:#071836;
@@ -420,6 +426,11 @@ nav a:hover{color:var(--blue)}
   font-weight:800;
   letter-spacing:.08em;
 }
+
+.row:first-child span:first-child{grid-column:2}
+.row:first-child span:last-child{grid-column:3}
+
+html[lang="ja"] .row{grid-template-columns:1fr 158px minmax(0,360px) 1fr}
 
 .status{
   color:#f5cf63;
@@ -483,8 +494,6 @@ nav a:hover{color:var(--blue)}
   color:#fff;
 }
 
-.mobile-checkin{display:none}
-
 .menu-toggle{
   display:none;
   flex-direction:column;
@@ -527,19 +536,8 @@ footer b{color:#263860}
     gap:8px;
   }
 
-  .mobile-checkin{
-    display:flex;
-    order:1;
-    width:100%;
-    justify-content:center;
-    padding:9px 0;
-    font-size:13px;
-  }
-
-  .desktop-checkin{display:none}
-
   .brand{
-    order:2;
+    order:1;
     gap:9px;
     flex:1 1 auto;
     min-width:0;
@@ -567,11 +565,11 @@ footer b{color:#263860}
 
   .menu-toggle{
     display:flex;
-    order:3;
+    order:2;
   }
 
   nav{
-    order:4;
+    order:3;
     display:none;
     flex-direction:column;
     align-items:stretch;
@@ -589,8 +587,15 @@ footer b{color:#263860}
     border-bottom:1px solid #eef1f6;
   }
 
+  nav a.nav-checkin{
+    align-self:flex-start;
+    padding:10px 20px;
+    margin-top:12px;
+    border-bottom:0;
+  }
+
   .lang{
-    margin:10px 4px 2px;
+    margin:14px 4px 2px;
     align-self:flex-start;
   }
 
@@ -626,16 +631,19 @@ footer b{color:#263860}
   .welcome-photo{height:260px}
   .map{min-height:270px}
 
-  .row:first-child{display:none}
-
   .row{
-    flex-direction:column;
-    gap:4px;
-    text-align:center;
+    grid-template-columns:106px minmax(0,1fr);
+    column-gap:14px;
+    padding:13px 16px;
   }
 
-  .row > b,
-  .row > span{white-space:normal}
+  html[lang="ja"] .row{grid-template-columns:156px minmax(0,1fr)}
+
+  .row > b{grid-column:1}
+  .row > span{grid-column:2}
+
+  .row:first-child span:first-child{grid-column:1}
+  .row:first-child span:last-child{grid-column:2}
 }
 
 @media(max-width:340px){
@@ -645,6 +653,9 @@ footer b{color:#263860}
     padding-left:6px;
     gap:0;
   }
+
+  html[lang="ja"] .row{grid-template-columns:112px minmax(0,1fr)}
+  html[lang="ja"] .row > b{white-space:normal}
 }
 </style>
 </head>
@@ -660,8 +671,6 @@ footer b{color:#263860}
 
 <header>
   <div class="container head">
-
-    <a class="checkin-link nav-checkin mobile-checkin" href="https://nana-matteo-checkin.pplx.app" target="_blank" rel="noopener" data-t="navCheckin">Check-in</a>
 
     <div class="brand">
       <img class="brand-logo" src="./nana_logo.jpg" alt="Nana & Matteo">
@@ -680,7 +689,7 @@ footer b{color:#263860}
       <a href="#welcome" data-t="navWelcome">Willkommen</a>
       <a href="#schedule" data-t="navSchedule">Flugplan</a>
       <a href="#location" data-t="navLocation">Anreise</a>
-      <a class="checkin-link nav-checkin desktop-checkin" href="https://nana-matteo-checkin.pplx.app" target="_blank" rel="noopener" data-t="navCheckin">Check-in</a>
+      <a class="checkin-link nav-checkin" href="https://nana-matteo-checkin.pplx.app" target="_blank" rel="noopener" data-t="navCheckin">Check-in</a>
 
       <select class="lang" onchange="setLang(this.value)" aria-label="Sprache">
         <option value="de">DE</option>
