@@ -175,7 +175,10 @@ export default function AdminDashboardPage() {
 
   async function exportCsv() {
     try {
-      const res = await fetch(`${API_BASE}/api/admin/export.csv`, {
+      // Path intentionally has no ".csv" extension — the hosting proxy
+      // force-caches extension-matched paths publicly for hours regardless
+      // of server Cache-Control (see server/routes.ts for details).
+      const res = await fetch(`${API_BASE}/api/admin/export-csv`, {
         headers: { "x-admin-password": password ?? "" },
       });
       if (!res.ok) {

@@ -386,7 +386,15 @@ export async function registerRoutes(
     }
   });
 
-  app.get("/api/admin/export.csv", requireAdmin, async (_req, res) => {
+  // NOTE: route path intentionally does NOT end in ".csv". The published
+  // site's hosting proxy treats any request path ending in a recognized
+  // static-file extension (.csv, .pdf, etc.) as a static asset and forces
+  // a public, long-lived Cache-Control header on it — regardless of what
+  // this handler sets — which caused admins to keep downloading stale,
+  // hours-old guest data. Keeping the path extension-free avoids that,
+  // while Content-Disposition below still names the downloaded file
+  // "gaeste.csv" for the user.
+  app.get("/api/admin/export-csv", requireAdmin, async (_req, res) => {
     try {
       const bookings = await storage.listBookingsWithGuests();
       const roomTypeLabel: Record<string, string> = {
@@ -512,6 +520,14 @@ export async function registerRoutes(
         .map((r) => r.map((cell) => `"${String(cell).replace(/"/g, '""')}"`).join(","))
         .join("\n");
       res.setHeader("Content-Type", "text/csv; charset=utf-8");
+      // The export reflects live, frequently-edited guest/booking data.
+      // Without an explicit no-store directive, the CDN in front of the
+      // published site (Cloudflare) was caching this response publicly
+      // for hours (cf-cache-status: HIT, max-age=14400), so admins kept
+      // downloading a stale snapshot instead of current data — the same
+      // class of bug already fixed for the PDF ticket route above.
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+      res.setHeader("Pragma", "no-cache");
       res.setHeader("Content-Disposition", "attachment; filename=gaeste.csv");
       res.send("\uFEFF" + csv);
     } catch (err) {

@@ -255,6 +255,14 @@ class SupabaseStorage implements IStorage {
   }
 
   async deleteBooking(bookingId: string): Promise<void> {
+    // Explicitly clean up dependent rows first in case the DB has no ON
+    // DELETE CASCADE configured — prevents orphaned guests/hotel_bookings
+    // from lingering (and potentially resurfacing in exports) after a
+    // booking is deleted from the admin dashboard.
+    const { error: hErr } = await supabase.from("hotel_bookings").delete().eq("booking_id", bookingId);
+    if (hErr) throw hErr;
+    const { error: gErr } = await supabase.from("guests").delete().eq("booking_id", bookingId);
+    if (gErr) throw gErr;
     const { error } = await supabase.from("bookings").delete().eq("id", bookingId);
     if (error) throw error;
   }
