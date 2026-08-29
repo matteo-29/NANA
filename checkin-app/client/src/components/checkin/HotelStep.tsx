@@ -4,13 +4,6 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import {
   Dialog,
   DialogContent,
   DialogHeader,
@@ -21,7 +14,6 @@ import { StepBar } from "@/components/layout";
 import { DateRangeCalendar } from "@/components/checkin/DateRangeCalendar";
 import { apiRequest } from "@/lib/queryClient";
 import {
-  ROOM_TYPES,
   MEAL_PLANS,
   HOTEL_DATE_OPTIONS,
   type HotelRoom,
@@ -38,20 +30,15 @@ import {
   Waves,
 } from "lucide-react";
 
-const ROOM_LINKS: Record<string, Record<"twin" | "family", string>> = {
+const ROOM_LINKS: Record<string, Record<"twin", string>> = {
   en: {
     twin: "https://www.princehotels.com/hiroshima/guest-rooms/superior-floor-twin-room/",
-    family:
-      "https://www.princehotels.com/hiroshima/guest-rooms/superior-floor-luxury-family-room-with-view-bath/",
   },
   de: {
     twin: "https://www.princehotels.com/hiroshima/guest-rooms/superior-floor-twin-room/",
-    family:
-      "https://www.princehotels.com/hiroshima/guest-rooms/superior-floor-luxury-family-room-with-view-bath/",
   },
   ja: {
     twin: "https://www.princehotels.co.jp/hiroshima/room/room13.html",
-    family: "https://www.princehotels.co.jp/hiroshima/room/room15.html",
   },
 };
 
@@ -223,7 +210,7 @@ export function HotelStep({
     onSubmit({ wantsHotel: true, checkIn, checkOut, rooms });
   }
 
-  const maxOccupancy = (roomType: HotelRoom["roomType"]) => (roomType === "twin" ? 2 : 4);
+  const maxOccupancy = (_roomType: HotelRoom["roomType"]) => 2;
 
   return (
     <div>
@@ -371,26 +358,12 @@ export function HotelStep({
                       <div className="flex flex-col gap-1.5">
                         <Label>{t("hotel.roomType")}</Label>
                         <div className="flex items-center gap-2">
-                          <Select
-                            value={room.roomType}
-                            onValueChange={(v) =>
-                              updateRoom(idx, {
-                                roomType: v as HotelRoom["roomType"],
-                                adults: Math.min(room.adults, maxOccupancy(v as HotelRoom["roomType"])),
-                              })
-                            }
+                          <div
+                            className="flex-1 h-9 px-3 rounded-md border border-input bg-muted/40 flex items-center text-sm"
+                            data-testid={`text-roomtype-${idx}`}
                           >
-                            <SelectTrigger className="flex-1" data-testid={`select-roomtype-${idx}`}>
-                              <SelectValue />
-                            </SelectTrigger>
-                            <SelectContent>
-                              {ROOM_TYPES.map((rt) => (
-                                <SelectItem key={rt} value={rt} data-testid={`option-roomtype-${rt}-${idx}`}>
-                                  {t(`hotel.roomType${rt === "twin" ? "Twin" : "Family"}`)}
-                                </SelectItem>
-                              ))}
-                            </SelectContent>
-                          </Select>
+                            {t("hotel.roomTypeTwin")}
+                          </div>
                           <a
                             href={ROOM_LINKS[lang]?.[room.roomType] ?? ROOM_LINKS.en[room.roomType]}
                             target="_blank"

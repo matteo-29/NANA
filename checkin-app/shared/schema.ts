@@ -48,7 +48,7 @@ export interface Guest {
 }
 
 // ---- Hotel booking (Phase 2) ----
-export const ROOM_TYPES = ["twin", "family"] as const;
+export const ROOM_TYPES = ["twin"] as const;
 export const MEAL_PLANS = ["room_only", "breakfast", "breakfast_onsen"] as const;
 
 // The bookable stay window is fixed to the days around the wedding

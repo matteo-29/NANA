@@ -46,24 +46,6 @@ const TWIN_PRICES: PriceTable = {
   },
 };
 
-// Luxury Family Room (53㎡, 2–4 occupancy). Prices are JPY per room per night.
-const FAMILY_PRICES: PriceTable = {
-  2: {
-    room_only: { S: 82720, A: 43560, B: 34870, C: 26180 },
-    breakfast: { S: 87120, A: 47960, B: 39270, C: 30580 },
-    breakfast_onsen: { S: 89760, A: 50600, B: 41910, C: 33220 },
-  },
-  3: {
-    room_only: { S: 82720, A: 43560, B: 34870, C: 26180 },
-    breakfast: { S: 89320, A: 50160, B: 41470, C: 32780 },
-    breakfast_onsen: { S: 93280, A: 54120, B: 45430, C: 36740 },
-  },
-  4: {
-    room_only: { S: 82720, A: 43560, B: 34870, C: 26180 },
-    breakfast: { S: 91520, A: 52360, B: 43670, C: 34980 },
-    breakfast_onsen: { S: 96800, A: 57640, B: 48950, C: 40260 },
-  },
-};
 
 export function periodFor(dateStr: string): Period | undefined {
   return PERIOD_MAP[dateStr];
@@ -90,12 +72,12 @@ function payingOccupancy(room: HotelRoom): number {
 }
 
 function nightlyRoomPrice(room: HotelRoom, period: Period): number {
-  const table = room.roomType === "twin" ? TWIN_PRICES : FAMILY_PRICES;
+  const table = TWIN_PRICES;
   const keys = Object.keys(table).map(Number).sort((a, b) => a - b);
   const occ = payingOccupancy(room);
-  // Clamp to the nearest available tier (family rooms have no 1-person
-  // tier; twin rooms have no 3/4-person tier) rather than throwing, since
-  // the UI already constrains adults+children per room type.
+  // Clamp to the nearest available tier (twin rooms have no 3/4-person
+  // tier) rather than throwing, since the UI already constrains
+  // adults+children per room type.
   const tier = keys.reduce((best, k) => (Math.abs(k - occ) < Math.abs(best - occ) ? k : best), keys[0]);
   const byMeal = table[tier];
   return byMeal[room.mealPlan][period];
