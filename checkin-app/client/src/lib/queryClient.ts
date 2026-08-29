@@ -17,6 +17,10 @@ export async function apiRequest(
 ): Promise<Response> {
   const res = await fetch(`${API_BASE}${url}`, {
     method,
+    // GET requests here often re-fetch data the guest just edited (e.g. the
+    // ticket PDF). Without this, some browsers reuse a cached response for
+    // the same URL instead of hitting the server again.
+    cache: "no-store",
     headers: {
       ...(data ? { "Content-Type": "application/json" } : {}),
       ...(extraHeaders || {}),

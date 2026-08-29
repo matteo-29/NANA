@@ -285,6 +285,12 @@ export async function registerRoutes(
       const hotelBooking = await storage.getHotelBooking(booking.id);
       const pdf = await renderTicketPdf(booking, guests, lang, hotelBooking ?? null);
       res.setHeader("Content-Type", "application/pdf");
+      // The ticket content depends on live, frequently-edited guest/hotel/bus
+      // data. Without an explicit no-store directive, browsers may reuse a
+      // previously cached response for the same URL and serve stale PDFs
+      // after the guest edits their booking.
+      res.setHeader("Cache-Control", "no-store, no-cache, must-revalidate");
+      res.setHeader("Pragma", "no-cache");
       res.setHeader(
         "Content-Disposition",
         `attachment; filename=NANA-${booking.booking_code}-ticket.pdf`

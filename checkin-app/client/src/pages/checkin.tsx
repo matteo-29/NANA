@@ -41,6 +41,12 @@ export default function CheckinPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [guestIndex, setGuestIndex] = useState(0);
   const [initialized, setInitialized] = useState(false);
+  // True while the guest is editing a single already-completed step from the
+  // confirmation screen (via one of the "Edit" buttons there). While set,
+  // the afterparty/hotel/bus steps short-circuit back to "confirmation"
+  // after saving instead of continuing forward through the rest of the
+  // normal first-time wizard sequence.
+  const [returnToConfirmation, setReturnToConfirmation] = useState(false);
 
   useEffect(() => {
     if (data && !initialized) {
@@ -136,7 +142,12 @@ export default function CheckinPage() {
     },
     onSuccess: (updatedGuests) => {
       patchGuests((guests) => guests.map((g) => updatedGuests.find((u) => u.id === g.id) ?? g));
-      setStep("hotel");
+      if (returnToConfirmation) {
+        setReturnToConfirmation(false);
+        setStep("confirmation");
+      } else {
+        setStep("hotel");
+      }
     },
   });
 
@@ -152,7 +163,12 @@ export default function CheckinPage() {
     },
     onSuccess: ({ hotelBooking }) => {
       patchHotelBooking(hotelBooking);
-      setStep("bus");
+      if (returnToConfirmation) {
+        setReturnToConfirmation(false);
+        setStep("confirmation");
+      } else {
+        setStep("bus");
+      }
     },
   });
 
@@ -168,6 +184,7 @@ export default function CheckinPage() {
     },
     onSuccess: (updatedGuests) => {
       patchGuests((guests) => guests.map((g) => updatedGuests.find((u) => u.id === g.id) ?? g));
+      setReturnToConfirmation(false);
       setStep("confirmation");
     },
   });
@@ -249,8 +266,13 @@ export default function CheckinPage() {
           guests={data.guests}
           onSubmit={(entries) => afterpartyMutation.mutate(entries)}
           onBack={() => {
-            setGuestIndex(selectedGuests.length - 1);
-            setStep("guest-meal");
+            if (returnToConfirmation) {
+              setReturnToConfirmation(false);
+              setStep("confirmation");
+            } else {
+              setGuestIndex(selectedGuests.length - 1);
+              setStep("guest-meal");
+            }
           }}
           isSubmitting={afterpartyMutation.isPending}
         />
@@ -261,7 +283,14 @@ export default function CheckinPage() {
           bookingId={bookingId!}
           initial={data.hotelBooking}
           onSubmit={(values) => hotelMutation.mutate(values)}
-          onBack={() => setStep("afterparty")}
+          onBack={() => {
+            if (returnToConfirmation) {
+              setReturnToConfirmation(false);
+              setStep("confirmation");
+            } else {
+              setStep("afterparty");
+            }
+          }}
           isSubmitting={hotelMutation.isPending}
         />
       )}
@@ -270,7 +299,14 @@ export default function CheckinPage() {
         <BusStep
           guests={data.guests}
           onSubmit={(optins) => busMutation.mutate(optins)}
-          onBack={() => setStep("hotel")}
+          onBack={() => {
+            if (returnToConfirmation) {
+              setReturnToConfirmation(false);
+              setStep("confirmation");
+            } else {
+              setStep("hotel");
+            }
+          }}
           isSubmitting={busMutation.isPending}
         />
       )}
@@ -317,9 +353,18 @@ export default function CheckinPage() {
           guests={data.guests}
           hotelBooking={data.hotelBooking}
           onEditSelection={() => setStep("selection")}
-          onEditAfterparty={() => setStep("afterparty")}
-          onEditHotel={() => setStep("hotel")}
-          onEditBus={() => setStep("bus")}
+          onEditAfterparty={() => {
+            setReturnToConfirmation(true);
+            setStep("afterparty");
+          }}
+          onEditHotel={() => {
+            setReturnToConfirmation(true);
+            setStep("hotel");
+          }}
+          onEditBus={() => {
+            setReturnToConfirmation(true);
+            setStep("bus");
+          }}
           onEditGuest={(idx) => {
             setGuestIndex(idx);
             setStep("guest-details");
