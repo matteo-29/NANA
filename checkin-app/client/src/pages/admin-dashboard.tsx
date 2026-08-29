@@ -376,6 +376,22 @@ function BookingEditDialog({
     ]
   );
   const [error, setError] = useState<string | null>(null);
+  // For a brand-new booking, mirror the primary name into the first guest row
+  // until the admin edits that row directly - otherwise the hidden empty guest
+  // row fails validation ("Ungueltige Eingabe") even though the top-level
+  // "Primary" name fields were filled in.
+  const [guestNameTouched, setGuestNameTouched] = useState<boolean>(!!initial);
+  useEffect(() => {
+    if (initial || guestNameTouched) return;
+    setGuests((prev) => {
+      if (prev.length === 0) return prev;
+      const first = prev[0];
+      if (first.lastName === lastName && first.firstName === firstName) return prev;
+      const next = [...prev];
+      next[0] = { ...first, lastName, firstName };
+      return next;
+    });
+  }, [lastName, firstName, initial, guestNameTouched]);
 
   const saveMutation = useMutation({
     mutationFn: async () => {
@@ -479,13 +495,19 @@ function BookingEditDialog({
                   <div className="flex items-center gap-2 py-2">
                     <Input
                       value={g.lastName}
-                      onChange={(e) => updateGuest(idx, { lastName: e.target.value })}
+                      onChange={(e) => {
+                        updateGuest(idx, { lastName: e.target.value });
+                        if (idx === 0) setGuestNameTouched(true);
+                      }}
                       placeholder={t("entry.lastName")}
                       data-testid={`input-guest-last-${idx}`}
                     />
                     <Input
                       value={g.firstName}
-                      onChange={(e) => updateGuest(idx, { firstName: e.target.value })}
+                      onChange={(e) => {
+                        updateGuest(idx, { firstName: e.target.value });
+                        if (idx === 0) setGuestNameTouched(true);
+                      }}
                       placeholder={t("entry.firstName")}
                       data-testid={`input-guest-first-${idx}`}
                     />
